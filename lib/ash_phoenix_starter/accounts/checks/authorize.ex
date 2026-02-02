@@ -36,11 +36,12 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
   # Confirms if the actor has required permissions to perform the current
   # action on the current resource
   defp can?(actor, context) do
-    AshPhoenixStarter.Accounts.User
-    |> Ash.Query.filter(id == ^actor.id)
-    |> Ash.Query.load(groups: :permissions)
-    |> Ash.Query.filter(groups.permissions.resource == ^context.resource)
-    |> Ash.Query.filter(groups.permissions.action == ^context.subject.action.type)
+    short_name = Ash.Resource.Info.short_name(context.resource)
+
+    SocialFund.Accounts.UserGroup
+    |> Ash.Query.filter(user_id == ^actor.id)
+    |> Ash.Query.filter(group.permissions.action == ^context.subject.action.name)
+    |> Ash.Query.filter(group.permissions.resource == ^short_name)
     |> Ash.exists?(tenant: actor.current_team, authorize?: false)
   end
 end

@@ -1,5 +1,6 @@
 [
   import_deps: [
+    :ash_json_api,
     :ash_double_entry,
     :cinder,
     :ash_authentication_phoenix,

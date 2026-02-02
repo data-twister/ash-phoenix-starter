@@ -7,6 +7,14 @@
 # General application configuration
 import Config
 
+config :mime,
+  extensions: %{"json" => "application/vnd.api+json"},
+  types: %{"application/vnd.api+json" => ["json"]}
+
+config :ash_json_api,
+  show_public_calculations_when_loaded?: false,
+  authorize_update_destroy_with_error?: true
+
 config :ex_cldr, default_backend: AshPhoenixStarter.Cldr
 config :cinder, default_theme: "modern"
 
@@ -28,6 +36,7 @@ config :spark,
     remove_parens?: true,
     "Ash.Resource": [
       section_order: [
+        :json_api,
         :account,
         :balance,
         :transfer,
@@ -50,7 +59,9 @@ config :spark,
         :identities
       ]
     ],
-    "Ash.Domain": [section_order: [:resources, :policies, :authorization, :domain, :execution]]
+    "Ash.Domain": [
+      section_order: [:json_api, :resources, :policies, :authorization, :domain, :execution]
+    ]
   ]
 
 config :AshPhoenixStarter,

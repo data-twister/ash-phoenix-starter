@@ -42,6 +42,8 @@ defmodule AshPhoenixStarter.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:open_api_spex, "~> 3.0"},
+      {:ash_json_api, "~> 1.0"},
       {:rename_project, "~> 0.1"},
       {:ex_money_sql, "~> 1.0"},
       {:ex_cldr, "~> 2.0"},

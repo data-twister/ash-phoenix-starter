@@ -34,7 +34,7 @@ defmodule AshPhoenixStarterWeb.Layouts do
     <div class="flex flex-col h-screen bg-gray-100">
       <!-- Top Navigation -->
       <.top_nav current_user={@current_user} />
-
+      
     <!-- Main Content with Left Menu -->
       <div class="flex flex-1 overflow-hidden">
         <!-- Left Menu -->
@@ -68,10 +68,9 @@ defmodule AshPhoenixStarterWeb.Layouts do
             <.left_nav menu={AshPhoenixStarterWeb.Menu.left_menu(@current_user)} uri={@uri} />
           </nav>
         </aside>
-
+        
     <!-- Main Content -->
         <main class="flex-1 p-2 bg-white overflow-auto">
-
           <div class="card card-content bg-c">{render_slot(@inner_block)}</div>
           <.flash_group flash={@flash} />
         </main>
@@ -101,7 +100,11 @@ defmodule AshPhoenixStarterWeb.Layouts do
           </div>
           <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
             <li>
-              <a class="bg-warning text-warning-content" :if={AshPhoenixStarterWeb.Helpers.impersonated?(@current_user)} href={~p"/accounts/users/stop/impersonation"}>
+              <a
+                :if={AshPhoenixStarterWeb.Helpers.impersonated?(@current_user)}
+                class="bg-warning text-warning-content"
+                href={~p"/accounts/users/stop/impersonation"}
+              >
                 <.icon name="hero-arrow-uturn-left-solid" />{gettext("Back to My Account")}
               </a>
             </li>
