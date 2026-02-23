@@ -50,11 +50,11 @@ You can find concepts used in this kit in the [Ash Framework for Phoenix Develop
 
 ## Installation 
 
-1. Clone 
+1. Clone this repository or use it as a template for your new app
 2. Rename your project with `mix rename AshPhoenixStarter MyNewProjectName`
-3. Replace `AshPhoenixStarter` with `MyNewProjectName` in your javascripts (This will automatically be cattered for in the future
-4. Confirm that all is well with `mix tests`
-5. Start implementing your new features
+4. Run `mix tailwind.install` to install tailwindcss
+5. Confirm that all is well with `mix tests`
+6. Start implementing your new features
 
 
 To start your Phoenix server:
