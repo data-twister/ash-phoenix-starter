@@ -39,7 +39,7 @@ defmodule AshPhoenixStarterWeb.Chart do
         id={"chart-#{ Ash.UUIDv7.generate()}"}
         phx-hook=".Chart"
         type={@type}
-        x_title={@y_title}
+        x_title={@x_title}
         y_title={@y_title}
         labels={Jason.encode!(@labels)}
         datasets={Jason.encode!(@datasets)}
