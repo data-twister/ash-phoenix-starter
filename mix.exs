@@ -91,7 +91,8 @@ defmodule AshPhoenixStarter.MixProject do
       {:phoenix_seo, "~> 0.3.1"},
       {:phoenix_copy, ">= 0.0.0"},
       {:adept_svg, "~> 0.3.1"},
-      {:phoenix_bakery, "~> 0.1.0", runtime: false}
+      {:phoenix_bakery, "~> 0.1.0", runtime: false},
+      {:hammer, ">= 0.0.0"},
     ]
   end
 
