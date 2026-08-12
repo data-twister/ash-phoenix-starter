@@ -87,7 +87,9 @@ defmodule AshPhoenixStarter.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:altcha, github: "data-twister/altcha-lib-ex"}
+      {:altcha, github: "data-twister/altcha-lib-ex"},
+      {:phoenix_seo, "~> 0.3.1"},
+      {:phoenix_copy, ">= 0.0.0"}
     ]
   end
 

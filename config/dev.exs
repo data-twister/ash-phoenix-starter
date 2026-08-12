@@ -27,7 +27,9 @@ config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
   secret_key_base: "u2v6CEq5SaCXqs6C1kN9q3XJVlNQqE49SsFYrwnO3paU5kthcIEpLuK0urfsOpJi",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:AshPhoenixStarter, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:AshPhoenixStarter, ~w(--watch)]}
+    tailwind: {Tailwind, :install_and_run, [:AshPhoenixStarter, ~w(--watch)]},
+    asset_copy_images: {Phoenix.Copy, :watch, [:images]},
+    asset_copy_fonts: {Phoenix.Copy, :watch, [:fonts]}
   ]
 
 # ## SSL Support

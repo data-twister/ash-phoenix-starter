@@ -17,7 +17,11 @@ defmodule AshPhoenixStarterWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def favicons do
+    ~w(android-chrome-192x192.png android-chrome-512x512.png apple-touch-icon.png favicon.ico icon.svg site.webmanifest)
+  end
+
+  def static_paths, do: ~w(assets fonts images svg robots.txt pwa.json) ++ favicons()
 
   def router do
     quote do
