@@ -62,7 +62,8 @@ config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/AshPhoenixStarter_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$"
+      ~r"lib/AshPhoenixStarter_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$",
+      ~r"lib/AshPhoenixStarter_web/assets/svg/.*(svg)$"
     ]
   ]
 

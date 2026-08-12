@@ -89,7 +89,8 @@ defmodule AshPhoenixStarter.MixProject do
       {:bandit, "~> 1.5"},
       {:altcha, github: "data-twister/altcha-lib-ex"},
       {:phoenix_seo, "~> 0.3.1"},
-      {:phoenix_copy, ">= 0.0.0"}
+      {:phoenix_copy, ">= 0.0.0"},
+      {:adept_svg, "~> 0.3.1"}
     ]
   end
 

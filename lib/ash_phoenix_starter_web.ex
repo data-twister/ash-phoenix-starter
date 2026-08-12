@@ -213,6 +213,8 @@ defmodule AshPhoenixStarterWeb do
         |> assign(:uri, URI.parse(url))
         |> noreply()
       end
+
+      alias AshPhoenixStarterWeb.Svg
     end
   end
 
