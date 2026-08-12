@@ -126,12 +126,6 @@ if config_env() == :prod do
   config :AshPhoenixStarter,
     ssl_endpoint_port: System.get_env("SSL_ENDPOINT_PORT") || 443
 
-  domain_info = System.get_env("SSL_ENDPOINT_DOMAIN_INFO") || ""
-  domain_info = domain_info |> String.split(",") |> List.to_tuple()
-
-  config :AshPhoenixStarter,
-    ssl_endpoint_domain_info: domain_info
-
   config :AshPhoenixStarter,
     endpoint_same_site: System.get_env("ENDPOINT_SAME_SITE") || ""
 

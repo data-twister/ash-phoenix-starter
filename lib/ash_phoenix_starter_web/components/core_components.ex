@@ -419,6 +419,17 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
     """
   end
 
+  attr :flag, :string, required: true
+  attr :variant, :string, default: "1x1"
+  attr :class, :string, default: "icon"
+  attr :rest, :global
+
+  def flag_icon(assigns) do
+    ~H"""
+    <FlagIcons.render flag={@flag} variant={@variant} class={@class} {@rest} />
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do
