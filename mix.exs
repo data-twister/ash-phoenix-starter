@@ -90,7 +90,8 @@ defmodule AshPhoenixStarter.MixProject do
       {:altcha, github: "data-twister/altcha-lib-ex"},
       {:phoenix_seo, "~> 0.3.1"},
       {:phoenix_copy, ">= 0.0.0"},
-      {:adept_svg, "~> 0.3.1"}
+      {:adept_svg, "~> 0.3.1"},
+      {:phoenix_bakery, "~> 0.1.0", runtime: false}
     ]
   end
 

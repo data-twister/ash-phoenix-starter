@@ -24,7 +24,8 @@ defmodule AshPhoenixStarterWeb.Endpoint do
     at: "/",
     from: :AshPhoenixStarter,
     gzip: not code_reloading?,
-    only: AshPhoenixStarterWeb.static_paths()
+    only: AshPhoenixStarterWeb.static_paths(),
+    headers: {__MODULE__, :static_headers, []}
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -53,6 +54,13 @@ defmodule AshPhoenixStarterWeb.Endpoint do
   plug Plug.Session, @session_options
   plug :serve_altcha_challenge
   plug AshPhoenixStarterWeb.Router
+
+  def static_headers(conn) do
+    case conn.request_path do
+      "/assets/serviceworker.js" -> [{"Service-Worker-Allowed", "/"}]
+      _ -> []
+    end
+  end
 
   def serve_altcha_challenge(%Plug.Conn{method: "GET", path_info: ["challenge"]} = conn, _opts) do
     hmac_secret = System.get_env("ALTCHA_HMAC_SECRET", "change-me-in-production")
