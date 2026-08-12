@@ -1,9 +1,48 @@
 defmodule AshPhoenixStarterWeb.DashboardLive do
   use AshPhoenixStarterWeb, :live_view
+  use AshPhoenixStarterWeb.LiveTracking
+
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
+
+  require Ash.Query
+
+  @impl true
+  def mount(_params, _session, socket) do
+    total_users = Ash.count!(Samba.Accounts.User, authorize?: false)
+    total_teams = Ash.count!(Samba.Accounts.Team, authorize?: false)
+
+    active_teams =
+      Samba.Accounts.Team
+      |> Ash.Query.filter(active == true)
+      |> Ash.count!(authorize?: false)
+
+    socket =
+      socket
+      |> assign(:page_name, "Dashboard")
+      |> assign(:total_users, total_users)
+      |> assign(:total_teams, total_teams)
+      |> assign(:active_teams, active_teams)
+      |> assign(:active_users, Enum.count(list_online_users()))
+
+    {:ok, socket}
+  end
 
   @impl Phoenix.LiveView
   def render(assigns) do
+    if AshPhoenixStarterWeb.Helpers.is_super_user?(assigns.current_user) do
+      super_user(assigns)
+    else
+      non_super_user(assigns)
+    end
+  end
+
+  def non_super_user(assigns) do
+    ~H"""
+    <Layouts.app flash={@flash} current_user={@current_user} uri={@uri}></Layouts.app>
+    """
+  end
+
+  def super_user(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_user={@current_user} uri={@uri}>
       <h1 class="text-3xl font-bold mb-6">Today's Overview</h1>
@@ -12,15 +51,17 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         <div class="bg-base-100 border border-lg border-primary rounded-box p-6">
           <div class="stat-figure"></div>
           <div class="stat-title text-lg">Total Users</div>
-          <div class="stat-value">200</div>
+          <div class="stat-value">{@total_users}</div>
           <div class="stat-desc">Active Users</div>
+          <div class="text-size-xs">{@active_users}</div>
         </div>
 
         <div class=" bg-base-100 bg-primary text-primary-content rounded-box p-6">
           <div class="stat-figure"></div>
           <div class="stat-title text-lg text-base-200">Total Teams</div>
-          <div class="stat-value">32</div>
-          <div class="stat-desc text-base-100">Total Tenants</div>
+          <div class="stat-value">{@total_teams}</div>
+          <div class="stat-desc text-base-100">Active Tenants</div>
+          <div class="text-size-xs">{@active_teams}</div>
         </div>
 
         <div class=" bg-base-100 bg-primary-content text-primary border border-primary rounded-box p-6">

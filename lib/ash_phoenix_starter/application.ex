@@ -12,6 +12,7 @@ defmodule AshPhoenixStarter.Application do
       AshPhoenixStarter.Repo,
       {DNSCluster, query: Application.get_env(:AshPhoenixStarter, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
+      AshPhoenixStarterWeb.Presence,
       # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
       # {AshPhoenixStarter.Worker, arg},
       # Start to serve requests, typically the last entry

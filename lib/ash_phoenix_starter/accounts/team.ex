@@ -65,6 +65,13 @@ defmodule AshPhoenixStarter.Accounts.Team do
       description "Domain name of the team or organisation"
     end
 
+    attribute :active, :boolean do
+      allow_nil? false
+      default true
+      public? true
+      description "Team Active?"
+    end
+
     attribute :description, :string, allow_nil?: true, public?: true
 
     timestamps()

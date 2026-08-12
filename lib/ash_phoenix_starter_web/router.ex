@@ -76,6 +76,9 @@ defmodule AshPhoenixStarterWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/landing", LandingLive, :index
+
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController
 
