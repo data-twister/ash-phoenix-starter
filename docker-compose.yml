@@ -1,0 +1,38 @@
+services:
+  postgres:
+    container_name: ash_phoenix_starter_web-postgres
+    image: postgres:16
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=AshPhoenixStarter_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./.postgres:/var/lib/postgresql/data
+  minio:
+    container_name: ash_phoenix_starter_web-minio
+    image: minio/minio:latest
+    entrypoint: sh
+    command: -c 'mkdir -p /data/ash_phoenix_starter_web && /usr/bin/minio server /data --console-address ":9001"'
+    hostname: minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ACCESS_KEY: "minio"
+      MINIO_SECRET_KEY: "minio123"
+    volumes:
+      - .minio:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+  mailpit:
+    container_name: ash_phoenix_starter_web-mailpit
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025
