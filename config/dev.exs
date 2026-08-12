@@ -4,7 +4,7 @@ config :ash, policies: [show_policy_breakdowns?: true]
 # Configure your database
 config :AshPhoenixStarter, AshPhoenixStarter.Repo,
   username: "postgres",
-  password: "ikijumba",
+  password: "postgres",
   hostname: "localhost",
   database: "AshPhoenixStarter_dev",
   stacktrace: true,

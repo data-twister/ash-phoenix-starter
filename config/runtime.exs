@@ -72,6 +72,87 @@ if config_env() == :prod do
       System.get_env("TOKEN_SIGNING_SECRET") ||
         raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
 
+
+  config :AshPhoenixStarter,
+         site_title_prefix: System.get_env("SITE_TITLE_PREFIX") || ""
+
+  config :AshPhoenixStarter,
+         google_site_verification: System.get_env("GOOGLE_SITE_VERIFICATION") || ""
+
+  config :AshPhoenixStarter,
+         site_default_locale: System.get_env("SITE_DEFAULT_LOCALE") || ""
+
+  config :AshPhoenixStarter,
+         site_default_mask_icon_color: System.get_env("SITE_DEFAULT_MASK_ICON_COLOR") || ""
+
+  config :AshPhoenixStarter,
+         site_default_windows_tile_color: System.get_env("SITE_DEFAULT_WINDOWS_TILE_COLOR") || ""
+
+  config :AshPhoenixStarter,
+         site_themes_list: System.get_env("SITE_THEMES_LIST") || ""
+
+  config :AshPhoenixStarter,
+         site_default_description: System.get_env("SITE_DEFAULT_DESCRIPTION") || ""
+
+  config :AshPhoenixStarter,
+         site_webmaster: System.get_env("SITE_WEBMASTER") || ""
+
+  config :AshPhoenixStarter,
+         site_default_suffix: System.get_env("SITE_DEFAULT_SUFFIX") || ""
+
+  config :AshPhoenixStarter,
+         site_default_title: System.get_env("SITE_DEFAULT_TITLE") || ""
+
+  config :AshPhoenixStarter,
+         site_author: System.get_env("SITE_AUTHOR") || ""
+
+  config :AshPhoenixStarter,
+         site_name: System.get_env("SITE_NAME") || ""
+
+  config :AshPhoenixStarter,
+         facebook_app_id: System.get_env("FACEBOOK_APP_ID") || ""
+
+  config :AshPhoenixStarter,
+         twitter_site_name: System.get_env("TWITTER_SITE_NAME") || ""
+
+  config :AshPhoenixStarter,
+         twitter_site_id: System.get_env("TWITTER_SITE_ID") || ""
+
+  config :AshPhoenixStarter,
+         twitter_site_creator: System.get_env("TWITTER_SITE_CREATOR") || ""
+
+  config :AshPhoenixStarter,
+         twitter_site_creator_id: System.get_env("TWITTER_SITE_CREATOR_ID") || ""
+
+  config :AshPhoenixStarter,
+         ssl_endpoint_port: System.get_env("SSL_ENDPOINT_PORT") || 443
+
+  domain_info = System.get_env("SSL_ENDPOINT_DOMAIN_INFO") || ""
+  domain_info = domain_info |> String.split(",") |> List.to_tuple()
+
+  config :AshPhoenixStarter,
+         ssl_endpoint_domain_info: domain_info
+
+  config :AshPhoenixStarter,
+         endpoint_same_site: System.get_env("ENDPOINT_SAME_SITE") || ""
+
+  config :AshPhoenixStarter,
+         endpoint_signing_salt: System.get_env("ENDPOINT_SIGNING_SALT") || ""
+
+  config :AshPhoenixStarter,
+         endpoint_key: System.get_env("ENDPOINT_KEY") || ""
+
+  store = System.get_env("ENDPOINT_STORE") || nil
+
+  store =
+    case store do
+      nil -> :cookie
+      data -> String.to_atom(data)
+    end
+
+  config :AshPhoenixStarter,
+         endpoint_store: store
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
