@@ -51,5 +51,31 @@ defmodule AshPhoenixStarterWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug :serve_altcha_challenge
   plug AshPhoenixStarterWeb.Router
+
+  def serve_altcha_challenge(%Plug.Conn{method: "GET", path_info: ["challenge"]} = conn, _opts) do
+    hmac_secret = System.get_env("ALTCHA_HMAC_SECRET", "change-me-in-production")
+    hmac_key_secret = System.get_env("ALTCHA_HMAC_KEY_SECRET", "change-me-in-production-2")
+
+    counter = Enum.random(5_000..10_000)
+
+    challenge =
+      Altcha.V2.create_challenge(%Altcha.V2.CreateChallengeOptions{
+        algorithm: "PBKDF2/SHA-256",
+        cost: 5_000,
+        counter: counter,
+        expires_at: DateTime.to_unix(DateTime.utc_now(), :second) + 600,
+        hmac_signature_secret: hmac_secret,
+        hmac_key_signature_secret: hmac_key_secret
+      })
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(challenge))
+    |> halt()
+  end
+
+  # Fallthrough clause so other routes like /register pass through safely to the router
+  def serve_altcha_challenge(conn, _opts), do: conn
 end

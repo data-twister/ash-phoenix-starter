@@ -17,4 +17,8 @@ defmodule AshPhoenixStarterWeb.AuthOverrides do
   # override AshAuthentication.Phoenix.Components.SignIn do
   #  set :show_banner, false
   # end
+
+  override Components.Password.RegisterForm do
+    set :register_extra_component, AshPhoenixStarterWeb.Components.AltchaExtra
+  end
 end

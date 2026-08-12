@@ -97,7 +97,8 @@ defmodule AshPhoenixStarterWeb.Router do
     reset_route auth_routes_prefix: "/auth",
                 overrides: [
                   AshPhoenixStarterWeb.AuthOverrides,
-                  AshAuthentication.Phoenix.Overrides.Default
+                  AshAuthentication.Phoenix.Overrides.Default,
+                  AshAuthentication.Components.AltchaExtra
                 ]
 
     # Remove this if you do not use the confirmation strategy

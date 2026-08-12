@@ -24,6 +24,29 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/AshPhoenixStarter"
 import topbar from "../vendor/topbar"
+import 'altcha'
+
+let Hooks = {};
+
+Hooks.AltchaHook = {
+  mounted() {
+    const widget = this.el.querySelector("altcha-widget");
+    const input = this.el.querySelector("#altcha-token-input");
+
+    if (widget && input) {
+      widget.addEventListener("statechange", (event) => {
+        const { state, payload } = event.detail || {};
+        console.log(`[Altcha] State: ${state}, Payload:`, payload);
+
+        if (state === "verified" && payload) {
+          input.value = payload;
+        } else if (state === "error") {
+          input.value = "";
+        }
+      });
+    }
+  }
+};
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {

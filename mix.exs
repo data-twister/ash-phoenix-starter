@@ -86,7 +86,8 @@ defmodule AshPhoenixStarter.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:altcha, github: "data-twister/altcha-lib-ex"}
     ]
   end
 
@@ -102,7 +103,11 @@ defmodule AshPhoenixStarter.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ash.setup --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "altcha.install"
+      ],
       "assets.build": ["compile", "tailwind AshPhoenixStarter", "esbuild AshPhoenixStarter"],
       "assets.deploy": [
         "tailwind AshPhoenixStarter --minify",

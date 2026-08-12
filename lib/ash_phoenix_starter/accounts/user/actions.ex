@@ -110,6 +110,9 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
         sensitive? true
       end
 
+      argument :altcha, :string, allow_nil?: false
+      change AshPhoenixStarter.Changes.VerifyAltcha
+
       # Sets the email from the argument
       change set_attribute(:email, arg(:email))
 
