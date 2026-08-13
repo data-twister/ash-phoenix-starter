@@ -70,7 +70,31 @@ config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :AshPhoenixStarter,
   dev_routes: true,
-  token_signing_secret: "7B/BPzeIzWI2IoXk/u0Fp8o5Sv3jF9vi"
+  token_signing_secret: "7B/BPzeIzWI2IoXk/u0Fp8o5Sv3jF9vi",
+  super_users: ["admin@example.com"],
+  site_title_prefix: "",
+  google_site_verification: "",
+  site_default_locale: "en_US",
+  site_default_mask_icon_color: "#663399",
+  site_default_windows_tile_color: "#663399",
+  site_themes_list: ["default"],
+  site_default_description: "",
+  site_default_suffix: "",
+  site_default_title: "",
+  site_author: "mithereal",
+  site_webmaster: "mithereal@gmail.com",
+  site_description: "",
+  site_name: "",
+  facebook_app_id: "",
+  twitter_site_name: "",
+  twitter_site_id: "",
+  twitter_site_creator: "",
+  twitter_site_creator_id: "",
+  ssl_endpoint_port: 4002,
+  endpoint_same_site: "Lax",
+  endpoint_signing_salt: "gTm6MBR2",
+  endpoint_key: "_web_key",
+  endpoint_store: :cookie
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

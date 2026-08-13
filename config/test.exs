@@ -1,4 +1,5 @@
 import Config
+config :AshPhoenixStarter, Oban, testing: :manual
 config :AshPhoenixStarter, token_signing_secret: "QLnUvgdau283stYcHZEjcJFGE4wcdS4Q"
 config :bcrypt_elixir, log_rounds: 1
 config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true

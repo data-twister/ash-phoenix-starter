@@ -8,11 +8,11 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    total_users = Ash.count!(Samba.Accounts.User, authorize?: false)
-    total_teams = Ash.count!(Samba.Accounts.Team, authorize?: false)
+    total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
+    total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
 
     active_teams =
-      Samba.Accounts.Team
+      AshPhoenixStarter.Accounts.Team
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
 

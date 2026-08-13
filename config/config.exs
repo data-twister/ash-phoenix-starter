@@ -7,6 +7,15 @@
 # General application configuration
 import Config
 
+config :ash_oban, pro?: false
+
+config :AshPhoenixStarter, Oban,
+  engine: Oban.Engines.Basic,
+  notifier: Oban.Notifiers.Postgres,
+  queues: [default: 10, system: 10],
+  repo: AshPhoenixStarter.Repo,
+  plugins: [{Oban.Plugins.Cron, []}]
+
 config :mime,
   extensions: %{"json" => "application/vnd.api+json"},
   types: %{"application/vnd.api+json" => ["json"]}
@@ -67,10 +76,7 @@ config :spark,
 config :AshPhoenixStarter,
   ecto_repos: [AshPhoenixStarter.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [
-    AshPhoenixStarter.Ledger,
-    AshPhoenixStarter.Accounts
-  ]
+  ash_domains: [AshPhoenixStarter.Ledger, AshPhoenixStarter.Accounts]
 
 # Configure super admin users who are allowed to do
 # special actions such as impersonating other

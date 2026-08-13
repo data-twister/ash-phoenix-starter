@@ -11,11 +11,17 @@ defmodule AshPhoenixStarter.Application do
       AshPhoenixStarterWeb.Telemetry,
       AshPhoenixStarter.Repo,
       {DNSCluster, query: Application.get_env(:AshPhoenixStarter, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
-      AshPhoenixStarterWeb.Presence,
+      {Oban,
+       AshOban.config(
+         Application.fetch_env!(:AshPhoenixStarter, :ash_domains),
+         Application.fetch_env!(:AshPhoenixStarter, Oban)
+       )},
+      AshPhoenixStarter.Accounts.PasswordResetScheduler,
       # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
       # {AshPhoenixStarter.Worker, arg},
       # Start to serve requests, typically the last entry
+      {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
+      AshPhoenixStarterWeb.Presence,
       AshPhoenixStarterWeb.Endpoint,
       {AshAuthentication.Supervisor, [otp_app: :AshPhoenixStarter]}
     ]

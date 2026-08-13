@@ -42,6 +42,7 @@ defmodule AshPhoenixStarter.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:oban, "~> 2.0"},
       {:open_api_spex, "~> 3.0"},
       {:ash_json_api, "~> 1.0"},
       {:rename_project, "~> 0.1"},
@@ -94,7 +95,9 @@ defmodule AshPhoenixStarter.MixProject do
       {:phoenix_bakery, "~> 0.1.0", runtime: false},
       {:hammer, ">= 0.0.0"},
       {:timex, ">= 0.0.0"},
-      {:flag_icons, "~> 0.1.0"}
+      {:flag_icons, "~> 0.1.0"},
+      {:ash_oban, "~> 0.8"},
+      {:x509, "~> 0.8"}
     ]
   end
 

@@ -257,9 +257,42 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
 
       run AshPhoenixStarter.Accounts.User.Actions.ForceSignIn
     end
+
+    update :admin_set_default_password do
+      description "Resets a user's password to the default system password"
+      accept []
+      require_atomic? false
+
+      change fn changeset, _context ->
+        default_password = System.get_env("DEFAULT_ADMIN_PASSWORD") || "AdminPassword123!"
+
+        changeset
+        |> Ash.Changeset.set_argument(:password, default_password)
+        |> Ash.Changeset.set_argument(:password_confirmation, default_password)
+      end
+
+      argument :password, :string, sensitive?: true, allow_nil?: true
+      argument :password_confirmation, :string, sensitive?: true, allow_nil?: true
+
+      change {AshAuthentication.Strategy.Password.HashPasswordChange, strategy_name: :password}
+    end
+
+    read :list_empty_password_admins do
+      description "List admin users who have a blank or missing hashed password"
+
+      # Pull super users from configuration or specify your filter condition
+      filter expr(
+               (is_nil(hashed_password) or hashed_password == "") and
+                 email in ^Application.get_env(:AshPhoenixStarter, :super_users)
+             )
+    end
   end
 
   code_interface do
+    define :list_empty_password_admins, action: :list_empty_password_admins
+    define :admin_set_default_password, action: :admin_set_default_password
     define :force_sign_in, action: :force_sign_in
+    define :get_by_email, action: :get_by_email
+    define :sign_in_with_password, action: :sign_in_with_password
   end
 end

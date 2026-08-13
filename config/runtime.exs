@@ -53,6 +53,18 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
+  use_self_signed = System.get_env("USE_SIGNED_SSL") == nil
+  cert_path = Application.app_dir(:AshPhoenixStarter, "priv/cert")
+
+  {certfile, keyfile, ca} =
+    if use_self_signed do
+      {Path.join("priv/cert", "selfsigned.pem"), Path.join("priv/cert", "selfsigned_key.pem"),
+       Path.join("priv/cert", "ca.pem")}
+    else
+      {Path.join("priv/cert", "fullchain.pem"), Path.join("priv/cert", "fullchain.pem"),
+       Path.join("priv/cert", "ca.pem")}
+    end
+
   config :AshPhoenixStarter, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
@@ -64,6 +76,13 @@ if config_env() == :prod do
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
+    ],
+    https: [
+      port: 443,
+      cipher_suite: :strong,
+      otp_app: :AshPhoenixStarter,
+      keyfile: keyfile,
+      certfile: certfile
     ],
     secret_key_base: secret_key_base
 
@@ -145,6 +164,15 @@ if config_env() == :prod do
 
   config :AshPhoenixStarter,
     endpoint_store: store
+
+  super_users =
+    case System.get_env("SUPER_USERS") do
+      nil -> ["admin@example.com"]
+      val -> String.split(val, ",", trim: true) |> Enum.map(&String.trim/1)
+    end
+
+  config :samba,
+    super_users: super_users
 
   # ## SSL Support
   #
