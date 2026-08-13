@@ -97,7 +97,9 @@ defmodule AshPhoenixStarter.MixProject do
       {:timex, ">= 0.0.0"},
       {:flag_icons, "~> 0.1.0"},
       {:ash_oban, "~> 0.8"},
-      {:x509, "~> 0.8"}
+      {:x509, "~> 0.8"},
+      {:con_cache, "~> 1.1"},
+      {:ash_ops, "~> 0.2"}
     ]
   end
 

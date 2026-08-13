@@ -4,6 +4,17 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
   actions do
     defaults [:read]
 
+    read :get_by_id do
+      description "Get a user by their primary ID"
+      get? true
+
+      argument :id, :uuid do
+        allow_nil? false
+      end
+
+      filter expr(id == ^arg(:id))
+    end
+
     read :get_by_subject do
       description "Get a user by the subject claim in a JWT"
       argument :subject, :string, allow_nil?: false
@@ -283,12 +294,17 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       # Pull super users from configuration or specify your filter condition
       filter expr(
                (is_nil(hashed_password) or hashed_password == "") and
-                 email in ^Application.get_env(:AshPhoenixStarter, :super_users)
+                 email in ^Application.compile_env(
+                   :AshPhoenixStarter,
+                   :super_users,
+                   "admin@example.com"
+                 )
              )
     end
   end
 
   code_interface do
+    define :get_by_id, action: :get_by_id
     define :list_empty_password_admins, action: :list_empty_password_admins
     define :admin_set_default_password, action: :admin_set_default_password
     define :force_sign_in, action: :force_sign_in

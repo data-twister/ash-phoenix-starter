@@ -8,7 +8,7 @@ defmodule AshPhoenixStarter.Generators.Account do
     action :generate_user, {:array, :struct} do
       argument :count, :integer, allow_nil?: false, default: 1
 
-      constraints items: [instance_of: SamAshPhoenixStarterba.Accounts.User]
+      constraints items: [instance_of: AshPhoenixStarter.Accounts.User]
 
       run fn input, _ctx ->
         users =

@@ -54,9 +54,9 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   use_self_signed = System.get_env("USE_SIGNED_SSL") == nil
-  cert_path = Application.app_dir(:AshPhoenixStarter, "priv/cert")
+  _cert_path = Application.app_dir(:AshPhoenixStarter, "priv/cert")
 
-  {certfile, keyfile, ca} =
+  {certfile, keyfile, _ca} =
     if use_self_signed do
       {Path.join("priv/cert", "selfsigned.pem"), Path.join("priv/cert", "selfsigned_key.pem"),
        Path.join("priv/cert", "ca.pem")}
