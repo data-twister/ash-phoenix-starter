@@ -7,22 +7,32 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
 
   @doc """
   Returns true to authorize or false to deny access
-  If actor is not provide, then deny access by returning false
+  If actor is not provided, then deny access by returning false
   """
   @impl true
-
   def match?(nil = _actor, _context, _opts), do: false
-  def match?(actor, context, _options), do: authorized?(actor, context)
+  def match?(actor, context, _options), do: can?(actor, context)
 
-  # """
-  # 1. If the actor is the team owner, then authorize since he's the owner
-  # 2. If none of the above, then check if the user has permission on the database
-  # """
-  defp authorized?(actor, context) do
+  # Confirms if the actor has required permissions using our reusable can/3 function
+  defp can?(actor, context) do
+    resource = context.resource
+    action_name = context.subject.action.name
+
+    can(actor, resource, action_name)
+  end
+
+  # Public or private can/3 helper
+  def can(nil, _module, _action), do: false
+
+  def can(actor, module, action) when is_atom(action) do
     cond do
       is_current_team_owner?(actor) -> true
-      true -> can?(actor, context)
+      true -> check_database_permissions(actor, module, action)
     end
+  end
+
+  def can(actor, module, action) when is_binary(action) do
+    can(actor, module, String.to_existing_atom(action))
   end
 
   # Confirms if the actor is the owner of the current team
@@ -33,14 +43,13 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
     |> Ash.exists?()
   end
 
-  # Confirms if the actor has required permissions to perform the current
-  # action on the current resource
-  defp can?(actor, context) do
-    short_name = Ash.Resource.Info.short_name(context.resource)
+  # Confirms if the actor has required permissions on the database
+  defp check_database_permissions(actor, module, action_name) do
+    short_name = Ash.Resource.Info.short_name(module)
 
-    SocialFund.Accounts.UserGroup
+    AshPhoenixStarter.Accounts.UserGroup
     |> Ash.Query.filter(user_id == ^actor.id)
-    |> Ash.Query.filter(group.permissions.action == ^context.subject.action.name)
+    |> Ash.Query.filter(group.permissions.action == ^action_name)
     |> Ash.Query.filter(group.permissions.resource == ^short_name)
     |> Ash.exists?(tenant: actor.current_team, authorize?: false)
   end

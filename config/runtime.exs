@@ -171,7 +171,7 @@ if config_env() == :prod do
       val -> String.split(val, ",", trim: true) |> Enum.map(&String.trim/1)
     end
 
-  config :samba,
+  config :AshPhoenixStarter,
     super_users: super_users
 
   # ## SSL Support

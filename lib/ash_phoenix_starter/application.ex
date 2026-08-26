@@ -17,7 +17,12 @@ defmodule AshPhoenixStarter.Application do
          Application.fetch_env!(:AshPhoenixStarter, Oban)
        )},
       AshPhoenixStarter.Accounts.PasswordResetScheduler,
-      {ConCache, [name: :app_settings_cache, ttl_check_interval: :timer.seconds(60)]},
+      {ConCache,
+       [
+         name: :app_settings_cache,
+         ttl_check_interval: :timer.seconds(60),
+         global_ttl: :timer.seconds(120)
+       ]},
 
       # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
       # {AshPhoenixStarter.Worker, arg},
