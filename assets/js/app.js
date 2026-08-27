@@ -23,8 +23,11 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/AshPhoenixStarter"
+import { SVGInject } from '../vendor/svg-inject';
 import topbar from "../vendor/topbar"
+import "phoenix_live_head"
 import 'altcha'
+
 
 let Hooks = {};
 
@@ -68,6 +71,7 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+window.SVGInject = SVGInject;
 
 // The lines below enable quality of life phoenix_live_reload
 // development features:

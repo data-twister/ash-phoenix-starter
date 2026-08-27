@@ -23,6 +23,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
       |> assign(:active_users, Enum.count(list_online_users()))
+      |> Phx.Live.Favicon.set_dynamic("subfolder", "dashboard")
 
     {:ok, socket}
   end

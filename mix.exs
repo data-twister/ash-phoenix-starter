@@ -68,7 +68,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.1.0"},
+      {:phoenix_live_view, "~> 1.1.0", override: true},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
@@ -99,7 +99,9 @@ defmodule AshPhoenixStarter.MixProject do
       {:ash_oban, "~> 0.8"},
       {:x509, "~> 0.8"},
       {:con_cache, "~> 1.1"},
-      {:ash_ops, "~> 0.2"}
+      {:ash_ops, "~> 0.2"},
+      {:phoenix_iconify, "~> 0.3.2"},
+      {:phoenix_live_favicon, "~> 1.0"}
     ]
   end
 

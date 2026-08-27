@@ -18,7 +18,7 @@ defmodule AshPhoenixStarterWeb do
   """
 
   def favicons do
-    ~w(android-chrome-192x192.png android-chrome-512x512.png apple-touch-icon.png favicon.ico icon.svg site.webmanifest)
+    ~w(favicons android-chrome-192x192.png android-chrome-512x512.png apple-touch-icon.png favicon.ico icon.svg site.webmanifest)
   end
 
   def static_paths, do: ~w(assets fonts images svg robots.txt pwa.json) ++ favicons()
@@ -195,7 +195,7 @@ defmodule AshPhoenixStarterWeb do
       import Phoenix.HTML
       # Core UI components
       import AshPhoenixStarterWeb.CoreComponents
-
+      import PhoenixIconify, only: [icon: 1]
       # Common modules used in templates
       alias Phoenix.LiveView.JS
       alias AshPhoenixStarterWeb.Layouts
