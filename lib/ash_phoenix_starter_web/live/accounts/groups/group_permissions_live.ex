@@ -7,26 +7,19 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
   def render(assigns) do
     ~H"""
     <Layouts.account_groups current_user={@current_user} flash={@flash} uri={@uri}>
-      
-    <!-- SELECT ALL -->
-
       <h2 class="text-2xl font-semibold text-gray-700 mb-4">
         Manage Permission for {Phoenix.Naming.humanize(@group.name)}
       </h2>
       <.form for={@form} phx-submit="save" id="group-permissions">
         <.select_all />
-        <div class="mb-6">
+        <div class="mb-24">
           <div class="space-y-6">
-            <!-- Resource: Users -->
             <div :for={resource <- @resources} class="border border-gray-300 rounded-md p-4">
               <h4 class="text-lg font-medium text-gray-600 mb-3">
                 {Phoenix.Naming.humanize(resource.short_name)}
               </h4>
-              <div
-                :for={action <- resource.actions}
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-              >
-                <label class="flex items-center">
+              <div class="space-y-3">
+                <label :for={action <- resource.actions} class="flex items-start">
                   <%!-- For already assigned permissions --%>
                   <input
                     :if={action.assigned?}
@@ -34,7 +27,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
                     type="checkbox"
                     id={"#{resource.short_name}-#{action.name}"}
                     name={"permissions[#{resource.short_name}][#{action.name}]"}
-                    class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
+                    class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2 mt-1 flex-shrink-0"
                   />
 
                   <%!-- For non assigned permissions --%>
@@ -43,19 +36,19 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
                     type="checkbox"
                     id={"#{resource.short_name}-#{action.name}"}
                     name={"permissions[#{resource.short_name}][#{action.name}]"}
-                    class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
+                    class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2 mt-1 flex-shrink-0"
                   />
-                  <span class="text-sm text-gray-700">
-                    {Phoenix.Naming.humanize(action.name)}
-                    <i :if={action.description}>: {Phoenix.Naming.humanize(action.description)}</i>
+                  <span class="text-sm text-gray-700 flex flex-wrap gap-1 items-baseline">
+                    <span class="font-medium">{Phoenix.Naming.humanize(action.name)}</span>
+                    <i :if={action.description} class="text-gray-500">: {Phoenix.Naming.humanize(action.description)}</i>
                   </span>
                 </label>
               </div>
             </div>
           </div>
         </div>
-        <div class="flex justify-end mt-6">
-          <.button>
+        <div class="fixed bottom-6 right-6 z-50">
+          <.button class="shadow-lg px-2 py-2 bg-gray-200 rounded-lg hover:bg-emerald-700 hover:text-white text-black">
             Save Permissions
           </.button>
         </div>
@@ -79,15 +72,26 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
   def handle_event("save", %{"permissions" => permissions}, socket) do
     case sync_permissions(permissions, socket) do
       {:ok, _perm} ->
+        if connected?(socket), do: Process.send_after(self(), :clear_flash, 3000)
+
         socket
         |> put_flash(:info, "Successfully updated permissions")
         |> noreply()
 
       _errors ->
+        if connected?(socket), do: Process.send_after(self(), :clear_flash, 3000)
+
         socket
         |> put_flash(:error, "Failed updated permissions")
         |> noreply()
     end
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info(:clear_flash, socket) do
+    socket
+    |> clear_flash()
+    |> noreply()
   end
 
   defp assign_group_permissions(socket) do
@@ -141,14 +145,10 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
   end
 
   defp get_resources(socket) do
-    # Fetch group permissions from the socket assigns
     group_permissions = socket.assigns.group_permissions
 
-    # Iterate over all configured Ash domains
     for domain <- Application.get_env(:AshPhoenixStarter, :ash_domains) do
-      # For each domain, process its resources
       for resource <- Ash.Domain.Info.resources(domain) do
-        # Get the short name of the resource
         resource_name = Ash.Resource.Info.short_name(resource)
 
         %{
@@ -160,7 +160,6 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
     |> Enum.flat_map(& &1)
   end
 
-  # Helper function to build the list of actions for a resource
   defp build_actions(resource, resource_name, group_permissions) do
     for action <- Ash.Resource.Info.actions(resource) do
       %{
@@ -172,7 +171,6 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
     end
   end
 
-  # Helper function to check if an action is assigned for the resource
   defp action_assigned?(action, resource_name, group_permissions) do
     Enum.any?(group_permissions, fn gp ->
       gp.action == Atom.to_string(action.name) &&
