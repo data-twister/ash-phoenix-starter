@@ -1,11 +1,11 @@
-defmodule AshPhoenixStarter.Settings.Configuration do
+defmodule AshPhoenixStarter.Settings.Setting do
   @moduledoc """
-  An Ash Framework resource representing a single key-value configuration entry 
+  An Ash Framework resource representing a single key-value configuration entry
   persisted in the PostgreSQL database.
 
-  `Configuration` acts as the persistent storage layer for `AshPhoenixStarter.SettingsManager`. 
-  It stores configuration settings as string-serialized values alongside a explicit 
-  `type` metadata field (`string`, `integer`, `boolean`, `float`, or `atom`), allowing 
+  `Configuration` acts as the persistent storage layer for `AshPhoenixStarter.Settings.SettingsManager`.
+  It stores configuration settings as string-serialized values alongside a explicit
+  `type` metadata field (`string`, `integer`, `boolean`, `float`, or `atom`), allowing
   the application to safely coerce rows back into native Elixir data types on retrieval.
 
   ## Database Schema (`app_settings`)
@@ -15,12 +15,17 @@ defmodule AshPhoenixStarter.Settings.Configuration do
   """
 
   use Ash.Resource,
-    domain: AshPhoenixStarter.Core,
+    domain: AshPhoenixStarter.Settings,
     data_layer: AshPostgres.DataLayer
 
   postgres do
     table "app_settings"
     repo AshPhoenixStarter.Repo
+  end
+
+  code_interface do
+    define :read, action: :read
+    define :list, action: :read
   end
 
   actions do
