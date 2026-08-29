@@ -7,6 +7,16 @@ defmodule AshPhoenixStarter.Application do
 
   @impl true
   def start(_type, _args) do
+    #    user_settings = [
+    #      Supervisor.child_spec(
+    #        {ConCache,
+    #          [
+    #            name: :tenant_settings_cache,
+    #            ttl_check_interval: :timer.minutes(30),
+    #            global_ttl: :timer.seconds(120)
+    #          ]},
+    #        id: :tenant_settings_cache_supervisor
+    #      )]
     children = [
       AshPhoenixStarterWeb.Telemetry,
       AshPhoenixStarter.Repo,
@@ -33,6 +43,8 @@ defmodule AshPhoenixStarter.Application do
       {AshAuthentication.Supervisor, [otp_app: :AshPhoenixStarter]}
     ]
 
+    ## to user user_settings
+    # children = user_settings ++ children
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: AshPhoenixStarter.Supervisor]

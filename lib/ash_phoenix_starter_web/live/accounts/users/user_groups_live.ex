@@ -4,7 +4,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <Layouts.account_users flash={@flash} current_user={@current_user} uri={@uri}>
+    <Layouts.account_groups flash={@flash} current_user={@current_user} uri={@uri}>
       <h1 class="text-2xl font-semibold text-gray-700 mb-4">
         {gettext("Assign Group Permissions")} {@user.email}
       </h1>
@@ -12,29 +12,33 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
       <form phx-submit="save">
         <.select_all />
 
-        <div
-          :for={group <- @groups}
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-        >
-          <label class="flex items-center">
-            <%!-- For non assigned permissions --%>
-            <input
-              :if={group_assigned?(@user.groups, group)}
-              checked
-              type="checkbox"
-              name={"groups[#{group.id}]"}
-              class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
-            />
+        <.table id="groups-table" rows={@groups}>
+          <:col :let={group} label={gettext("Group Name")}>
+            <label class="flex items-center cursor-pointer">
+              <input
+                :if={group_assigned?(@user.groups, group)}
+                checked
+                type="checkbox"
+                name={"groups[#{group.id}]"}
+                class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
+              />
 
-            <input
-              :if={group_not_assigned?(@user.groups, group)}
-              type="checkbox"
-              name={"groups[#{group.id}]"}
-              class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
-            />
-            <span class="text-sm text-gray-700">{Phoenix.Naming.humanize(group.name)}</span>
-          </label>
-        </div>
+              <input
+                :if={group_not_assigned?(@user.groups, group)}
+                type="checkbox"
+                name={"groups[#{group.id}]"}
+                class="h-4 w-4 text-primary border-primary rounded focus:ring-primary mr-2"
+              />
+              <span class="text-sm text-gray-700">{Phoenix.Naming.humanize(group.name)}</span>
+            </label>
+          </:col>
+
+          <:col :let={group} label={gettext("Actions")}>
+            <.button type="button" phx-click={JS.patch("/admin/accounts/groups/permissions/#{group.id}")}>
+              <.icon name="hero-shield-check" class="w-5 h-5" /> Permissions
+            </.button>
+          </:col>
+        </.table>
 
         <div class="flex justify-end mt-6">
           <.button>
@@ -42,7 +46,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
           </.button>
         </div>
       </form>
-    </Layouts.account_users>
+    </Layouts.account_groups>
     """
   end
 
@@ -78,8 +82,18 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
     end
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("save", _, socket) do
+    #   user_id = socket.assigns.user_id
+
+    socket
+    |> put_flash(:info, "No User Groups Selected")
+    |> noreply()
+  end
+
   defp sync_user_groups(user_groups, socket) do
     %{current_user: current_user} = socket.assigns
+
 
     AshPhoenixStarter.Accounts.UserGroup
     |> Ash.Changeset.for_create(:sync, %{user_groups: user_groups})

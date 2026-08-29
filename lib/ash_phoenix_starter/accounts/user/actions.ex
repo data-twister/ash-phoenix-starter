@@ -301,6 +301,47 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
                  )
              )
     end
+
+    create :seed_user do
+      description "Admin/Seeder action to create a user bypassing Altcha verification."
+
+      argument :email, :ci_string do
+        allow_nil? false
+      end
+
+      argument :password, :string do
+        description "The proposed password for the user, in plain text."
+        allow_nil? false
+        constraints min_length: 8
+        sensitive? true
+      end
+
+      argument :password_confirmation, :string do
+        description "The proposed password for the user (again), in plain text."
+        allow_nil? false
+        sensitive? true
+      end
+
+      # Instruct AshAuthentication which strategy context to bind to
+      change set_context(%{strategy_name: :password})
+
+      # Sets the email from the argument
+      change set_attribute(:email, arg(:email))
+
+      # Hashes the provided password
+      change AshAuthentication.Strategy.Password.HashPasswordChange
+
+      # Generates an authentication token for the user
+      change AshAuthentication.GenerateTokenChange
+
+      # Validates that the password matches the confirmation
+      validate AshAuthentication.Strategy.Password.PasswordConfirmationValidation
+
+      metadata :token, :string do
+        description "A JWT that can be used to authenticate the user."
+        allow_nil? false
+      end
+    end
   end
 
   code_interface do

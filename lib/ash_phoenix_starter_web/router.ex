@@ -3,6 +3,8 @@ defmodule AshPhoenixStarterWeb.Router do
 
   use AshAuthentication.Phoenix.Router
 
+  use AshPhoenixStarter.Cldr.Routes, helpers: false
+
   import AshAuthentication.Plug.Helpers
 
   pipeline :browser do
@@ -13,6 +15,12 @@ defmodule AshPhoenixStarterWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :load_from_session
+
+    plug Cldr.Plug.PutLocale,
+      apps: [:cldr, :gettext],
+      from: [:path, :query, :session],
+      cldr: AshPhoenixStarter.Cldr,
+      gettext: AshPhoenixStarterWeb.Gettext
   end
 
   pipeline :api do
