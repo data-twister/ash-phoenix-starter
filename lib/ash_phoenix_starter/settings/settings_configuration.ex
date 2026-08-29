@@ -1,4 +1,4 @@
-defmodule AshPhoenixStarter.Settings.Configuration do
+defmodule AshPhoenixStarter.Settings.Setting do
   @moduledoc """
   An Ash Framework resource representing a single key-value configuration entry 
   persisted in the PostgreSQL database.

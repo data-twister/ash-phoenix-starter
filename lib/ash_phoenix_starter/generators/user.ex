@@ -5,9 +5,8 @@ defmodule AshPhoenixStarter.Generators.User do
   def user(opts \\ []) do
     changeset_generator(
       User,
-      :register_with_password,
+      :seed_user,
       defaults: [
-        username: sequence(:username, &"user_#{&1}"),
         email: sequence(:email, &"user_#{&1}@example.com"),
         password: "Passw0rd123!",
         password_confirmation: "Passw0rd123!"

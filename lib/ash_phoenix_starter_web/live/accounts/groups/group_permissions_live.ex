@@ -40,7 +40,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
                   />
                   <span class="text-sm text-gray-700 flex flex-wrap gap-1 items-baseline">
                     <span class="font-medium">{Phoenix.Naming.humanize(action.name)}</span>
-                    <i :if={action.description} class="text-gray-500">: {Phoenix.Naming.humanize(action.description)}</i>
+                    <i :if={action.description} class="text-gray-500">
+                      : {Phoenix.Naming.humanize(action.description)}
+                    </i>
                   </span>
                 </label>
               </div>
