@@ -5,9 +5,15 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
   require Ash.Query
+  alias Phx.Live.Favicon
 
   @impl true
   def mount(_params, _session, socket) do
+
+     if connected?(socket) do
+      Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "notifications:alerts")
+    end
+
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
 
@@ -23,7 +29,8 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
       |> assign(:active_users, Enum.count(list_online_users()))
-      |> Phx.Live.Favicon.set_dynamic("subfolder", "dashboard")
+      |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
+      |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
     {:ok, socket}
   end
@@ -134,5 +141,36 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       </div>
     </Layouts.app>
     """
+  end
+
+ @impl true
+  def handle_info({:new_notification, count}, socket) do
+    socket = 
+      if count > 0 do
+        # 1. Active State: Inject the SVG dynamic markup template onto our target ID
+        svg_template = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='{counter_background}' /><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' font-size='55' fill='white'>{counter}</text></svg>"
+        
+        socket
+        # Turn off the path-based elements by blanking their reference attributes
+        |> Favicon.set_dynamic("favicon-32", "subfolder", "blank")
+        |> Favicon.set_dynamic("favicon-16", "subfolder", "blank")
+        # Build and update the custom counter template
+        |> Favicon.set_dynamic("dynamic-svg-favicon", "dynamic-href", svg_template)
+        |> Favicon.set_dynamic("dynamic-svg-favicon", "counter", count)
+        |> Favicon.set_dynamic("dynamic-svg-favicon", "counter_background", "red")
+      else
+        # 2. Fallback State: Strip the custom SVG and restore the subfolder routes
+        socket
+        |> Favicon.set_dynamic("dynamic-svg-favicon", "dynamic-href", "")
+        |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
+        |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
+      end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(_message, socket) do
+    {:noreply, socket}
   end
 end

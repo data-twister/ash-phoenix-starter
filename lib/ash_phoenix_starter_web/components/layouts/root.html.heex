@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {Application.get_env(:live_debugger, :live_debugger_tags)}
+  <head phx-update="stream" id="head">
+    <%= if tags = Application.get_env(:live_debugger, :live_debugger_tags) do %>
+      <%= raw(tags) %>
+    <% end %>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,18 +15,30 @@
     />
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <link phx-track-static rel="stylesheet" href={~p"/images/icons/icons.css"} />
+    
+    <!-- 1. The path-based subfolder fallback tags (Active by default) -->
     <link
+      id="favicon-32"
       rel="icon"
       type="image/png"
-      data-dynamic-href="images/favicons/{subfolder}/favicon-32x32.png"
+      data-dynamic-href="/images/favicons/{subfolder}/favicon-32x32.png"
       href={~p"/images/favicons/favicon-32x32.png"}
     />
     <link
+      id="favicon-16"
       rel="icon"
       type="image/png"
-      data-dynamic-href="images/favicons/{subfolder}/favicon-16x16.png"
+      data-dynamic-href="/images/favicons/{subfolder}/favicon-16x16.png"
       href={~p"/images/favicons/favicon-16x16.png"}
     />
+
+    <!-- 2. Target tag used for hot-swapping the SVG markup counter -->
+    <link 
+      id="dynamic-svg-favicon" 
+      rel="icon" 
+      type="image/svg+xml"
+    />
+
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
     <script>
@@ -38,11 +52,8 @@
             document.documentElement.setAttribute("data-theme", theme);
           }
         };
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          setTheme(localStorage.getItem("phx:theme") || "system");
-        }
+        setTheme(localStorage.getItem("phx:theme") || "system");
         window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
       })();
     </script>
