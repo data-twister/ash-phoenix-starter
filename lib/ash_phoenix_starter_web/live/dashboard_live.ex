@@ -1,6 +1,7 @@
 defmodule AshPhoenixStarterWeb.DashboardLive do
   use AshPhoenixStarterWeb, :live_view
   use AshPhoenixStarterWeb.LiveTracking
+  alias AshPhoenixStarter.GeoBoundaries
 
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
@@ -13,10 +14,19 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
 
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock_stream")
+    end
+
+     {:ok, initial_map} = GeoBoundaries.get_bounds("us") |> GeoBoundaries.inject_live_data(%{})
+
+
+
     active_teams =
       AshPhoenixStarter.Accounts.Team
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
+      
 
     socket =
       socket
@@ -25,6 +35,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
       |> assign(:active_users, Enum.count(list_online_users()))
+      |> assign(us_map_data: initial_map, active_country: "us")
       |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
       |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
@@ -87,7 +98,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         <div class="card border border-primary">
           <div class="card-body">
             <h2 class="card-title">Merchant Locations Map</h2>
-            <AshPhoenixStarterWeb.Map.map />
+            <AshPhoenixStarterWeb.Map.map initial_geojson={@us_map_data} height="500px" />
           </div>
         </div>
         
@@ -137,5 +148,24 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       </div>
     </Layouts.app>
     """
+  end
+
+    @impl true
+  def handle_event("switch_country", %{"code" => country_code}, socket) do
+    {:ok, fresh_map} = GeoBoundaries.get_bounds(country_code) |> GeoBoundaries.inject_live_data(%{})
+    
+    socket = 
+      socket
+      |> assign(map_layer: fresh_map, active_country: country_code)
+      |> push_event("render_new_layer", %{geojson: fresh_map})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:stock_update, %{region: region_name, count: updated_count}}, socket) do
+    # 4. STREAMING ENGINE: Catch raw application model events and push them out-of-band 
+    # directly down into the client browser hook via the WebSocket connection
+    {:noreply, push_event(socket, "update_stock", %{province_name: region_name, new_stock: updated_count})}
   end
 end

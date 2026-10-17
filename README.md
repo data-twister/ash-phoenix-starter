@@ -57,6 +57,8 @@ You can find concepts used in this kit in the [Ash Framework for Phoenix Develop
 5. Confirm that all is well with `mix tests`
 6. Start implementing your new features
 
+## For map boundry jsons you can access them @https://datahub.io/core/geo-boundaries-us-110m or https://www.naturalearthdata.com/downloads/110m-cultural-vectors/ and exgrat them to the corrospondingjaon file
+
 
 To start your Phoenix server:
 
