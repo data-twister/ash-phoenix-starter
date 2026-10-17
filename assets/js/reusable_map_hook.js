@@ -13,9 +13,10 @@ export default {
     let layerLookupIndex = {};
 
     // 2. Load Base Tile Layer Map Graphics
-    L.tileLayer('https://openstreetmap.org{z}/{x}/{y}.png', {
+    // FIXED: Adjusted string template layout to target standard OpenStreetMap tile subdomains
+    L.tileLayer('https://openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     // 3. Information HUD Control Overlay Panel

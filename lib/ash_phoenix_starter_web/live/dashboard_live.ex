@@ -15,7 +15,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
 
     if connected?(socket) do
-      Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock_stream")
+      Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock:update")
     end
 
      {:ok, initial_map} = GeoBoundaries.get_bounds("us") |> GeoBoundaries.inject_live_data(%{})
@@ -35,7 +35,9 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
       |> assign(:active_users, Enum.count(list_online_users()))
-      |> assign(us_map_data: initial_map, active_country: "us")
+      |> assign(:us_map_data, initial_map)
+      |> assign(:active_country "us")
+      |> assign(:currency, :usd)
       |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
       |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
@@ -125,19 +127,19 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
                   <tr>
                     <td>Merchant A</td>
                     <td>Product X</td>
-                    <td>{Money.new(7200, :xof)}</td>
+                    <td>{Money.new(7200, {@currency})}</td>
                     <td><span class="badge badge-warning">Low</span></td>
                   </tr>
                   <tr>
                     <td>Merchant B</td>
                     <td>Product Y</td>
-                    <td>{Money.new(7200, :xof)}</td>
+                    <td>{Money.new(7200, {@currency})}</td>
                     <td><span class="badge badge-error">Critical</span></td>
                   </tr>
                   <tr>
                     <td>Merchant C</td>
                     <td>Product Z</td>
-                    <td>{Money.new(3200, :xof)}</td>
+                    <td>{Money.new(3200, {@currency})}</td>
                     <td><span class="badge badge-warning">Low</span></td>
                   </tr>
                 </tbody>
@@ -150,13 +152,13 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     """
   end
 
-    @impl true
+  @impl true
   def handle_event("switch_country", %{"code" => country_code}, socket) do
     {:ok, fresh_map} = GeoBoundaries.get_bounds(country_code) |> GeoBoundaries.inject_live_data(%{})
     
     socket = 
       socket
-      |> assign(map_layer: fresh_map, active_country: country_code)
+      |> assign(us_map_data: fresh_map, active_country: country_code)
       |> push_event("render_new_layer", %{geojson: fresh_map})
 
     {:noreply, socket}
@@ -164,8 +166,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
   @impl true
   def handle_info({:stock_update, %{region: region_name, count: updated_count}}, socket) do
-    # 4. STREAMING ENGINE: Catch raw application model events and push them out-of-band 
-    # directly down into the client browser hook via the WebSocket connection
+    # STREAMING ENGINE: Receives live events out-of-band and flashes color alterations onto the map layout canvas
     {:noreply, push_event(socket, "update_stock", %{province_name: region_name, new_stock: updated_count})}
   end
 end
