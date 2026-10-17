@@ -33,11 +33,21 @@ defmodule AshPhoenixStarterWeb.Live.Hooks.NotificationHook do
       |> Favicon.set_dynamic("dynamic-svg-favicon", "dynamic-href", svg_template)
       |> Favicon.set_dynamic("dynamic-svg-favicon", "counter", count)
       |> Favicon.set_dynamic("dynamic-svg-favicon", "counter_background", "red")
-    else
-      socket
-      |> Favicon.set_dynamic("dynamic-svg-favicon", "dynamic-href", "")
-      |> Favicon.set_dynamic("favicon-32", "subfolder", "common")
-      |> Favicon.set_dynamic("favicon-16", "subfolder", "common")
-    end
+      else
+    # Automatically extracts a folder string name based on your module naming rules
+    # e.g., AshPhoenixStarterWeb.DashboardLive -> "dashboard"
+    # e.g., AshPhoenixStarterWeb.SettingsLive -> "settings"
+    current_page_folder = 
+      socket.view
+      |> Module.split()
+      |> List.last()
+      |> String.replace("Live", "")
+      |> String.downcase()
+
+    socket
+    |> Favicon.set_dynamic("dynamic-svg-favicon", "dynamic-href", "")
+    |> Favicon.set_dynamic("favicon-32", "subfolder", current_page_folder)
+    |> Favicon.set_dynamic("favicon-16", "subfolder", current_page_folder)
+  end
   end
 end
