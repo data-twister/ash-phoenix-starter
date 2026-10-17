@@ -5,18 +5,27 @@ defmodule AshPhoenixStarter.Application do
 
   use Application
 
+   global_config = Application.get_env(:AshPhoenixStarter, :global_cache_config, [])
+    ttl_check   = Keyword.get(global_config, :ttl_check_interval, :timer.seconds(120))
+    global_ttl  = Keyword.get(global_config, :global_ttl, :timer.minutes(60))
+
+     tenant_config = Application.get_env(:AshPhoenixStarter, :tenant_cache_config, [])
+    tenant_ttl_check   = Keyword.get(tenant_config, :ttl_check_interval, :timer.seconds(60))
+    tenant_global_ttl  = Keyword.get(tenant_config, :global_ttl, :timer.minutes(30))
+
+
   @impl true
   def start(_type, _args) do
-    #    user_settings = [
-    #      Supervisor.child_spec(
-    #        {ConCache,
-    #          [
-    #            name: :tenant_settings_cache,
-    #            ttl_check_interval: :timer.minutes(30),
-    #            global_ttl: :timer.seconds(120)
-    #          ]},
-    #        id: :tenant_settings_cache_supervisor
-    #      )]
+    user_settings = [
+          Supervisor.child_spec(
+            {ConCache,
+              [
+                name: :tenant_settings_cache,
+                ttl_check_interval: tenant_ttl_check,
+                global_ttl: tenant_global_ttl
+              ]},
+            id: :tenant_settings_cache_supervisor
+          )]
     children = [
       AshPhoenixStarterWeb.Telemetry,
       AshPhoenixStarter.Repo,
@@ -30,8 +39,8 @@ defmodule AshPhoenixStarter.Application do
       {ConCache,
        [
          name: :app_settings_cache,
-         ttl_check_interval: :timer.seconds(60),
-         global_ttl: :timer.seconds(120)
+         ttl_check_interval: ttl_check,
+         global_ttl: global_ttl
        ]},
 
       # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
@@ -43,8 +52,7 @@ defmodule AshPhoenixStarter.Application do
       {AshAuthentication.Supervisor, [otp_app: :AshPhoenixStarter]}
     ]
 
-    ## to user user_settings
-    # children = user_settings ++ children
+     children = user_settings ++ children
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: AshPhoenixStarter.Supervisor]

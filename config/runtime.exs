@@ -174,6 +174,26 @@ if config_env() == :prod do
   config :AshPhoenixStarter,
     super_users: super_users
 
+  global_ttl_env       = System.get_env("GLOBAL_TTL_INTERVAL") || "60"
+  global_check_env     = System.get_env("GLOBAL_CHECK_INTERVAL") || "120"
+  
+  tenant_ttl_env       = System.get_env("TENANT_TTL_INTERVAL") || "15"
+  tenant_check_env     = System.get_env("TENANT_CHECK_INTERVAL") || "30"
+
+  global_ttl_minutes   = String.to_integer(global_ttl_env)
+  global_check_seconds = String.to_integer(global_check_env)
+  
+  tenant_ttl_minutes   = String.to_integer(tenant_ttl_env)
+  tenant_check_seconds = String.to_integer(tenant_check_env)
+
+  config :AshPhoenixStarter, :global_cache_config,
+  ttl_check_interval: :timer.seconds(tenant_check_seconds),
+  global_ttl: :timer.minutes(tenant_ttl_minutes)
+  
+  config :AshPhoenixStarter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(global_check_seconds), 
+  global_ttl: :timer.minutes(global_ttl_minutes) 
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

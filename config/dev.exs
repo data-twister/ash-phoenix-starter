@@ -116,3 +116,11 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :AshPhoenixStarter, :global_cache_config,
+  ttl_check_interval: :timer.seconds(120),
+  global_ttl: :timer.minutes(60)
+  
+  config :AshPhoenixStarter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(30), 
+  global_ttl: :timer.minutes(15) 

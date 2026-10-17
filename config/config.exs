@@ -155,6 +155,14 @@ config :mime, :types, %{
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
+  
+config :AshPhoenixStarter, :global_cache_config,
+  ttl_check_interval: :timer.seconds(120),
+  global_ttl: :timer.minutes(60)
+  
+  config :AshPhoenixStarter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(30), 
+  global_ttl: :timer.minutes(15) 
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
