@@ -164,6 +164,19 @@ config :AshPhoenixStarter, :global_cache_config,
   ttl_check_interval: :timer.seconds(30), 
   global_ttl: :timer.minutes(15) 
 
+  config :ex_aws,
+  access_key_id: System.get_env("SPACES_ACCESS_KEY"),
+  secret_access_key: System.get_env("SPACES_SECRET_KEY"),
+  # ExAws requires a region string, but you override the host below
+  region: "us-east-1"
+
+config :ex_aws, :s3,
+  scheme: "https://",
+  host: System.get_env("SPACES_HOST") || "nyc3.digitaloceanspaces.com",
+  port: 443
+
+config :waffle, storage: Waffle.Storage.Local
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

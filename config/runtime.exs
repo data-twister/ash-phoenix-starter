@@ -174,6 +174,35 @@ if config_env() == :prod do
   config :AshPhoenixStarter,
     super_users: super_users
 
+  storage_backend =
+    case System.get_env("STORAGE_BACKEND") do
+      nil -> Waffle.Storage.Local
+      val ->  Waffle.Storage.S3
+    end
+
+ # Default to Local storage in dev/test, switch to S3/Spaces in production
+  storage_backend =
+    if config_env() == :prod, do: storage_backend, else: Waffle.Storage.Local
+
+  config :ash_phoenix_starter, :waffle_storage_backend, storage_backend
+
+  if storage_backend == Waffle.Storage.S3 do
+    config :waffle,
+      bucket: System.get_env("SPACES_BUCKET"),
+      # Optional: CDN endpoint for fast delivery
+      asset_host: System.get_env("SPACES_CDN_URL")
+
+    config :ex_aws,
+      access_key_id: System.get_env("SPACES_ACCESS_KEY"),
+      secret_access_key: System.get_env("SPACES_SECRET_KEY"),
+      region: "us-east-1",
+      s3: [
+        scheme: "https://",
+        host: System.get_env("SPACES_HOST") || "nyc3.digitaloceanspaces.com",
+        port: 443
+      ]
+  end
+
   global_ttl_env       = System.get_env("GLOBAL_TTL_INTERVAL") || "60"
   global_check_env     = System.get_env("GLOBAL_CHECK_INTERVAL") || "120"
   
