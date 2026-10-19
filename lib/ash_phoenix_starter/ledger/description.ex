@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-defmodule AshPhoenixStarter.Ledgers.Description do
+defmodule AshPhoenixStarter.Ledger.Description do
   @moduledoc false
   use Ash.Resource,
-    domain: Elixir.AshPhoenixStarter.Ledgers,
+    domain: Elixir.AshPhoenixStarter.Ledger,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Description]
 
@@ -15,8 +15,8 @@ defmodule AshPhoenixStarter.Ledgers.Description do
   end
 
   description do
-    transfer_resource AshPhoenixStarter.Ledgers.Transfer
-    account_resource AshPhoenixStarter.Ledgers.Account
+    transfer_resource AshPhoenixStarter.Ledger.Transfer
+    account_resource AshPhoenixStarter.Ledger.Account
   end
 
   code_interface do

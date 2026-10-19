@@ -68,7 +68,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:ash, "~> 3.0"},
       {:ash_json_api, "~> 1.0"},
       {:ash_money, "~> 0.2"},
-      {:ash_double_entry, "~> 1.0"},
+      {:ash_double_entry, github: "data-twister/ash_double_entry"},
       {:ash_authentication_phoenix, "~> 2.0"},
       {:ash_authentication, "~> 4.0"},
       {:ash_postgres, "~> 2.0"},
@@ -121,7 +121,12 @@ defmodule AshPhoenixStarter.MixProject do
       {:picosat_elixir, "~> 0.2"},
       {:ex_cmd, "~> 0.18.0"},
       {:mix_audit, "~> 2.1"},
-      {:altcha, github: "data-twister/altcha-lib-ex"}
+      {:altcha, github: "data-twister/altcha-lib-ex"},
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.5"},
+      {:hackney, "~> 4.0", override: true},
+      {:waffle, "~> 2.0"},
+      {:waffle_ecto, "~> 0.0"},
     ]
   end
 

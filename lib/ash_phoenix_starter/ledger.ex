@@ -6,5 +6,6 @@ defmodule AshPhoenixStarter.Ledger do
     resource AshPhoenixStarter.Ledger.Account
     resource AshPhoenixStarter.Ledger.Balance
     resource AshPhoenixStarter.Ledger.Transfer
+     resource AshPhoenixStarter.Ledger.Description
   end
 end
