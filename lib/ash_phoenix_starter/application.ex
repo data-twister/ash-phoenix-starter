@@ -27,6 +27,7 @@ defmodule AshPhoenixStarter.Application do
             id: :tenant_settings_cache_supervisor
           )]
     children = [
+      Cldr.Currency,
       AshPhoenixStarterWeb.Telemetry,
       AshPhoenixStarter.Repo,
       {DNSCluster, query: Application.get_env(:AshPhoenixStarter, :dns_cluster_query) || :ignore},

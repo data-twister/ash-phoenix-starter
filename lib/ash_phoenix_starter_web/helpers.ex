@@ -16,6 +16,19 @@ defmodule AshPhoenixStarterWeb.Helpers do
   @spec impersonated?(User.t()) :: boolean()
   def impersonated?(user), do: Map.get(user, :impersonated?, false)
 
+
+  def get_currency_atom(country_code) when is_binary(country_code) do
+    # 1. "us" -> "US"
+    # 2. "US" -> :US
+   territory_atom = country_code |> String.upcase() |> String.to_existing_atom()
+    
+    # 3. Fetches the active currency atom (e.g., :USD)
+   Cldr.Currency.current_currency_for_territory(territory_atom)
+  rescue
+   ArgumentError -> {:error, :invalid_country_code}
+ end
+
+
  alias AshPhoenixStarter.Settings.Manager
 
   @doc """
@@ -46,4 +59,5 @@ defmodule AshPhoenixStarterWeb.Helpers do
     url_config = Keyword.get(endpoint_config, :url, [])
     Keyword.get(url_config, :host, "localhost")
   end
+end
 end

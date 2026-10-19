@@ -195,6 +195,7 @@ defmodule AshPhoenixStarterWeb do
 
       # HTML escaping functionality
       import Phoenix.HTML
+      import AshPhoenixStarterWeb.Helpers
       # Core UI components
       import AshPhoenixStarterWeb.CoreComponents
       import PhoenixIconify, only: [icon: 1]

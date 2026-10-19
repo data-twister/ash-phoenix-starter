@@ -2,6 +2,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
   use AshPhoenixStarterWeb, :live_view
   use AshPhoenixStarterWeb.LiveTracking
   alias AshPhoenixStarter.GeoBoundaries
+  alias AshPhoenixStarter.Settings.Manager
 
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
@@ -10,19 +11,25 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-
+    tenant = socket.assigns[:current_user].team.domain
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
+    total_fields = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
+    active_country = Manager.get_tenant(tenant, :active_country) || "us"
 
     if connected?(socket) do
       Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock:update")
     end
 
-     {:ok, initial_map} = GeoBoundaries.get_bounds("us") |> GeoBoundaries.inject_live_data(%{})
-
-
+     {:ok, initial_map} = GeoBoundaries.get_bounds(active_country) |> GeoBoundaries.inject_live_data(%{})
 
     active_teams =
+      AshPhoenixStarter.Accounts.Team
+      |> Ash.Query.filter(active == true)
+      |> Ash.count!(authorize?: false)
+
+      
+    active_fields =
       AshPhoenixStarter.Accounts.Team
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
@@ -34,10 +41,12 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:total_users, total_users)
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
+      |> assign(:total_fields, total_fields)
+      |> assign(:active_fields, active_fields)
       |> assign(:active_users, Enum.count(list_online_users()))
-      |> assign(:us_map_data, initial_map)
-      |> assign(:active_country "us")
-      |> assign(:currency, :usd)
+      |> assign(:map_data, initial_map)
+      |> assign(:active_country active_country)
+      |> assign(:currency, get_currency_atom(active_country))
       |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
       |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
@@ -81,6 +90,15 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
           <div class="text-size-xs">{@active_teams}</div>
         </div>
 
+        
+        <div class=" bg-base-100 bg-primary text-primary-content rounded-box p-6">
+          <div class="stat-figure"></div>
+          <div class="stat-title text-lg text-base-200">Total Fields</div>
+          <div class="stat-value">{@total_fields}</div>
+          <div class="stat-desc text-base-100">Active Fields</div>
+          <div class="text-size-xs">{@active_fields}</div>
+        </div>
+
         <div class=" bg-base-100 bg-primary-content text-primary border border-primary rounded-box p-6">
           <div class="stat-title text-primary text-lg">Revenue</div>
           <div class="stat-value ">12,000</div>
@@ -100,7 +118,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         <div class="card border border-primary">
           <div class="card-body">
             <h2 class="card-title">Merchant Locations Map</h2>
-            <AshPhoenixStarterWeb.Map.map initial_geojson={@us_map_data} height="500px" />
+            <AshPhoenixStarterWeb.Map.map initial_geojson={@map_data} height="500px" />
           </div>
         </div>
         
@@ -158,7 +176,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     
     socket = 
       socket
-      |> assign(us_map_data: fresh_map, active_country: country_code)
+      |> assign(map_data: fresh_map, active_country: country_code)
       |> push_event("render_new_layer", %{geojson: fresh_map})
 
     {:noreply, socket}

@@ -85,6 +85,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:ex_cldr, "~> 2.45", override: true},
       {:ex_cldr_calendars, "~> 2.1"},
+      {:ex_cldr_currencies, "~> 2.13"}
       {:ex_cldr_units, "~> 3.18"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.32"},
