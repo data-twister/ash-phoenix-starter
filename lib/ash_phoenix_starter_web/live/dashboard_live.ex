@@ -3,6 +3,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
   use AshPhoenixStarterWeb.LiveTracking
   alias AshPhoenixStarter.GeoBoundaries
   alias AshPhoenixStarter.Settings.Manager
+  alias AshPhoenixStarter.Accounts.MerchantStock 
 
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
@@ -14,12 +15,22 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     tenant = socket.assigns[:current_user].team.domain
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
+
+    supported_countries = [
+      {"United States", "us"},
+      {"France", "fr"},
+      {"United Kingdom", "gb"},
+      {"Canada", "ca"}
+    ]
+
     active_country = Manager.get_tenant(tenant, :active_country) || "us"
-    live_metrics = %{
-    "texas" => 840,
-    "CALIFORNIA " => 1250,
-    "New York" => 610 # This won't crash; it safely defaults density to 0 since NY isn't in our geojson sample above
-    }
+
+    {status, live_metrics} = AshPhoenixStarter.Accounts.MerchantStock.get_live_metrics_for_country(active_country)
+    
+    live_metrics = case status do
+      :ok -> live_metrics
+      _-> %{}
+    end
 
     if connected?(socket) do
       #  merchant_id = socket.assigns.current_merchant.id
@@ -27,7 +38,12 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock:update")
     end
 
-     {:ok, initial_map} = GeoBoundaries.get_bounds(active_country) |> GeoBoundaries.inject_live_data(live_metrics)
+     {status, initial_map} = GeoBoundaries.get_bounds(active_country) |> GeoBoundaries.inject_live_data(live_metrics)
+
+      initial_map = case status do
+      :ok -> initial_map
+      _-> %{}
+    end
 
     active_teams =
       AshPhoenixStarter.Accounts.Team
@@ -64,6 +80,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:active_country active_country)
       |> assign(:currency, get_currency_atom(active_country))
       |> assign(:merchants_stock, merchants_stock)
+      |> assign(:supported_countries, supported_countries)
       |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
       |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
@@ -122,17 +139,26 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <!-- Map Section -->
-        <div class="card border border-primary">
-          <div class="card-body">
-            <h2 class="card-title">Merchant Locations Map</h2>
-            <AshPhoenixStarterWeb.Map.map initial_geojson={@map_data} height="500px" />
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <!-- Left Column: Controls & Map Graphic -->
+        <div class="space-y-4">
+          <AshPhoenixStarterWeb.Map.country_selector 
+            selected={@active_country} 
+            supported_countries={@supported_countries} 
+          />
+          
+          <div class="card border border-primary bg-base-100 shadow-sm rounded-xl">
+            <div class="card-body p-5">
+              <h2 class="card-title text-lg font-bold mb-3 text-gray-800">Merchant Locations Map</h2>
+              <AshPhoenixStarterWeb.Map.map initial_geojson={@map_data} height="500px" />
+            </div>
           </div>
         </div>
         
-    <!-- Low Stock Section -->
-   <AshPhoenixStarterWeb.Stock.low merchants={@merchants_stock} />
+        <!-- Right Column: Low Stock Management Panel -->
+        <div class="card bg-base-100 h-full">
+          <AshPhoenixStarterWeb.Stock.low merchants={@merchants_stock} />
+        </div>
       </div>
     </Layouts.app>
     """
