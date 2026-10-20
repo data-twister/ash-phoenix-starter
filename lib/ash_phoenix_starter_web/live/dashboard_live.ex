@@ -14,7 +14,6 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     tenant = socket.assigns[:current_user].team.domain
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
-    total_fields = Ash.count!(AshPhoenixStarter.Farms.FarmField, authorize?: false)
     active_country = Manager.get_tenant(tenant, :active_country) || "us"
 
     if connected?(socket) do
@@ -30,13 +29,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
 
-      
-    active_fields =
-      AshPhoenixStarter.Farms.FarmField
-      |> Ash.Query.filter(active == true)
-      |> Ash.count!(authorize?: false)
-
-      merchants_stock = [
+    merchants_stock = [
     %{
       name: "Merchant A",
       products: [
@@ -60,10 +53,6 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:active_users, Enum.count(list_online_users()))
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
-      |> assign(:total_fields, total_fields)
-      |> assign(:active_fields, active_fields)
-      |> assign(:revenue, "$12,000")
-      |> assign(:next_harvest, "Today")
       |> assign(:transactions_today, "$72,000")
       |> assign(:transactions_processed, "500")
       |> assign(:map_data, initial_map)
@@ -113,22 +102,6 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
           <div class="text-size-xs">{@active_teams}</div>
         </div>
 
-        
-        <div class=" bg-base-100 bg-primary text-primary-content rounded-box p-6">
-          <div class="stat-figure"></div>
-          <div class="stat-title text-lg text-base-200">Total Fields</div>
-          <div class="stat-value">{@total_fields}</div>
-          <div class="stat-desc text-base-100">Active Fields</div>
-          <div class="text-size-xs">{@active_fields}</div>
-        </div>
-
-        <div class=" bg-base-100 bg-primary-content text-primary border border-primary rounded-box p-6">
-          <div class="stat-title text-primary text-lg">Revenue</div>
-          <div class="stat-value ">{@revenue}</div>
-          <div class="stat-desc text-primary">Next Harvest</div>
-          <div class="text-size-xs">{@next_harvest}</div>
-        </div>
-
         <div class="stat bg-base-100 border border-secondary rounded-box p-6">
           <div class="stat-figure "></div>
           <div class="stat-title text-lg">Transactions Today</div>
@@ -173,19 +146,4 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     {:noreply, push_event(socket, "update_stock", %{province_name: region_name, new_stock: updated_count})}
   end
 
-    # Capture the broadcast notification payload coming directly from Ash
-  # def handle_info(%Ash.Notifier.PubSub.Notification{action: :update, data: updated_product}, socket) do
-  #   # 1. Look up the geographic region/province tracking names associated with this location layout
-  #   # (Assuming you track name values on your Region schema metadata profiles)
-  #   province_name = socket.assigns.current_region_name 
-
-  #   # 2. Push the atomic event payload directly to your reusable_map_hook JS implementation
-  #   socket = 
-  #     push_event(socket, "update_stock", %{
-  #       province_name: province_name,
-  #       new_stock: updated_product.remaining_stock
-  #     })
-
-  #   {:noreply, socket}
-  # end
 end

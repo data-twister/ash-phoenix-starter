@@ -76,7 +76,7 @@ config :spark,
 config :AshPhoenixStarter,
   ecto_repos: [AshPhoenixStarter.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [AshPhoenixStarter.Core, AshPhoenixStarter.Accounts, AshPhoenixStarter.Ledger, AshPhoenixStarter.Settings, AshPhoenixStarter.Farms]
+  ash_domains: [AshPhoenixStarter.Core, AshPhoenixStarter.Accounts, AshPhoenixStarter.Ledger, AshPhoenixStarter.Settings]
 
 # Configure super admin users who are allowed to do
 # special actions such as impersonating other
