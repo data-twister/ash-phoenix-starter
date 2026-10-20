@@ -15,6 +15,11 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
     active_country = Manager.get_tenant(tenant, :active_country) || "us"
+    live_metrics = %{
+    "texas" => 840,
+    "CALIFORNIA " => 1250,
+    "New York" => 610 # This won't crash; it safely defaults density to 0 since NY isn't in our geojson sample above
+    }
 
     if connected?(socket) do
       #  merchant_id = socket.assigns.current_merchant.id
@@ -22,7 +27,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock:update")
     end
 
-     {:ok, initial_map} = GeoBoundaries.get_bounds(active_country) |> GeoBoundaries.inject_live_data(%{})
+     {:ok, initial_map} = GeoBoundaries.get_bounds(active_country) |> GeoBoundaries.inject_live_data(live_metrics)
 
     active_teams =
       AshPhoenixStarter.Accounts.Team

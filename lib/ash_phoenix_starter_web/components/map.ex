@@ -2,15 +2,10 @@ defmodule AshPhoenixStarterWeb.Map do
   use AshPhoenixStarterWeb, :html
 
   @doc """
-  A reusable, streaming-ready Leaflet Map component built to match Option B (Standalone Hook).
-
-  ## Assigns
-    * `:initial_geojson` - The pre-hydrated Elixir map structure parsed by the server.
-    * `:height` - (Optional) Custom height configuration string. Defaults to "680px".
+  Renders the global Leaflet CDN stylesheets and scripts required for the map hook.
+  Call this inside the <head> of your layout.
   """
-  def map(assigns) do
-    assigns = assign_new(assigns, :height, fn -> "680px" end)
-
+  def assets(assigns) do
     ~H"""
     <link
       rel="stylesheet"
@@ -24,7 +19,20 @@ defmodule AshPhoenixStarterWeb.Map do
       crossorigin=""
     >
     </script>
+    """
+  end
 
+  @doc """
+  A reusable, streaming-ready Leaflet Map component built to match Option B (Standalone Hook).
+
+  ## Assigns
+    * `:initial_geojson` - The pre-hydrated Elixir map structure parsed by the server.
+    * `:height` - (Optional) Custom height configuration string. Defaults to "680px".
+  """
+  def map(assigns) do
+    assigns = assign_new(assigns, :height, fn -> "680px" end)
+
+    ~H"""
     <div id="reusable-map-container" phx-update="ignore">
       <div 
         id="leaflet-reusable-map" 

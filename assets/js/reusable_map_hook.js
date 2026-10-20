@@ -14,7 +14,7 @@ export default {
 
     // 2. Load Base Tile Layer Map Graphics
     // FIXED: Adjusted string template layout to target standard OpenStreetMap tile subdomains
-    L.tileLayer('https://openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
