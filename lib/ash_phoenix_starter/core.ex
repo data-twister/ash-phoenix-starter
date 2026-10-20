@@ -5,5 +5,7 @@ defmodule AshPhoenixStarter.Core do
 
   resources do
     resource AshPhoenixStarter.Core.FileAsset
+    resource AshPhoenixStarter.Core.Product
+    resource AshPhoenixStarter.Core.Region
   end
 end

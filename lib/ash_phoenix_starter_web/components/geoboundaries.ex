@@ -47,13 +47,12 @@ defmodule AshPhoenixStarter.GeoBoundaries do
           0
         end
 
-      # 3. Add consistent output keys ("name" and "density") for your Javascript layer
+      # 3. FIXED: Replaced "Mesozoic.merge" with native Map.merge for reliable execution
       updated_properties = 
-        properties
-        | Mesozoic.merge(%{
-            "name" => raw_region_name || "Unknown Region",
-            "density" => stock_count
-          })
+        Map.merge(properties, %{
+          "name" => raw_region_name || "Unknown Region",
+          "density" => stock_count
+        })
 
       Map.put(feature, "properties", updated_properties)
     end)

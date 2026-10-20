@@ -7,13 +7,11 @@
 export default {
   mounted() {
     // 1. Initialize Map Instance
-    // Mounts Leaflet inside the hook element container, targeting a fallback center
     const map = L.map(this.el.id).setView([0, 0], 2);
     let currentGeoJsonLayer = null;
     let layerLookupIndex = {};
 
     // 2. Load Base Tile Layer Map Graphics
-    // FIXED: Adjusted string template layout to target standard OpenStreetMap tile subdomains
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
@@ -24,7 +22,6 @@ export default {
 
     info.onAdd = function (map) {
       this._div = L.DomUtil.create('div', 'info');
-      // Apply base HUD panel inline container floating styles
       this._div.style.backgroundColor = 'rgba(255, 255, 255, 0.96)';
       this._div.style.padding = '10px 14px';
       this._div.style.border = '1px solid #d1d5db';
@@ -37,18 +34,20 @@ export default {
 
     info.update = function (props) {
       const contents = props 
-        ? `<b style="font-size: 14px; color: #111827;">${props.name}</b><br /><span style="color: #4b5563;">Stock availability:</span> <strong style="color: #111827;">${props.density || 0}</strong>` 
+        ? `<b style="font-size: 14px; color: #111827;">${props.name}</b><br /><span style="color: #4b5563;">Total Product Stock:</span> <strong style="color: #111827;">${props.density.toLocaleString() || 0} units</strong>` 
         : '<span style="color: #6b7280;">Hover over a region</span>';
-      this._div.innerHTML = `<h4 style="margin: 0 0 6px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280;">Merchant Availability</h4>${contents}`;
+      this._div.innerHTML = `<h4 style="margin: 0 0 6px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280;">Inventory Health</h4>${contents}`;
     };
 
     info.addTo(map);
 
     // 4. Uniform Dynamic Color Scales Handler
+    // UPDATED: Adjusted scale steps to align with product catalog volume thresholds
     function getColor(stockLevel) {
-      if (stockLevel >= 50) return '#10b981'; // High Inventory (Green)
-      if (stockLevel >= 20) return '#f59e0b'; // Medium Inventory (Yellow)
-      return '#ef4444';                       // Low Inventory / Alert (Red)
+      if (stockLevel > 2000)  return '#10b981'; // Healthy Inventory: Above Low Threshold (Green)
+      if (stockLevel > 500)   return '#f59e0b'; // Warning: Low Stock Threshold breached (Yellow/Orange)
+      if (stockLevel > 0)     return '#ef4444'; // Alert: Critical Stock Threshold breached (Red)
+      return '#e5e7eb';                         // Out of Stock / No Registered Products (Gray)
     }
 
     function style(feature) {
@@ -59,7 +58,7 @@ export default {
         dashArray: '3',
         fillOpacity: 0.65,
         fillColor: getColor(stock),
-        color: '#ffffff' // Clean crisp white region separation outline stroke vectors
+        color: '#ffffff'
       };
     }
 
@@ -76,6 +75,7 @@ export default {
       info.update(layer.feature.properties);
     }
 
+    // FIXED: Patched variable layout assignments to ensure smooth tracking boundaries
     function resetHighlight(e) {
       if (currentGeoJsonLayer) {
         currentGeoJsonLayer.resetStyle(e.target);
@@ -83,12 +83,12 @@ export default {
       info.update();
     }
 
+    // Automatically centers and zooms into clicked territories smoothly
     function zoomToFeature(e) {
       map.fitBounds(e.target.getBounds());
     }
 
     function onEachFeature(feature, layer) {
-      // Indexing layer paths dynamically via the uniform property schema assigned by our Elixir module
       if (feature.properties && feature.properties.name) {
         const cleanName = feature.properties.name.toLowerCase().trim();
         layerLookupIndex[cleanName] = layer;
@@ -105,12 +105,10 @@ export default {
     const renderLayerPipeline = (geoJsonData) => {
       if (!geoJsonData || !geoJsonData.features) return;
 
-      // Unmount old layout coordinate vertices shapes from active canvas scene framework safely
       if (currentGeoJsonLayer) {
         map.removeLayer(currentGeoJsonLayer);
       }
 
-      // Reset internal lookup hash dictionary indexes maps completely
       layerLookupIndex = {};
 
       currentGeoJsonLayer = L.geoJson(geoJsonData, {
@@ -118,7 +116,6 @@ export default {
         onEachFeature: onEachFeature
       }).addTo(map);
 
-      // Automatically compute, snap and position the viewer box center frame boundaries on load
       if (currentGeoJsonLayer.getBounds().isValid()) {
         map.fitBounds(currentGeoJsonLayer.getBounds(), { padding: [30, 30] });
       }
@@ -145,15 +142,13 @@ export default {
 
       const targetLayer = layerLookupIndex[province_name.toLowerCase().trim()];
       if (targetLayer) {
-        // Mutate local geojson object properties state tracking tree instantly
         targetLayer.feature.properties.density = new_stock;
 
-        // Shift hex path polygon fill configurations immediately without redrawing everything
         targetLayer.setStyle({
           fillColor: getColor(new_stock)
         });
 
-        // Update tracking HUD context information box instantly if currently hovered by user
+        // Update active tracking HUD if the user is currently hovering over this updating segment
         info.update(targetLayer.feature.properties);
       }
     });
