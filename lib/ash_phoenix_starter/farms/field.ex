@@ -37,6 +37,12 @@ defmodule AshPhoenixStarter.Farms.FarmField do
       public? true
     end
 
+    
+    attribute :active, :boolean do
+      allow_nil? false
+      public? true
+    end
+
     attribute :soil_type, :string do
       allow_nil? false
       public? true

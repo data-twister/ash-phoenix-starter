@@ -14,10 +14,12 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     tenant = socket.assigns[:current_user].team.domain
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
     total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
-    total_fields = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
+    total_fields = Ash.count!(AshPhoenixStarter.Farms.FarmField, authorize?: false)
     active_country = Manager.get_tenant(tenant, :active_country) || "us"
 
     if connected?(socket) do
+      #  merchant_id = socket.assigns.current_merchant.id
+      # Phoenix.PubSub.subscribe(AshPhoenixStarterWeb.PubSub, "products:merchant:#{merchant_id}:updated")
       Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "merchant_stock:update")
     end
 
@@ -30,23 +32,44 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
       
     active_fields =
-      AshPhoenixStarter.Accounts.Team
+      AshPhoenixStarter.Farms.FarmField
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
+
+      merchants_stock = [
+    %{
+      name: "Merchant A",
+      products: [
+        %{name: "Product X", remaining_stock: 7200, alert_level: "Low"}
+      ]
+    },
+    %{
+      name: "Merchant B",
+      products: [
+        %{name: "Product Y", remaining_stock: 1200, alert_level: "Critical"},
+        %{name: "Product Z", remaining_stock: 3200, alert_level: "Low"}
+      ]
+    }
+  ]
       
 
     socket =
       socket
       |> assign(:page_name, "Dashboard")
       |> assign(:total_users, total_users)
+      |> assign(:active_users, Enum.count(list_online_users()))
       |> assign(:total_teams, total_teams)
       |> assign(:active_teams, active_teams)
       |> assign(:total_fields, total_fields)
       |> assign(:active_fields, active_fields)
-      |> assign(:active_users, Enum.count(list_online_users()))
+      |> assign(:revenue, "$12,000")
+      |> assign(:next_harvest, "Today")
+      |> assign(:transactions_today, "$72,000")
+      |> assign(:transactions_processed, "500")
       |> assign(:map_data, initial_map)
       |> assign(:active_country active_country)
       |> assign(:currency, get_currency_atom(active_country))
+      |> assign(:merchants_stock, merchants_stock)
       |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
       |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
@@ -101,15 +124,17 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
         <div class=" bg-base-100 bg-primary-content text-primary border border-primary rounded-box p-6">
           <div class="stat-title text-primary text-lg">Revenue</div>
-          <div class="stat-value ">12,000</div>
+          <div class="stat-value ">{@revenue}</div>
           <div class="stat-desc text-primary">Next Harvest</div>
+          <div class="text-size-xs">{@next_harvest}</div>
         </div>
 
         <div class="stat bg-base-100 border border-secondary rounded-box p-6">
           <div class="stat-figure "></div>
           <div class="stat-title text-lg">Transactions Today</div>
-          <div class="stat-value">7,382,952</div>
+          <div class="stat-value">{@transactions_today}</div>
           <div class="stat-desc">Number of transactions processed</div>
+          <div class="text-size-xs">{@transactions_processed}</div>
         </div>
       </div>
 
@@ -123,48 +148,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         </div>
         
     <!-- Low Stock Section -->
-        <div class="card bg-base-100 border border-primary ">
-          <div class="card-body">
-            <h2 class="card-title">Actual vs Predicted Sales (Today)</h2>
-            <AshPhoenixStarterWeb.Chart.chart />
-          </div>
-          <div class="divider" />
-          <div class="card-body">
-            <h2 class="card-title">Merchants About to Run Out of Stock</h2>
-            <div class="overflow-x-auto">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Merchant Name</th>
-                    <th>Product</th>
-                    <th>Remaining Stock</th>
-                    <th>Alert Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Merchant A</td>
-                    <td>Product X</td>
-                    <td>{Money.new(7200, {@currency})}</td>
-                    <td><span class="badge badge-warning">Low</span></td>
-                  </tr>
-                  <tr>
-                    <td>Merchant B</td>
-                    <td>Product Y</td>
-                    <td>{Money.new(7200, {@currency})}</td>
-                    <td><span class="badge badge-error">Critical</span></td>
-                  </tr>
-                  <tr>
-                    <td>Merchant C</td>
-                    <td>Product Z</td>
-                    <td>{Money.new(3200, {@currency})}</td>
-                    <td><span class="badge badge-warning">Low</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+   <AshPhoenixStarterWeb.Stock.low merchants={@merchants_stock} />
       </div>
     </Layouts.app>
     """
@@ -185,6 +169,23 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
   @impl true
   def handle_info({:stock_update, %{region: region_name, count: updated_count}}, socket) do
     # STREAMING ENGINE: Receives live events out-of-band and flashes color alterations onto the map layout canvas
+
     {:noreply, push_event(socket, "update_stock", %{province_name: region_name, new_stock: updated_count})}
   end
+
+    # Capture the broadcast notification payload coming directly from Ash
+  # def handle_info(%Ash.Notifier.PubSub.Notification{action: :update, data: updated_product}, socket) do
+  #   # 1. Look up the geographic region/province tracking names associated with this location layout
+  #   # (Assuming you track name values on your Region schema metadata profiles)
+  #   province_name = socket.assigns.current_region_name 
+
+  #   # 2. Push the atomic event payload directly to your reusable_map_hook JS implementation
+  #   socket = 
+  #     push_event(socket, "update_stock", %{
+  #       province_name: province_name,
+  #       new_stock: updated_product.remaining_stock
+  #     })
+
+  #   {:noreply, socket}
+  # end
 end
