@@ -102,6 +102,12 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
           <div class="text-size-xs">{@active_teams}</div>
         </div>
 
+        <div class="bg-base-300 text-primary-content border border-lg border-primary rounded-box p-6">
+          <div class="stat-title  text-lg">Revenue</div>
+          <div class="stat-value ">12,000</div>
+          <div class="stat-desc ">Next Harvest</div>
+        </div>
+
         <div class="stat bg-base-100 border border-secondary rounded-box p-6">
           <div class="stat-figure "></div>
           <div class="stat-title text-lg">Transactions Today</div>
