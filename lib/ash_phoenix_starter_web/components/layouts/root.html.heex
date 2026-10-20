@@ -61,6 +61,19 @@
     </script>
   </head>
   <body>
+    <%= if Plug.Conn.get_session(@conn, :impersonator_user_id) && assigns[:current_user] do %>
+      <div class="bg-yellow-400 text-neutral-900 font-semibold text-center py-2.5 px-4 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-50 sticky top-0 shadow-md border-b border-yellow-500">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="shrink-0 text-base">⚠️</span>
+          <p class="truncate">
+            <strong>Impersonation Mode:</strong> Viewing as <span class="underline font-bold"><%= assigns[:current_user].email %></span>
+          </p>
+        </div>
+        <a href="/accounts/users/stop/impersonation" class="w-full sm:w-auto shrink-0 text-center bg-neutral-900 text-white hover:bg-neutral-800 active:scale-95 transition-all text-xs font-bold py-1.5 sm:py-1 px-4 rounded shadow-sm">
+          Exit Session
+        </a>
+      </div>
+    <% end %>
     {@inner_content}
   </body>
 </html>
