@@ -8,11 +8,8 @@ defmodule AshPhoenixStarter.Core.Region do
   end
 
   attributes do
-    uuid_primary_key :id do
-      generated? true
-      allow_nil? true
-      writable? false
-    end
+    # FIXED: Handled inline to prevent block DSL macro lookup errors
+    uuid_primary_key :id, writable?: false
 
     attribute :name, :string do
       allow_nil? false
@@ -25,17 +22,15 @@ defmodule AshPhoenixStarter.Core.Region do
       public? true
     end
 
-    # Database-managed timestamps
+    # Database-managed timestamps (FIXED: block syntax adjusted)
     attribute :inserted_at, :utc_datetime_usec do
-      generated? true
       allow_nil? true
-      writable? false
+      public? false
     end
 
     attribute :updated_at, :utc_datetime_usec do
-      generated? true
       allow_nil? true
-      writable? false
+      public? false
     end
   end
 
