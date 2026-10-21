@@ -5,17 +5,18 @@ defmodule AshPhoenixStarter.Application do
 
   use Application
 
-   global_config = Application.get_env(:AshPhoenixStarter, :global_cache_config, [])
-    ttl_check   = Keyword.get(global_config, :ttl_check_interval, :timer.seconds(120))
-    global_ttl  = Keyword.get(global_config, :global_ttl, :timer.minutes(60))
-
-     tenant_config = Application.get_env(:AshPhoenixStarter, :tenant_cache_config, [])
-    tenant_ttl_check   = Keyword.get(tenant_config, :ttl_check_interval, :timer.seconds(60))
-    tenant_global_ttl  = Keyword.get(tenant_config, :global_ttl, :timer.minutes(30))
-
 
   @impl true
   def start(_type, _args) do
+
+    global_config = Application.get_env(:AshPhoenixStarter, :global_cache_config, [])
+    ttl_check   = Keyword.get(global_config, :ttl_check_interval, :timer.seconds(120))
+    global_ttl  = Keyword.get(global_config, :global_ttl, :timer.minutes(60))
+
+    tenant_config = Application.get_env(:AshPhoenixStarter, :tenant_cache_config, [])
+    tenant_ttl_check   = Keyword.get(tenant_config, :ttl_check_interval, :timer.seconds(60))
+    tenant_global_ttl  = Keyword.get(tenant_config, :global_ttl, :timer.minutes(30))
+
     user_settings = [
           Supervisor.child_spec(
             {ConCache,
@@ -26,6 +27,7 @@ defmodule AshPhoenixStarter.Application do
               ]},
             id: :tenant_settings_cache_supervisor
           )]
+          
     children = [
       Cldr.Currency,
       AshPhoenixStarterWeb.Telemetry,
