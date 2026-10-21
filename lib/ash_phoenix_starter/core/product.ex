@@ -1,7 +1,7 @@
 defmodule AshPhoenixStarter.Merchants.Product do
   use Ash.Resource,
     domain: AshPhoenixStarter.Core,
-    data_layer: AshPostgres.DataLayer,
+    data_layer: AshPostgres.DataLayer
     # notifiers: [Ash.Notifier.PubSub]
 
   postgres do
