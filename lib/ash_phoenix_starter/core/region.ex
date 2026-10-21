@@ -8,15 +8,14 @@ defmodule AshPhoenixStarter.Core.Region do
   end
 
   attributes do
-    # FIXED: Handled inline to prevent block DSL macro lookup errors
     uuid_primary_key :id, writable?: false
+
 
     attribute :name, :string do
       allow_nil? false
       public? true
     end
 
-    # 1. ADDED: Clear country grouping scope matching your new core framework semantics
     attribute :country_code, :string do
       allow_nil? false
       public? true
@@ -45,7 +44,6 @@ defmodule AshPhoenixStarter.Core.Region do
 
     create :create do
       primary? true
-      # 2. UPDATED: Whitelist country code parameters inside your data ingest actions
       accept [:name, :country_code]
     end
 

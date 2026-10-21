@@ -20,7 +20,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
   end
 
   attributes do
-    # Fixed: Passing options inline to uuid_primary_key is the safest and cleanest pattern in Ash
     uuid_primary_key :id, writable?: false
 
     attribute :name, :string do
@@ -28,7 +27,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       public? true
     end
 
-    # 1. ADDED: Geographic scoping attributes matching the mapping engine requirements
     attribute :country_code, :string do
       allow_nil? false
       public? true
@@ -39,7 +37,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       public? true
     end
 
-    # Database-managed timestamps (Fixed: allow_nil? syntax inside block)
     attribute :inserted_at, :utc_datetime_usec do
       allow_nil? true
       public? false
@@ -64,7 +61,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       public? true
     end
 
-    # 2. FIXED: Point to the new updated Product module namespace path
     has_many :low_stock_products, AshPhoenixStarter.Merchants.Product do
       public? true
     end
@@ -75,7 +71,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
 
     create :create do
       primary? true
-      # Include new geographic properties in your creation whitelist parameters
       accept [:name, :country_code, :region_name, :user_id, :region_id]
     end
 
