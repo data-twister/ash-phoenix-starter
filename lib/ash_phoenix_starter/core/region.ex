@@ -5,6 +5,7 @@ defmodule AshPhoenixStarter.Core.Region do
 
   postgres do
     table "regions"
+    repo AshPhoenixStarter.Repo
   end
 
   attributes do

@@ -6,6 +6,7 @@ defmodule AshPhoenixStarter.Merchants.Product do
 
   postgres do
     table "products"
+    repo AshPhoenixStarter.Repo
   end
 
   multitenancy do
