@@ -24,8 +24,6 @@ defmodule AshPhoenixStarter.Merchants.Product do
   attributes do
     uuid_primary_key :id, writable?: false
 
-    uuid_primary_key :id, writable?: false
-
     attribute :name, :string do
       allow_nil? false
       public? true
@@ -191,6 +189,6 @@ defmodule AshPhoenixStarter.Merchants.Product do
   pub_sub do
     module AshPhoenixStarterWeb.Endpoint
     prefix "products"
-    publish :update, [:merchant, :id], "updated"
+    publish :update, ["merchant", :merchant_id, "updated"], "updated"
   end
 end
