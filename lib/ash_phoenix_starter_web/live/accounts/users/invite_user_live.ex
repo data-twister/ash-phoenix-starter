@@ -7,7 +7,12 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserLive do
       <.form for={@form} phx-change="validate" phx-submit="save" id="user-group-form">
         <.render_ash_form_errors form={@form} />
 
-        <div class=" p-6 rounded-lg border border-gray-200">
+        <div class="p-6 rounded-lg border border-gray-200">
+          <!-- Text centered perfectly in the middle of this container -->
+          <div class="flex items-center justify-center font-medium text-gray-700 mb-6">
+            {gettext("Add A User Without Email Confirmation")}
+          </div>
+
           <div class="">
             <.input
               field={@form[:email]}
@@ -25,6 +30,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserLive do
     </Layouts.account_users>
     """
   end
+
 
   def mount(_params, _session, socket) do
     socket

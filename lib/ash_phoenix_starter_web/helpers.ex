@@ -60,4 +60,3 @@ defmodule AshPhoenixStarterWeb.Helpers do
     Keyword.get(url_config, :host, "localhost")
   end
 end
-end

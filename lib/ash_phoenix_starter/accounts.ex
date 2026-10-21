@@ -14,5 +14,11 @@ defmodule AshPhoenixStarter.Accounts do
     resource AshPhoenixStarter.Accounts.GroupPermission
 
     resource AshPhoenixStarter.Accounts.UserImpersonation
+
+    resource AshPhoenixStarter.Accounts.Invitation
+
+    resource AshPhoenixStarter.Accounts.UserNotification do
+      define :notify, action: :create
+    end
   end
 end

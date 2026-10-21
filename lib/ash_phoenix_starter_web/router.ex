@@ -64,6 +64,8 @@ defmodule AshPhoenixStarterWeb.Router do
 
       live "/accounts/users", Accounts.Users.UsersLive
       live "/accounts/users/invite", Accounts.Users.InviteUserLive
+      live "/accounts/users/inviteconfirmation", Accounts.Users.InviteUserConfirmationLive
+      live "/accounts/users/invitations", Accounts.Users.UserInvitationsLive
       live "/accounts/users/:user_id/groups", Accounts.Users.UserGroupsLive
 
       live "/accounts/groups", Accounts.Groups.GroupsLive
@@ -89,6 +91,15 @@ defmodule AshPhoenixStarterWeb.Router do
 
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController
+
+    #invitations 
+    get "/accounts/users/invitations/:tenant/:token/accept",
+        TeamInvitationAcceptanceController,
+        :accept
+
+    get "/accounts/users/invitations/:tenant/:token/reject",
+        TeamInvitationAcceptanceController,
+        :reject
 
     # user Impersonations
     get "/accounts/users/impersonate/:user_id", AuthController, :impersonate
