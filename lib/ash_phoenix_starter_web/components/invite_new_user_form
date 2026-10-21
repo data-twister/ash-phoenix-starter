@@ -98,10 +98,6 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
       end
   end
 
-  defp assign_form(socket) do
-    assign(socket, :form, get_form(socket.assigns))
-  end
-
   # Prevents the form from being re-created on every update
   defp get_form(%{form: form}) when is_map(form), do: form
 
