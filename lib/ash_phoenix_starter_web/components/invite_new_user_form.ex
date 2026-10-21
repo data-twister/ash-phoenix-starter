@@ -95,7 +95,7 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
         socket
         |> assign(:form, form)
         |> noreply()
-    en
+      end
   end
 
   defp assign_form(socket) do
