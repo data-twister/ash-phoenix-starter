@@ -51,6 +51,7 @@ if config_env() == :prod do
       """
 
   host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("RENDER_EXTERNAL_HOSTNAME") || "localhost" 
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   use_self_signed = System.get_env("USE_SIGNED_SSL") == nil
