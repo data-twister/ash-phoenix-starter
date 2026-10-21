@@ -20,11 +20,8 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
   end
 
   attributes do
-    uuid_primary_key :id do
-      generated? true
-      allow_nil? true
-      writable? false
-    end
+    # Fixed: Passing options inline to uuid_primary_key is the safest and cleanest pattern in Ash
+    uuid_primary_key :id, writable?: false
 
     attribute :name, :string do
       allow_nil? false
@@ -42,17 +39,15 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       public? true
     end
 
-    # Database-managed timestamps
+    # Database-managed timestamps (Fixed: allow_nil? syntax inside block)
     attribute :inserted_at, :utc_datetime_usec do
-      generated? true
       allow_nil? true
-      writable? false
+      public? false
     end
 
     attribute :updated_at, :utc_datetime_usec do
-      generated? true
       allow_nil? true
-      writable? false
+      public? false
     end
   end
 
