@@ -2,7 +2,7 @@ defmodule AshPhoenixStarter.Merchants.Product do
   use Ash.Resource,
     domain: AshPhoenixStarter.Core,
     data_layer: AshPostgres.DataLayer,
-    notifiers: [Ash.Notifier.PubSub]
+    # notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "products"
@@ -186,9 +186,9 @@ defmodule AshPhoenixStarter.Merchants.Product do
     define :get_all_live_metrics
   end
 
-  pub_sub do
-    module AshPhoenixStarterWeb.Endpoint
-    prefix "products"
-    publish :update, ["merchant", :merchant_id, "updated"], "updated"
-  end
+  # pub_sub do
+  #   module AshPhoenixStarterWeb.Endpoint
+  #   prefix "products"
+  #   publish :update, ["merchant", :merchant_id, "updated"], "updated"
+  # end
 end
