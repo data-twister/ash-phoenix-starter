@@ -1,4 +1,3 @@
-# lib/AshPhoenixStarter_web/live/accounts/users/user_invitations_live/invite_new_user_form.ex
 defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   @moduledoc """
   LiveComponent that renders a form to invite a new user to the current user's team.
@@ -7,7 +6,7 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   is sent to the provided email address.
 
   This component is designed to be used within a modal dialog, which can be triggered by a button
-  elsewhere in the application. The modal button is this compoent
+  elsewhere in the application.
   """
   use AshPhoenixStarterWeb, :live_component
 
@@ -15,15 +14,16 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   This a wrapper used to access this component like a static component
   in the template.
   """
+  attr :id, :string, default: "invite-new-user-form" # Fix: Set a predictable default ID
   attr :actor, AshPhoenixStarter.Accounts.User, required: true
 
   def form(assigns) do
     ~H"""
-    <.live_component id={Ash.UUIDv7.generate()} actor={@actor} module={__MODULE__} />
+    <.live_component id={@id} actor={@actor} module={__MODULE__} />
     """
   end
 
-  attr :id, :string, default: Ash.UUIDv7.generate()
+  attr :id, :string, required: true
   attr :actor, AshPhoenixStarter.Accounts.User, required: true
 
   def render(assigns) do
@@ -33,7 +33,7 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
         {gettext("Invite a user")}
       </.button>
       <.modal id="invite-user-modal">
-        <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+        <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
           <h3 class="text-xl font-semibold leading-none tracking-tight">
             {gettext("Invite a new member to your team")}
           </h3>
@@ -44,28 +44,27 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
           </p>
         </div>
 
-  <.form 
-  for={@form} 
-  phx-change="validate" 
-  phx-submit="save" 
-  phx-target={@myself}
-  class="space-y-8 bg-white"
->
-  <.input field={@form[:email]} type="email" label="New user Email" />
-  <.input
-    field={@form[:group_id]}
-    type="select"
-    options={@access_groups}
-    label={gettext("Select Access Group")}
-  />
-   <div class="w-full justify-end flex">
-    <.button type="submit">
-      {gettext("Invite User")} 
-      <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
-    </.button>
-   </div>
-  </.form>
-
+        <.form 
+          for={@form} 
+          phx-change="validate" 
+          phx-submit="save" 
+          phx-target={@myself}
+          class="space-y-8 bg-white"
+        >
+          <.input field={@form[:email]} type="email" label="New user Email" />
+          <.input
+            field={@form[:group_id]}
+            type="select"
+            options={@access_groups}
+            label={gettext("Select Access Group")}
+          />
+           <div class="w-full justify-end flex">
+            <.button type="submit">
+              {gettext("Invite User")} 
+              <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
+            </.button>
+           </div>
+        </.form>
       </.modal>
     </div>
     """
@@ -77,42 +76,46 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
     |> assign(assigns)
     |> assign_access_groups()
     |> assign_form()
-    |> ok()
+    |> then(&{:ok, &1}) # Fix: Standard LiveView return tuple fallback
   end
 
   @impl true
-  def handle_event("validate", %{"form" => params}, socket) do
+  def handle_event("validate", %{"invitation" => params}, socket) do
     form = AshPhoenix.Form.validate(socket.assigns.form, params)
 
     socket
     |> assign(:form, form)
-    |> noreply()
+    |> then(&{:noreply, &1}) # Fix: Standard LiveView return tuple fallback
   end
 
   @impl true
-  def handle_event("save", %{"form" => params}, socket) do
+  def handle_event("save", %{"invitation" => params}, socket) do
     case AshPhoenix.Form.submit(socket.assigns.form, params: params) do
       {:ok, _invitation} ->
         socket
         |> put_flash(:info, "Invitation sent successfully")
         |> push_event("js-exec", %{to: "#invite-user-modal", attr: "data-cancel"})
         |> redirect(to: ~p"/accounts/users/invitations")
-        |> noreply()
+        |> then(&{:noreply, &1})
 
       {:error, form} ->
         socket
         |> assign(:form, form)
-        |> noreply()
+        |> then(&{:noreply, &1})
       end
   end
 
-  # Prevents the form from being re-created on every update
-  defp get_form(%{form: form}) when is_map(form), do: form
+  defp assign_form(socket) do
+    if Map.has_key?(socket.assigns, :form) do
+      socket
+    else
+      form =
+        AshPhoenixStarter.Accounts.Invitation
+        |> AshPhoenix.Form.for_create(:create, actor: socket.assigns.actor)
+        |> to_form()
 
-  defp get_form(%{actor: actor}) do
-    AshPhoenixStarter.Accounts.Invitation
-    |> AshPhoenix.Form.for_create(:create, actor: actor)
-    |> to_form()
+      assign(socket, :form, form)
+    end
   end
 
   defp assign_access_groups(socket) do
