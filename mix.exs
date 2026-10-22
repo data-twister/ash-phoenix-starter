@@ -147,7 +147,7 @@ defmodule AshPhoenixStarter.MixProject do
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
-        "altcha.install"
+        "altcha.install  --if-missing"
       ],
       "assets.build": ["compile", "tailwind AshPhoenixStarter", "esbuild AshPhoenixStarter"],
       "assets.deploy": [

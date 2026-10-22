@@ -2,6 +2,7 @@
 set -o errexit
 
 mix deps.get --only prod
+mix assets.setup
 MIX_ENV=prod mix compile
 
 MIX_ENV=prod mix assets.build
