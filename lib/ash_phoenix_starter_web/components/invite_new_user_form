@@ -1,3 +1,4 @@
+# lib/AshPhoenixStarter_web/live/accounts/users/user_invitations_live/invite_new_user_form.ex
 defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   @moduledoc """
   LiveComponent that renders a form to invite a new user to the current user's team.
@@ -14,7 +15,7 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   This a wrapper used to access this component like a static component
   in the template.
   """
-  attr :id, :string, default: "invite-new-user-form" # Fix: Set a predictable default ID
+  attr :id, :string, default: "invite-new-user-form"
   attr :actor, AshPhoenixStarter.Accounts.User, required: true
 
   def form(assigns) do
@@ -51,7 +52,18 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
           phx-target={@myself}
           class="space-y-8 bg-white"
         >
-          <.input field={@form[:email]} type="email" label="New user Email" />
+          <.render_ash_form_errors form={@form} />
+
+          <.input 
+            id={"#{@id}-email-input"}
+            field={@form[:email]} 
+            type="email" 
+            label={gettext("New user Email")} 
+            placeholder="e.g. coworker@company.com"
+            autocomplete="email"
+            phx-mounted={JS.focus()}
+          />
+          
           <.input
             field={@form[:group_id]}
             type="select"
@@ -59,9 +71,23 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
             label={gettext("Select Access Group")}
           />
            <div class="w-full justify-end flex">
-            <.button type="submit">
-              {gettext("Invite User")} 
-              <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
+            <%!-- 
+              Added phx-disable-with layout feedback.
+              When submitted, the text swaps, the airplane hides, and the loading spinner activates.
+            --%>
+            <.button 
+              type="submit" 
+              class="inline-flex items-center gap-2"
+              phx-disable-with={gettext("Sending Invitation...")}
+            >
+              <span class="inline-group-disabled:hidden flex items-center">
+                {gettext("Invite User")}
+                <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
+              </span>
+              <span class="hidden group-disabled:inline flex items-center">
+                <.icon name="hero-arrow-path" class="animate-spin h-5 w-5 mr-2" />
+                {gettext("Sending Invitation...")}
+              </span>
             </.button>
            </div>
         </.form>
@@ -76,16 +102,16 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
     |> assign(assigns)
     |> assign_access_groups()
     |> assign_form()
-    |> then(&{:ok, &1}) # Fix: Standard LiveView return tuple fallback
+    |> then(&{:ok, &1})
   end
 
   @impl true
   def handle_event("validate", %{"invitation" => params}, socket) do
-    form = AshPhoenix.Form.validate(socket.assigns.form, params)
+    form = AshPhoenix.Form.validate(socket.assigns.form, params, errors: true)
 
     socket
     |> assign(:form, form)
-    |> then(&{:noreply, &1}) # Fix: Standard LiveView return tuple fallback
+    |> then(&{:noreply, &1})
   end
 
   @impl true
