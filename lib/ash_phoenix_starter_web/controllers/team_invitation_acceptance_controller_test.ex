@@ -1,12 +1,11 @@
-# lib/helpcenter_web/controllers/team_invitation_acceptance_controller_test.exs
-defmodule HelpcenterWeb.TeamInvitationAcceptanceControllerTEst do
-  use HelpcenterWeb.ConnCase
+defmodule AshPhoenixStarterWeb.TeamInvitationAcceptanceControllerTEst do
+  use AshPhoenixStarterWeb.ConnCase
 
   defp create_group!(actor) do
     group_attrs = %{name: "Accountants", description: "Can manage billing in the system"}
 
     Ash.create!(
-      Helpcenter.Accounts.Group,
+      AshPhoenixStarter.Accounts.Group,
       group_attrs,
       actor: actor,
       authorize?: false
@@ -25,7 +24,7 @@ defmodule HelpcenterWeb.TeamInvitationAcceptanceControllerTEst do
       invite_attributes = %{email: "john@example.com", group_id: group.id}
 
       invitation =
-        Helpcenter.Accounts.Invitation
+        AshPhoenixStarter.Accounts.Invitation
         |> Ash.Changeset.for_create(:create, invite_attributes, actor: actor)
         |> Ash.create!()
 
@@ -38,7 +37,7 @@ defmodule HelpcenterWeb.TeamInvitationAcceptanceControllerTEst do
       # Confirm the invitation has been accepted
       require Ash.Query
 
-      assert Helpcenter.Accounts.Invitation
+      assert AshPhoenixStarter.Accounts.Invitation
              |> Ash.Query.filter(token == ^invitation.token)
              |> Ash.Query.filter(status == :accepted)
              |> Ash.exists?(actor: actor)

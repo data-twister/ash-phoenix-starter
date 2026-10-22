@@ -1,4 +1,4 @@
-defmodule Helpcenter.Accounts.UserNotification.Changes.SendEmail do
+defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.SendEmail do
   use Ash.Resource.Change
   import Swoosh.Email
 

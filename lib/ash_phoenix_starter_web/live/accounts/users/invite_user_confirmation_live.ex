@@ -17,37 +17,44 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive.InviteUserConf
           </p>
         </div>
 
-        <.simple_form for={@form} phx-change="validate" phx-submit="save" id="standalone-invite-form">
-          <.render_ash_form_errors form={@form} />
+<.form 
+  for={@form} 
+  phx-change="validate" 
+  phx-submit="save" 
+  id="standalone-invite-form"
+  class="space-y-8 bg-white"
+>
+  <.render_ash_form_errors form={@form} />
 
-          <div class="space-y-4">
-            <.input 
-              field={@form[:email]} 
-              type="email" 
-              label={gettext("New user Email")} 
-              placeholder="e.g. coworker@company.com"
-              required 
-            />
-            
-            <.input
-              field={@form[:group_id]}
-              type="select"
-              options={@access_groups}
-              label={gettext("Select Access Group")}
-              required
-            />
-          </div>
+  <div class="space-y-4">
+    <.input 
+      field={@form[:email]} 
+      type="email" 
+      label={gettext("New user Email")} 
+      placeholder="e.g. coworker@company.com"
+      required 
+    />
+    
+    <.input
+      field={@form[:group_id]}
+      type="select"
+      options={@access_groups}
+      label={gettext("Select Access Group")}
+      required
+    />
+  </div>
 
-          <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-            <.link navigate={~p"/accounts/users/invitations"} class="text-sm font-semibold leading-6 text-gray-900 flex items-center px-4 hover:bg-gray-50 rounded-lg">
-              {gettext("Cancel")}
-            </.link>
-            <.button variant="primary" type="submit" class="flex items-center gap-2">
-              {gettext("Send Invitation")} 
-              <.icon name="hero-paper-airplane-solid" class="h-4 w-4" />
-            </.button>
-          </div>
-        </.simple_form>
+  <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+    <.link navigate={~p"/accounts/users/invitations"} class="text-sm font-semibold leading-6 text-gray-900 flex items-center px-4 hover:bg-gray-50 rounded-lg">
+      {gettext("Cancel")}
+    </.link>
+    <.button variant="primary" type="submit" class="flex items-center gap-2">
+      {gettext("Send Invitation")} 
+      <.icon name="hero-paper-airplane-solid" class="h-4 w-4" />
+    </.button>
+  </div>
+</.form>
+
       </div>
     </Layouts.account_users>
     """

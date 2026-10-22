@@ -1,4 +1,4 @@
-# lib/helpcenter_web/controllers/team_invitation_acceptance_controller.ex
+# lib/AshPhoenixStarter_web/controllers/team_invitation_acceptance_controller.ex
 defmodule AshPhoenixStarterWeb.TeamInvitationAcceptanceController do
   use AshPhoenixStarterWeb, :controller
 
@@ -46,7 +46,7 @@ defmodule AshPhoenixStarterWeb.TeamInvitationAcceptanceController do
 
     options = [tenant: tenant, authorize?: false]
 
-    Helpcenter.Accounts.Invitation
+    AshPhoenixStarter.Accounts.Invitation
     |> Ash.Query.filter(token == ^token)
     |> Ash.read_first(options)
     |> case do

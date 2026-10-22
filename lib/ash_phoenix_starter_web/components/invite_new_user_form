@@ -44,20 +44,28 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
           </p>
         </div>
 
-        <.simple_form for={@form} phx-change="validate" phx-submit="save" phx-target={@myself}>
-          <.input field={@form[:email]} type="email" label="New user Email" />
-          <.input
-            field={@form[:group_id]}
-            type="select"
-            options={@access_groups}
-            label={gettext("Select Access Group")}
-          />
-          <div class="w-full justify-end flex">
-            <.button>
-              {gettext("Invite User")} <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
-            </.button>
-          </div>
-        </.simple_form>
+  <.form 
+  for={@form} 
+  phx-change="validate" 
+  phx-submit="save" 
+  phx-target={@myself}
+  class="space-y-8 bg-white"
+>
+  <.input field={@form[:email]} type="email" label="New user Email" />
+  <.input
+    field={@form[:group_id]}
+    type="select"
+    options={@access_groups}
+    label={gettext("Select Access Group")}
+  />
+   <div class="w-full justify-end flex">
+    <.button type="submit">
+      {gettext("Invite User")} 
+      <.icon name="hero-paper-airplane-solid" class="ml-2 h-5 w-5" />
+    </.button>
+   </div>
+  </.form>
+
       </.modal>
     </div>
     """
