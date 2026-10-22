@@ -43,7 +43,6 @@ Built for fast prototype and scaling in the future.
 4. Workflows with ash_approver(A local package that needs to be published)
 5. Self referencing data with AshParental
 6. Documentations
-7. Automated CI/ CD workflow with Github
 
 
 ## Installation 

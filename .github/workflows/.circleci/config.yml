@@ -1,0 +1,63 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      # Primary container where all steps run
+      - image: cimg/elixir:1.20.4-erlang-29.0.5-node
+        environment:
+          MIX_ENV: test
+      # Updated to an official, modern CircleCI database image
+      - image: cimg/postgres:14.13
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: AshPhoenixStarter_test # Replaced _dev with _test to match MIX_ENV
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install Hex and Rebar
+          command: |
+            mix local.hex --force
+            mix local.rebar --force
+
+      # Combined dependency and build cache retrieval
+      - restore_cache:
+          keys:
+            - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+            - v1-mix-cache-{{ .Branch }}-
+            - v1-mix-cache-
+
+      - run:
+          name: Get and Compile Dependencies
+          command: |
+            mix deps.get
+            mix deps.compile
+
+      - run:
+          name: Compile Application
+          command: mix compile --warnings-as-errors
+
+      # Consolidated save step avoids redundant uploads of identical paths
+      - save_cache:
+          key: v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+          paths:
+            - deps
+            - _build
+
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - run:
+          name: Setup Database
+          command: mix ecto.create
+
+      - run:
+          name: Run Tests
+          command: mix test
