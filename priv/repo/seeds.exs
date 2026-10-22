@@ -26,7 +26,7 @@ team =
     %{
       name: "Admin",
       domain: "admin",
-      description: "Primary HOA management workspace"
+      description: "Primary Workspace"
     },
     actor: admin_user
   )

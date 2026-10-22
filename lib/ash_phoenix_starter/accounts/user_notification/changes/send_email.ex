@@ -11,9 +11,12 @@ defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.SendEmail do
   end
 
   defp send_email(_changeset, notification) do
+    domain = AshPhoenixStarterWeb.Endpoint.host()
+    
     new()
-    |> from({"noreply", "noreply@example.com"})
-    |> to("noreply@example.com")
+    |> from({"noreply", "noreply@#{domain}"})
+    |> to("noreply@#{domain}")
+
     |> subject(notification.subject || "New Notification")
     |> html_body(notification.body)
     |> AshPhoenixStarter.Mailer.deliver!()

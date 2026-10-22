@@ -16,6 +16,8 @@ defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.DeliverEmail do
   end
 
   defp deliver_email(_changeset, notification) do
+    domain = AshPhoenixStarterWeb.Endpoint.host()
+
     %{recipient_user_id: user_id} = notification
 
     # We need to know the recipient's email address
@@ -27,7 +29,7 @@ defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.DeliverEmail do
 
     # Rely on Phoenix mailer infrastructure to send the email
     new()
-    |> from({"noreply", "noreply@example.com"})
+    |> from({"noreply", "noreply@#{domain}"})
     |> to(to_string(recipient.email))
     |> subject(notification.subject)
     |> text_body(notification.body)

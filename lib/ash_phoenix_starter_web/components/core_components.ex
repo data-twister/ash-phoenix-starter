@@ -545,19 +545,6 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
 
-  attr :form, Phoenix.HTML.Form, required: true
-
-  def render_ash_form_errors(assigns) do
-    ~H"""
-    <span
-      :for={{field, error_message} <- AshPhoenix.Form.errors(@form)}
-      class="block text-red-500 text-sm"
-    >
-      {Phoenix.Naming.humanize(field)} {error_message}
-    </span>
-    """
-  end
-
   @doc """
   Renders top-level, action-specific, or database-constraint validation errors from an Ash Form.
   
