@@ -5,10 +5,12 @@ defmodule AshPhoenixStarter.Workers.EmailSender do
 
   @impl Oban.Worker
   def perform(job) do
+    domain = AshPhoenixStarterWeb.Endpoint.host()
+
     params = job.args["params"]
 
     new()
-    |> from({"AshPhoenixStarter", "no-reply@AshPhoenixStarter.com"})
+    |> from({"AshPhoenixStarter", "no-reply@#{domain}"})
     |> to(params["to"] |> to_string())
     |> subject(params["subject"])
     |> html_body(params["body"])

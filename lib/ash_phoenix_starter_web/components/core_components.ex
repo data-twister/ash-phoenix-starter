@@ -597,4 +597,18 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
     """
   end
 
+attr :name, :string, required: true
+attr :class, :string, default: nil
+
+def icon(%{name: "hero-" <> icon_name} = assigns) do
+  # Dynamically routes string names cleanly over to the Hex SVG engine
+  assigns = assign(assigns, :icon_function, String.to_existing_atom(icon_name))
+  
+  ~H"""
+  <span class={["inline-block custom-icon-base", @class]}>
+    {apply(Heroicons, @icon_function, [%{class: @class}])}
+  </span>
+  """
+end
+
 end
