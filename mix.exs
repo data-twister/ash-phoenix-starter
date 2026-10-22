@@ -122,7 +122,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:picosat_elixir, "~> 0.2"},
       {:ex_cmd, "~> 0.18.0"},
       {:mix_audit, "~> 2.1"},
-      {:altcha, github: "data-twister/altcha-lib-ex"},
+      {:altcha, git: "https://github.com", branch: "installer"}
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
       {:hackney, "~> 4.0", override: true},
