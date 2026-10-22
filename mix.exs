@@ -61,7 +61,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:phoenix_iconify, "~> 0.3.2"},
       {:phoenix_live_favicon, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:phoenix_bakery, "~> 0.1.0", runtime: false},
+      #{:phoenix_bakery, "~> 0.1.0", runtime: false},
       {:live_debugger, "~> 0.4", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:swoosh, "~> 1.16"},
