@@ -68,7 +68,7 @@ if config_env() == :prod do
   config :AshPhoenixStarter, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
-    url: [host: host || "example.com", port: 443, scheme: "https"],
+    url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
@@ -202,6 +202,18 @@ if config_env() == :prod do
         port: 443
       ]
   end
+
+   config :AshPhoenixStarter, Oban,
+    repo: AshPhoenixStarter.Repo, 
+    plugins: [
+      {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
+      {Oban.Plugins.Cron, crontab: []}                 
+    ],
+    queues: [
+      default: 10,
+      ash_notifications: 10,
+      mailers: 20           
+    ]
 
   global_ttl_env       = System.get_env("GLOBAL_TTL_INTERVAL") || "60"
   global_check_env     = System.get_env("GLOBAL_CHECK_INTERVAL") || "120"

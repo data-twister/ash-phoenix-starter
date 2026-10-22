@@ -69,15 +69,20 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 # Set runtime working directory
 WORKDIR /app
 
-# Change ownership to a non-root system user for security
+# Ensure ownership is given to non-root user
 RUN chown nobody /app
-USER nobody
 
 # Copy the built release artifact from the builder stage
 COPY --from=builder --chown=nobody:root /app/_build/prod/rel/AshPhoenixStarter ./
 
-# Expose the default Phoenix web port
+# Copy the migration execution script explicitly
+COPY --chown=nobody:root start.sh ./start.sh
+
+# Shift to non-privileged runtime user for container safety
+USER nobody
+
+# Expose the default Phoenix web port for Render (10000)
 EXPOSE 10000
 
-# Start your application
-CMD ["/app/bin/AshPhoenixStarter", "start"]
+# Execute the start script to run migrations and trigger app boot sequentialy
+CMD ["/app/start.sh"]
