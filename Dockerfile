@@ -1,7 +1,7 @@
 # ==========================================
 # STAGE 1: Build the Release artifact
 # ==========================================
-FROM elixir:1.17-slim AS builder
+FROM elixir:1.19-slim AS builder
 
 # Set production environment variables
 ENV MIX_ENV=prod \
