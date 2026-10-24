@@ -129,7 +129,9 @@ defmodule AshPhoenixStarter.MixProject do
       {:waffle, "~> 2.0"},
       {:waffle_ecto, "~> 0.0"},
       {:idna, "~> 7.1", override: true},
-      #{:tz_world, "~> 2.5"}
+      #{:tz_world, "~> 2.5"},
+      # {:geotz, github: "data-twister/geotz"},
+      # {:geolixir, "~> 0.1.4"},
     ]
   end
 
