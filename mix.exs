@@ -128,7 +128,8 @@ defmodule AshPhoenixStarter.MixProject do
       {:hackney, "~> 4.0", override: true},
       {:waffle, "~> 2.0"},
       {:waffle_ecto, "~> 0.0"},
-      {:idna, "~> 7.1", override: true}
+      {:idna, "~> 7.1", override: true},
+      #{:tz_world, "~> 2.5"}
     ]
   end
 
