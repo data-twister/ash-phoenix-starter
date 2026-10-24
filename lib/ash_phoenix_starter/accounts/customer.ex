@@ -82,8 +82,6 @@ defmodule AshPhoenixStarter.Accounts.Customer do
     update :update do
       primary? true
       accept [:name, :country_code, :user_id]
-      
-      change into_context(:country_code, &String.upcase/1)
     end
   end
 

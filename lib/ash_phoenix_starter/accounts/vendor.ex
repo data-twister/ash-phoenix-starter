@@ -107,16 +107,11 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
     create :create do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
-      
-      # Clean uppercase coercion for country tracking properties
-      change into_context(:country_code, &String.upcase/1)
     end
 
     update :update do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
-      
-      change into_context(:country_code, &String.upcase/1)
     end
 
     # Custom paginated read action tailored for internal dashboard components

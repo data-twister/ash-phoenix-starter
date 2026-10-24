@@ -107,16 +107,11 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
     create :create do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
-      
-      # Clean data entry tracking strings automatically before write pipeline commits
-      change into_context(:country_code, &String.upcase/1)
     end
 
     update :update do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
-      
-      change into_context(:country_code, &String.upcase/1)
     end
 
     # Custom dashboard endpoint supporting clean data slicing out-of-the-box
@@ -125,7 +120,7 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       prepare aggregate(:total_low_stock, :count, :low_stock_products)
     end
   end
-  
+
   policies do
     bypass AshOban.Checks.AshObanInteraction do
       authorize_if always()
