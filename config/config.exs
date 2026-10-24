@@ -143,11 +143,11 @@ config :phoenix_copy,
     destination: Path.expand("../priv/static/fonts/", __DIR__)
   ]
 
-config :phoenix,
-  static_compressors: [
-    PhoenixBakery.Gzip,
-    PhoenixBakery.Zstd
-  ]
+# config :phoenix,
+#  static_compressors: [
+#    PhoenixBakery.Gzip,
+#    PhoenixBakery.Zstd
+#  ]
 
 config :mime, :types, %{
   "application/jrd+json" => ["jrd"]
