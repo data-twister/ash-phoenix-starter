@@ -25,6 +25,8 @@ Built for fast prototype and scaling in the future.
 12. Templating with Daisy UI
 14. Accounting with AshDouble Entry
 15. Image Uploads (with multiple backends)
+16. Products
+17. Customers/Merchants/Vendors - Support for multiple sides of the supply chain; customers (buyers), vendors (suppliers) and merchants (sellers)
 
 ### On-going implementation
 

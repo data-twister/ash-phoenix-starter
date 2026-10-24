@@ -7,10 +7,6 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
   postgres do
     table "vendors"
     repo AshPhoenixStarter.Repo
-
-    # Ensure uniqueness constraints are trapped cleanly at the database layer
-    # safely isolated inside each distinct multi-tenant context boundary.
-    identity :unique_vendor_name_per_tenant, [:name], message: "A vendor with this name already exists."
   end
 
   multitenancy do
@@ -127,6 +123,20 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
     read :paginated_dashboard do
       pagination offset?: true, limit?: true, required?: false, default_limit: 25
       prepare aggregate(:total_low_stock, :count, :low_stock_products)
+    end
+  end
+
+    policies do
+    bypass AshOban.Checks.AshObanInteraction do
+      authorize_if always()
+    end
+
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    policy always() do
+      forbid_if always()
     end
   end
 end

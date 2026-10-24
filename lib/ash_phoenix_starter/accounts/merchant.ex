@@ -7,10 +7,6 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
   postgres do
     table "merchants"
     repo AshPhoenixStarter.Repo
-
-    # Enforce database-level uniqueness constraints safely isolated 
-    # within each individual tenant's isolated context boundary.
-    identity :unique_merchant_name_per_tenant, [:name], message: "A merchant with this name already exists."
   end
 
   multitenancy do
@@ -129,5 +125,18 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
       prepare aggregate(:total_low_stock, :count, :low_stock_products)
     end
   end
+  
+  policies do
+    bypass AshOban.Checks.AshObanInteraction do
+      authorize_if always()
+    end
 
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    policy always() do
+      forbid_if always()
+    end
+  end
 end
