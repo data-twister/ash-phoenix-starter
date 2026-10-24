@@ -9,7 +9,7 @@ import Config
 
 config :ash_oban, pro?: false
 
-config :AshPhoenixStarter, Oban,
+config :ash_phoenix_starter, Oban,
   engine: Oban.Engines.Basic,
   notifier: Oban.Notifiers.Postgres,
   queues: [default: 10, system: 10],
@@ -73,7 +73,7 @@ config :spark,
     ]
   ]
 
-config :AshPhoenixStarter,
+config :ash_phoenix_starter,
   ecto_repos: [AshPhoenixStarter.Repo],
   generators: [timestamp_type: :utc_datetime],
   ash_domains: [AshPhoenixStarter.Core, AshPhoenixStarter.Accounts, AshPhoenixStarter.Ledger, AshPhoenixStarter.Settings]
@@ -82,10 +82,10 @@ config :AshPhoenixStarter,
 # special actions such as impersonating other
 # users in the teams. Seeing all teams
 # and more...
-config :AshPhoenixStarter, super_users: ["kamaro@example.com"]
+config :ash_phoenix_starter, super_users: ["kamaro@example.com"]
 
 # Configures the endpoint
-config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
+config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
@@ -102,7 +102,7 @@ config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :AshPhoenixStarter, AshPhoenixStarter.Mailer, adapter: Swoosh.Adapters.Local
+config :ash_phoenix_starter, AshPhoenixStarter.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -156,11 +156,11 @@ config :mime, :types, %{
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
   
-config :AshPhoenixStarter, :global_cache_config,
+config :ash_phoenix_starter, :global_cache_config,
   ttl_check_interval: :timer.seconds(120),
   global_ttl: :timer.minutes(60)
   
-  config :AshPhoenixStarter, :tenant_cache_config,
+  config :ash_phoenix_starter, :tenant_cache_config,
   ttl_check_interval: :timer.seconds(30), 
   global_ttl: :timer.minutes(15) 
 

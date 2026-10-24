@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarter.Accounts.UserImpersonation do
   use Ash.Resource,
-    otp_app: :AshPhoenixStarter,
+    otp_app: :ash_phoenix_starter,
     domain: AshPhoenixStarter.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]

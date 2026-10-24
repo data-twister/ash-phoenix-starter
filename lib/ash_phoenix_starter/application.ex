@@ -9,11 +9,11 @@ defmodule AshPhoenixStarter.Application do
   @impl true
   def start(_type, _args) do
 
-    global_config = Application.get_env(:AshPhoenixStarter, :global_cache_config, [])
+    global_config = Application.get_env(:ash_phoenix_starter, :global_cache_config, [])
     ttl_check   = Keyword.get(global_config, :ttl_check_interval, :timer.seconds(120))
     global_ttl  = Keyword.get(global_config, :global_ttl, :timer.minutes(60))
 
-    tenant_config = Application.get_env(:AshPhoenixStarter, :tenant_cache_config, [])
+    tenant_config = Application.get_env(:ash_phoenix_starter, :tenant_cache_config, [])
     tenant_ttl_check   = Keyword.get(tenant_config, :ttl_check_interval, :timer.seconds(60))
     tenant_global_ttl  = Keyword.get(tenant_config, :global_ttl, :timer.minutes(30))
 
@@ -32,11 +32,11 @@ defmodule AshPhoenixStarter.Application do
       Cldr.Currency,
       AshPhoenixStarterWeb.Telemetry,
       AshPhoenixStarter.Repo,
-      {DNSCluster, query: Application.get_env(:AshPhoenixStarter, :dns_cluster_query) || :ignore},
+      {DNSCluster, query: Application.get_env(:ash_phoenix_starter, :dns_cluster_query) || :ignore},
       {Oban,
        AshOban.config(
-         Application.fetch_env!(:AshPhoenixStarter, :ash_domains),
-         Application.fetch_env!(:AshPhoenixStarter, Oban)
+         Application.fetch_env!(:ash_phoenix_starter, :ash_domains),
+         Application.fetch_env!(:ash_phoenix_starter, Oban)
        )},
       AshPhoenixStarter.Accounts.PasswordResetScheduler,
       {ConCache,
@@ -52,7 +52,7 @@ defmodule AshPhoenixStarter.Application do
       {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
       AshPhoenixStarterWeb.Presence,
       AshPhoenixStarterWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :AshPhoenixStarter]}
+      {AshAuthentication.Supervisor, [otp_app: :ash_phoenix_starter]}
     ]
 
      children = user_settings ++ children

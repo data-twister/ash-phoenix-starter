@@ -3,7 +3,7 @@ alias AshPhoenixStarter.Generators.User
 alias AshPhoenixStarter.Generators.Team
 
 super_user =
-  List.first(Application.get_env(:AshPhoenixStarter, :super_users)) || "admin@example.com"
+  List.first(Application.get_env(:ash_phoenix_starter, :super_users)) || "admin@example.com"
 
 default_password = System.get_env("DEFAULT_ADMIN_PASSWORD") || "AdminPassword123!"
 

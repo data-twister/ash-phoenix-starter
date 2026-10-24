@@ -17,7 +17,7 @@ import Config
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 if System.get_env("PHX_SERVER") do
-  config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint, server: true
+  config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do
@@ -30,7 +30,7 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :AshPhoenixStarter, AshPhoenixStarter.Repo,
+  config :ash_phoenix_starter, AshPhoenixStarter.Repo,
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
@@ -54,7 +54,7 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "10000")
 
   use_self_signed = System.get_env("USE_SIGNED_SSL") == nil
-  _cert_path = Application.app_dir(:AshPhoenixStarter, "priv/cert")
+  _cert_path = Application.app_dir(:ash_phoenix_starter, "priv/cert")
 
   {certfile, keyfile, _ca} =
     if use_self_signed do
@@ -65,9 +65,9 @@ if config_env() == :prod do
        Path.join("priv/cert", "ca.pem")}
     end
 
-  config :AshPhoenixStarter, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :ash_phoenix_starter, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
+  config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
@@ -80,78 +80,78 @@ if config_env() == :prod do
     https: [
       port: 443,
       cipher_suite: :strong,
-      otp_app: :AshPhoenixStarter,
+      otp_app: :ash_phoenix_starter,
       keyfile: keyfile,
       certfile: certfile
     ],
     secret_key_base: secret_key_base
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     token_signing_secret:
       System.get_env("TOKEN_SIGNING_SECRET") ||
         raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_title_prefix: System.get_env("SITE_TITLE_PREFIX") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     google_site_verification: System.get_env("GOOGLE_SITE_VERIFICATION") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_locale: System.get_env("SITE_DEFAULT_LOCALE") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_mask_icon_color: System.get_env("SITE_DEFAULT_MASK_ICON_COLOR") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_windows_tile_color: System.get_env("SITE_DEFAULT_WINDOWS_TILE_COLOR") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_themes_list: System.get_env("SITE_THEMES_LIST") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_description: System.get_env("SITE_DEFAULT_DESCRIPTION") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_webmaster: System.get_env("SITE_WEBMASTER") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_suffix: System.get_env("SITE_DEFAULT_SUFFIX") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_default_title: System.get_env("SITE_DEFAULT_TITLE") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_author: System.get_env("SITE_AUTHOR") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     site_name: System.get_env("SITE_NAME") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     facebook_app_id: System.get_env("FACEBOOK_APP_ID") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     twitter_site_name: System.get_env("TWITTER_SITE_NAME") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     twitter_site_id: System.get_env("TWITTER_SITE_ID") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     twitter_site_creator: System.get_env("TWITTER_SITE_CREATOR") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     twitter_site_creator_id: System.get_env("TWITTER_SITE_CREATOR_ID") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     ssl_endpoint_port: System.get_env("SSL_ENDPOINT_PORT") || 443
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     endpoint_same_site: System.get_env("ENDPOINT_SAME_SITE") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     endpoint_signing_salt: System.get_env("ENDPOINT_SIGNING_SALT") || ""
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     endpoint_key: System.get_env("ENDPOINT_KEY") || ""
 
   store = System.get_env("ENDPOINT_STORE") || nil
@@ -162,7 +162,7 @@ if config_env() == :prod do
       data -> String.to_atom(data)
     end
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     endpoint_store: store
 
   super_users =
@@ -171,7 +171,7 @@ if config_env() == :prod do
       val -> String.split(val, ",", trim: true) |> Enum.map(&String.trim/1)
     end
 
-  config :AshPhoenixStarter,
+  config :ash_phoenix_starter,
     super_users: super_users
 
   storage_backend =
@@ -203,7 +203,7 @@ if config_env() == :prod do
       ]
   end
 
-   config :AshPhoenixStarter, Oban,
+   config :ash_phoenix_starter, Oban,
     repo: AshPhoenixStarter.Repo, 
     plugins: [
       {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
@@ -227,11 +227,11 @@ if config_env() == :prod do
   tenant_ttl_minutes   = String.to_integer(tenant_ttl_env)
   tenant_check_seconds = String.to_integer(tenant_check_env)
 
-  config :AshPhoenixStarter, :global_cache_config,
+  config :ash_phoenix_starter, :global_cache_config,
   ttl_check_interval: :timer.seconds(tenant_check_seconds),
   global_ttl: :timer.minutes(tenant_ttl_minutes)
   
-  config :AshPhoenixStarter, :tenant_cache_config,
+  config :ash_phoenix_starter, :tenant_cache_config,
   ttl_check_interval: :timer.seconds(global_check_seconds), 
   global_ttl: :timer.minutes(global_ttl_minutes) 
 
@@ -240,7 +240,7 @@ if config_env() == :prod do
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  #     config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
+  #     config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
   #       https: [
   #         ...,
   #         port: 443,
@@ -262,7 +262,7 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your config/prod.exs,
   # ensuring no data is ever sent via http, always redirecting to https:
   #
-  #     config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
+  #     config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
@@ -272,7 +272,7 @@ if config_env() == :prod do
   # In production you need to configure the mailer to use a different adapter.
   # Here is an example configuration for Mailgun:
   #
-  #     config :AshPhoenixStarter, AshPhoenixStarter.Mailer,
+  #     config :ash_phoenix_starter, AshPhoenixStarter.Mailer,
   #       adapter: Swoosh.Adapters.Mailgun,
   #       api_key: System.get_env("MAILGUN_API_KEY"),
   #       domain: System.get_env("MAILGUN_DOMAIN")

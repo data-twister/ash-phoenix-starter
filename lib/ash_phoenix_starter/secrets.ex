@@ -7,6 +7,6 @@ defmodule AshPhoenixStarter.Secrets do
         _opts,
         _context
       ) do
-    Application.fetch_env(:AshPhoenixStarter, :token_signing_secret)
+    Application.fetch_env(:ash_phoenix_starter, :token_signing_secret)
   end
 end

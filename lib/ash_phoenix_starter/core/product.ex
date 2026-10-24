@@ -1,4 +1,4 @@
-defmodule AshPhoenixStarter.Merchants.Product do
+defmodule AshPhoenixStarter.Core.Product do
   use Ash.Resource,
     domain: AshPhoenixStarter.Core,
     data_layer: AshPostgres.DataLayer

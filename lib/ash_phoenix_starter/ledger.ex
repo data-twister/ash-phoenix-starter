@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarter.Ledger do
   use Ash.Domain,
-    otp_app: :AshPhoenixStarter
+    otp_app: :ash_phoenix_starter
 
   resources do
     resource AshPhoenixStarter.Ledger.Account

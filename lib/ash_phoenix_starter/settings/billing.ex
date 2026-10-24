@@ -3,7 +3,7 @@ defmodule AshPhoenixStarter.Settings.Billing do
   The billing helper module this serves as an example of how to create an item in group permissions.
   """
   use Ash.Resource,
-    otp_app: :AshPhoenixStarter,
+    otp_app: :ash_phoenix_starter,
     domain: AshPhoenixStarter.Settings,
     data_layer: Ash.DataLayer.Simple
 

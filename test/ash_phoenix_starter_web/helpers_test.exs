@@ -11,11 +11,11 @@ defmodule AshPhoenixStarterWeb.HelpersTest do
   describe "is_super_user?/1" do
     setup do
       # Temporarily set the super_users config for testing
-      original_super_users = Application.get_env(:AshPhoenixStarter, :super_users, [])
-      Application.put_env(:AshPhoenixStarter, :super_users, ["super@example.com"])
+      original_super_users = Application.get_env(:ash_phoenix_starter, :super_users, [])
+      Application.put_env(:ash_phoenix_starter, :super_users, ["super@example.com"])
 
       on_exit(fn ->
-        Application.put_env(:AshPhoenixStarter, :super_users, original_super_users)
+        Application.put_env(:ash_phoenix_starter, :super_users, original_super_users)
       end)
     end
 

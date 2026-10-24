@@ -11,11 +11,11 @@ defmodule Mix.Tasks.FetchFonts do
     Application.ensure_all_started(:inets)
     Application.ensure_all_started(:ssl)
 
-    font_urls = Application.get_env(:AshPhoenixStarter, :font_urls, [])
+    font_urls = Application.get_env(:ash_phoenix_starter, :font_urls, [])
 
     if Enum.empty?(font_urls) do
       Mix.shell().error(
-        "No font URLs found in application config under :AshPhoenixStarter, :font_urls"
+        "No font URLs found in application config under :ash_phoenix_starter, :font_urls"
       )
     else
       File.mkdir_p!(@fonts_dir)

@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarter.Repo do
   use AshPostgres.Repo,
-    otp_app: :AshPhoenixStarter
+    otp_app: :ash_phoenix_starter
 
   @impl AshPostgres.Repo
   def installed_extensions do

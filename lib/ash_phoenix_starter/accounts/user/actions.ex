@@ -308,7 +308,7 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       filter expr(
                (is_nil(hashed_password) or hashed_password == "") and
                  email in ^Application.compile_env(
-                   :AshPhoenixStarter,
+                   :ash_phoenix_starter,
                    :super_users,
                    "admin@example.com"
                  )

@@ -1,5 +1,5 @@
 defmodule AshPhoenixStarter.Release do
-  @app :AshPhoenixStarter
+  @app :ash_phoenix_starter
 
   def migrate do
     # Load Ecto and Ash Postgres configurations

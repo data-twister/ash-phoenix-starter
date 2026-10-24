@@ -6,7 +6,7 @@ defmodule AshPhoenixStarterWeb.Helpers do
   """
   @spec is_super_user?(User.t()) :: boolean()
   def is_super_user?(user) do
-    super_users = Application.get_env(:AshPhoenixStarter, :super_users, [])
+    super_users = Application.get_env(:ash_phoenix_starter, :super_users, [])
     to_string(user.email) in super_users
   end
 
@@ -55,7 +55,7 @@ defmodule AshPhoenixStarterWeb.Helpers do
   defp tenant_key(tenant_id, key), do: "tenant:#{tenant_id}:#{key}"
 
   defp local_site_url do
-    endpoint_config = Application.get_env(:AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint)
+    endpoint_config = Application.get_env(:ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint)
     url_config = Keyword.get(endpoint_config, :url, [])
     Keyword.get(url_config, :host, "localhost")
   end
