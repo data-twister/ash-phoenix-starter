@@ -10,9 +10,7 @@ defmodule AshPhoenixStarterWeb.Stock do
 
   def render(assigns) do
     ~H"""
-    <div class="text-center p-4 text-gray-500">
-      {gettext("Unknown stock status configuration")}
-    </div>
+    <div class="text-center p-4 text-gray-500">{gettext("Unknown stock status configuration")}</div>
     """
   end
 
@@ -26,23 +24,31 @@ defmodule AshPhoenixStarterWeb.Stock do
       <div class="divider" />
       <div class="card-body">
         <h2 class="card-title">Merchants About to Run Out of Stock</h2>
+
         <div class="overflow-x-auto">
           <table class="table">
             <thead>
               <tr>
                 <th>Merchant Name</th>
+
                 <th>Product</th>
+
                 <th>Remaining Stock</th>
+
                 <th>Alert Level</th>
               </tr>
             </thead>
+
             <tbody>
               <%= for merchant <- @merchants do %>
                 <%= for product <- merchant.products do %>
                   <tr>
                     <td class="font-medium">{merchant.name}</td>
+
                     <td>{product.name}</td>
+
                     <td>{Money.new(product.price, @currency)}</td>
+
                     <td>
                       <span class={[
                         "badge",
@@ -64,46 +70,53 @@ defmodule AshPhoenixStarterWeb.Stock do
   end
 
   def healthy(assigns) do
-  ~H"""
-  <div class="card bg-base-100 border border-base-300">
-    <div class="card-body">
-      <h2 class="card-title">Actual vs Predicted Sales (Today)</h2>
-      <AshPhoenixStarterWeb.Chart.chart />
-    </div>
-    <div class="divider" />
-    <div class="card-body">
-      <h2 class="card-title">Merchants with Healthy Stock</h2>
-      <div class="overflow-x-auto">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Merchant Name</th>
-              <th>Product</th>
-              <th>Current Stock</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= for merchant <- @merchants do %>
-              <%= for product <- merchant.products do %>
-                <tr>
-                  <td class="font-medium">{merchant.name}</td>
-                  <td>{product.name}</td>
-                  <td>{Money.new(product.price, @currency)}</td>
-                  <td>
-                    <span class="badge badge-success text-white">
-                      {product.alert_level || "Healthy"}
-                    </span>
-                  </td>
-                </tr>
+    ~H"""
+    <div class="card bg-base-100 border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title">Actual vs Predicted Sales (Today)</h2>
+        <AshPhoenixStarterWeb.Chart.chart />
+      </div>
+      <div class="divider" />
+      <div class="card-body">
+        <h2 class="card-title">Merchants with Healthy Stock</h2>
+
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Merchant Name</th>
+
+                <th>Product</th>
+
+                <th>Current Stock</th>
+
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <%= for merchant <- @merchants do %>
+                <%= for product <- merchant.products do %>
+                  <tr>
+                    <td class="font-medium">{merchant.name}</td>
+
+                    <td>{product.name}</td>
+
+                    <td>{Money.new(product.price, @currency)}</td>
+
+                    <td>
+                      <span class="badge badge-success text-white">
+                        {product.alert_level || "Healthy"}
+                      </span>
+                    </td>
+                  </tr>
+                <% end %>
               <% end %>
-            <% end %>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-  """
-end
-
+    """
+  end
 end

@@ -177,10 +177,10 @@ if config_env() == :prod do
   storage_backend =
     case System.get_env("STORAGE_BACKEND") do
       nil -> Waffle.Storage.Local
-      val ->  Waffle.Storage.S3
+      val -> Waffle.Storage.S3
     end
 
- # Default to Local storage in dev/test, switch to S3/Spaces in production
+  # Default to Local storage in dev/test, switch to S3/Spaces in production
   storage_backend =
     if config_env() == :prod, do: storage_backend, else: Waffle.Storage.Local
 
@@ -203,37 +203,41 @@ if config_env() == :prod do
       ]
   end
 
-   config :ash_phoenix_starter, Oban,
-    repo: AshPhoenixStarter.Repo, 
+  config :ash_phoenix_starter, Oban,
+    repo: AshPhoenixStarter.Repo,
     plugins: [
       {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
-      {Oban.Plugins.Cron, crontab: []}                 
+      {Oban.Plugins.Cron, crontab: []}
     ],
     queues: [
       default: 10,
       ash_notifications: 10,
-      mailers: 20           
+      mailers: 20
     ]
 
-  global_ttl_env       = System.get_env("GLOBAL_TTL_INTERVAL") || "60"
-  global_check_env     = System.get_env("GLOBAL_CHECK_INTERVAL") || "120"
-  
-  tenant_ttl_env       = System.get_env("TENANT_TTL_INTERVAL") || "15"
-  tenant_check_env     = System.get_env("TENANT_CHECK_INTERVAL") || "30"
+  global_ttl_env = System.get_env("GLOBAL_TTL_INTERVAL") || "60"
+  global_check_env = System.get_env("GLOBAL_CHECK_INTERVAL") || "120"
 
-  global_ttl_minutes   = String.to_integer(global_ttl_env)
+  tenant_ttl_env = System.get_env("TENANT_TTL_INTERVAL") || "15"
+  tenant_check_env = System.get_env("TENANT_CHECK_INTERVAL") || "30"
+
+  global_ttl_minutes = String.to_integer(global_ttl_env)
   global_check_seconds = String.to_integer(global_check_env)
-  
-  tenant_ttl_minutes   = String.to_integer(tenant_ttl_env)
+
+  tenant_ttl_minutes = String.to_integer(tenant_ttl_env)
   tenant_check_seconds = String.to_integer(tenant_check_env)
 
   config :ash_phoenix_starter, :global_cache_config,
-  ttl_check_interval: :timer.seconds(tenant_check_seconds),
-  global_ttl: :timer.minutes(tenant_ttl_minutes)
-  
+    ttl_check_interval: :timer.seconds(tenant_check_seconds),
+    global_ttl: :timer.minutes(tenant_ttl_minutes)
+
   config :ash_phoenix_starter, :tenant_cache_config,
-  ttl_check_interval: :timer.seconds(global_check_seconds), 
-  global_ttl: :timer.minutes(global_ttl_minutes) 
+    ttl_check_interval: :timer.seconds(global_check_seconds),
+    global_ttl: :timer.minutes(global_ttl_minutes)
+
+  config :ash_phoenix_starter, :timezone_cache_config,
+    ttl_check_interval: :timer.seconds(3600),
+    global_ttl: :timer.hours(24)
 
   # ## SSL Support
   #

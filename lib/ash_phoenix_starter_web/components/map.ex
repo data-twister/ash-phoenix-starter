@@ -22,9 +22,9 @@ defmodule AshPhoenixStarterWeb.Map do
     """
   end
 
-    @doc """
+  @doc """
   A reusable dropdown menu for toggling map layers across dynamically provided country codes.
-  
+
   ## Assigns
     * `:selected` - The active country code string (e.g. "us", "fr").
     * `:supported_countries` - A list of tuples containing `{"Display Name", "country_code"}`
@@ -33,7 +33,10 @@ defmodule AshPhoenixStarterWeb.Map do
     ~H"""
     <div class="mb-4 max-w-xs">
       <form phx-change="select_country" class="m-0">
-        <label for="country-select" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
+        <label
+          for="country-select"
+          class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5"
+        >
           Select Territory
         </label>
         <select
@@ -42,8 +45,8 @@ defmodule AshPhoenixStarterWeb.Map do
           class="block w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900 font-medium"
         >
           <%= for {name, code} <- @supported_countries do %>
-            <option value={code} selected={code == @selected}><%= name %></option>
-          <%= end %>
+            <option value={code} selected={code == @selected}>{name}</option>
+          <% end %>
         </select>
       </form>
     </div>
@@ -62,13 +65,14 @@ defmodule AshPhoenixStarterWeb.Map do
 
     ~H"""
     <div id="reusable-map-container" phx-update="ignore">
-      <div 
-        id="leaflet-reusable-map" 
-        phx-hook="Map" 
+      <div
+        id="leaflet-reusable-map"
+        phx-hook="Map"
         data-geojson={Jason.encode!(@initial_geojson)}
-        class="w-full rounded-xl border border-gray-200 shadow-sm" 
+        class="w-full rounded-xl border border-gray-200 shadow-sm"
         style={"height: #{@height};"}
-      ></div>
+      >
+      </div>
     </div>
     """
   end

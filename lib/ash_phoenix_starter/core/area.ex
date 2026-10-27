@@ -13,12 +13,14 @@ defmodule AshPhoenixStarter.Core.Area do
 
     attribute :name, :string do
       allow_nil? false
-      public? true # e.g., "Downtown Delivery Zone Suite A"
+      # e.g., "Downtown Delivery Zone Suite A"
+      public? true
     end
-    
+
     attribute :postal_code_prefix, :string do
       allow_nil? true
-      public? true # e.g., "857" for localized structural matching
+      # e.g., "857" for localized structural matching
+      public? true
     end
   end
 

@@ -6,7 +6,9 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
   @cache_name :timezone_resolution_cache
 
   @impl true
-  def describe(_opts), do: "Resolves IANA timezone using database columns, ConCache memory, TzWorld, Geotz, or API fallbacks"
+  def describe(_opts),
+    do:
+      "Resolves IANA timezone using database columns, ConCache memory, TzWorld, Geotz, or API fallbacks"
 
   @impl true
   def calculate(records, _opts, _context) do
@@ -28,7 +30,7 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
 
             nil ->
               # Cache miss: Execute resolution strategy loop cascade
-              resolved_tz = 
+              resolved_tz =
                 cond do
                   tz_world_available? ->
                     lookup_local_tz_world(record.latitude, record.longitude)
@@ -70,8 +72,10 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
 
   defp fetch_timezone_from_api(lat, lon) do
     url = "https://timeapi.io"
-    
-    Logger.info("[Timezone Resolution] Local engines missed/not found. Executing external API fallback for: {lat: #{lat}, lon: #{lon}}")
+
+    Logger.info(
+      "[Timezone Resolution] Local engines missed/not found. Executing external API fallback for: {lat: #{lat}, lon: #{lon}}"
+    )
 
     case Req.get(url, query: [latitude: lat, longitude: lon], retry: false, receive_timeout: 2000) do
       {:ok, %Req.Response{status: 200, body: %{"timeZone" => tz_string}}} ->
@@ -82,7 +86,10 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
         nil
 
       {:error, reason} ->
-        Logger.error("[Timezone API Fallback] Network connection failed. Reason: #{inspect(reason)}")
+        Logger.error(
+          "[Timezone API Fallback] Network connection failed. Reason: #{inspect(reason)}"
+        )
+
         nil
     end
   end
@@ -98,10 +105,12 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
   end
 
   defp store_in_memory_cache(_lat, _lon, nil), do: nil
+
   defp store_in_memory_cache(lat, lon, timezone_string) do
     if Code.ensure_loaded?(ConCache) and Process.whereis(@cache_name) do
       ConCache.put(@cache_name, {lat, lon}, timezone_string)
     end
+
     timezone_string
   end
 

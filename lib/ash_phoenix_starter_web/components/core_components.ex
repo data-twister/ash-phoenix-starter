@@ -549,7 +549,7 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
 
   @doc """
   Renders top-level, action-specific, or database-constraint validation errors from an Ash Form.
-  
+
   ## Examples
 
       <.render_ash_form_errors form={@form} />
@@ -559,9 +559,9 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
 
   def render_ash_form_errors(assigns) do
     # Only show the alert if the form has undergone validation errors or submission failures
-    show_errors? = 
-      assigns.form.source.errors != [] or 
-      (assigns.form.source.submit_errors && assigns.form.source.submit_errors != [])
+    show_errors? =
+      assigns.form.source.errors != [] or
+        (assigns.form.source.submit_errors && assigns.form.source.submit_errors != [])
 
     assigns = assign(assigns, :show_errors?, show_errors?)
 
@@ -598,5 +598,4 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
     <% end %>
     """
   end
-
 end

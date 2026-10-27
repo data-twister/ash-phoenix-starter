@@ -106,7 +106,6 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
 
       notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
 
-
       argument :email, :ci_string do
         allow_nil? false
       end
@@ -208,7 +207,6 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       description "Sign in or register a user with magic link."
 
       notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
-
 
       argument :token, :string do
         description "The token from the magic link that was sent to the user"

@@ -31,7 +31,6 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserLive do
     """
   end
 
-
   def mount(_params, _session, socket) do
     socket
     |> assign(:after_submit_url, ~p"/accounts/users")

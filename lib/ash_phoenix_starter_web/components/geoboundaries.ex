@@ -26,36 +26,40 @@ defmodule AshPhoenixStarter.GeoBoundaries do
   Fuses your dynamic database metrics into the GeoJSON structure.
   It standardizes string checking by comparing lowercase, trimmed text values.
   """
-  def inject_live_data({:ok, %{"type" => "FeatureCollection", "features" => features} = geojson}, live_data) do
+  def inject_live_data(
+        {:ok, %{"type" => "FeatureCollection", "features" => features} = geojson},
+        live_data
+      ) do
     # Transform live_data keys to lowercase/trimmed text for foolproof mapping match checks
-    normalized_live_data = 
-      Map.new(live_data, fn {key, val} -> 
-        {normalize_string(key), val} 
+    normalized_live_data =
+      Map.new(live_data, fn {key, val} ->
+        {normalize_string(key), val}
       end)
 
-    hydrated_features = Enum.map(features, fn feature ->
-      properties = feature["properties"] || %{}
-      
-      # 1. Look through priority keys to find whatever name string is inside this file
-      raw_region_name = Enum.find_value(@name_keys, fn key -> properties[key] end)
+    hydrated_features =
+      Enum.map(features, fn feature ->
+        properties = feature["properties"] || %{}
 
-      # 2. Match it up against your live data map
-      stock_count = 
-        if raw_region_name do
-          Map.get(normalized_live_data, normalize_string(raw_region_name), 0)
-        else
-          0
-        end
+        # 1. Look through priority keys to find whatever name string is inside this file
+        raw_region_name = Enum.find_value(@name_keys, fn key -> properties[key] end)
 
-      # 3. FIXED: Replaced "Mesozoic.merge" with native Map.merge for reliable execution
-      updated_properties = 
-        Map.merge(properties, %{
-          "name" => raw_region_name || "Unknown Region",
-          "density" => stock_count
-        })
+        # 2. Match it up against your live data map
+        stock_count =
+          if raw_region_name do
+            Map.get(normalized_live_data, normalize_string(raw_region_name), 0)
+          else
+            0
+          end
 
-      Map.put(feature, "properties", updated_properties)
-    end)
+        # 3. FIXED: Replaced "Mesozoic.merge" with native Map.merge for reliable execution
+        updated_properties =
+          Map.merge(properties, %{
+            "name" => raw_region_name || "Unknown Region",
+            "density" => stock_count
+          })
+
+        Map.put(feature, "properties", updated_properties)
+      end)
 
     {:ok, Map.put(geojson, "features", hydrated_features)}
   end
@@ -64,6 +68,7 @@ defmodule AshPhoenixStarter.GeoBoundaries do
 
   # Shorthand helper to strip casing differences ("Texas " and "texas" match perfectly)
   defp normalize_string(nil), do: ""
+
   defp normalize_string(str) when is_binary(str) do
     str |> String.trim() |> String.downcase()
   end

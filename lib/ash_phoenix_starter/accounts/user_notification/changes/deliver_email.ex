@@ -27,7 +27,8 @@ defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.DeliverEmail do
             "to" => to_string(recipient.email),
             "subject" => notification.subject,
             "body" => notification.body,
-            "text" => strip_html(notification.body) # Optional fallback text layout structure
+            # Optional fallback text layout structure
+            "text" => strip_html(notification.body)
           }
         }
 
@@ -40,24 +41,34 @@ defmodule AshPhoenixStarter.Accounts.UserNotification.Changes.DeliverEmail do
             {:ok, notification}
 
           {:error, reason} ->
-            Logger.error("Failed to enqueue email for notification #{notification_id}: #{inspect(reason)}")
+            Logger.error(
+              "Failed to enqueue email for notification #{notification_id}: #{inspect(reason)}"
+            )
+
             {:ok, notification}
         end
 
       {:error, %Ash.Error.Query.NotFound{}} ->
-        Logger.warning("Skipped enqueuing email notification #{notification_id}. Recipient user #{user_id} not found.")
+        Logger.warning(
+          "Skipped enqueuing email notification #{notification_id}. Recipient user #{user_id} not found."
+        )
+
         {:ok, notification}
 
       {:error, reason} ->
-        Logger.error("Error looking up recipient for notification #{notification_id}: #{inspect(reason)}")
+        Logger.error(
+          "Error looking up recipient for notification #{notification_id}: #{inspect(reason)}"
+        )
+
         {:ok, notification}
     end
   end
 
   # Tiny helper to make sure text_body isn't completely empty if it's parsed via HTML layout strings
   defp strip_html(nil), do: ""
+
   defp strip_html(html) do
-    html 
+    html
     |> String.replace(~r/<[^>]*>/, "")
     |> String.trim()
   end

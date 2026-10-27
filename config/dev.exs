@@ -120,7 +120,7 @@ config :swoosh, :api_client, false
 config :ash_phoenix_starter, :global_cache_config,
   ttl_check_interval: :timer.seconds(120),
   global_ttl: :timer.minutes(60)
-  
-  config :ash_phoenix_starter, :tenant_cache_config,
-  ttl_check_interval: :timer.seconds(30), 
-  global_ttl: :timer.minutes(15) 
+
+config :ash_phoenix_starter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(30),
+  global_ttl: :timer.minutes(15)

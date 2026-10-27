@@ -1,4 +1,3 @@
-
 defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
   @behaviour Waffle.Storage
 

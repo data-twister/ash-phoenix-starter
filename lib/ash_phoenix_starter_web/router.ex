@@ -92,7 +92,7 @@ defmodule AshPhoenixStarterWeb.Router do
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController
 
-    #invitations 
+    # invitations 
     get "/accounts/users/invitations/:tenant/:token/accept",
         TeamInvitationAcceptanceController,
         :accept

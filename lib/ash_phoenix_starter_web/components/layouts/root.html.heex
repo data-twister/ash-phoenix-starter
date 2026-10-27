@@ -2,7 +2,7 @@
 <html lang="en">
   <head phx-update="stream" id="head">
     <%= if tags = Application.get_env(:live_debugger, :live_debugger_tags) do %>
-      <%= raw(tags) %>
+      {raw(tags)}
     <% end %>
 
     <meta charset="utf-8" />
@@ -16,12 +16,12 @@
     />
 
     <AshPhoenixStarterWeb.Map.assets />
-    
+
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <link phx-track-static rel="stylesheet" href={~p"/images/icons/icons.css"} />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    
+
     <link
       id="favicon-32"
       rel="icon"
@@ -37,9 +37,9 @@
       href={~p"/images/favicons/favicon-16x16.png"}
     />
 
-    <link 
-      id="dynamic-svg-favicon" 
-      rel="icon" 
+    <link
+      id="dynamic-svg-favicon"
+      rel="icon"
       type="image/svg+xml"
     />
 
@@ -68,10 +68,14 @@
         <div class="flex items-center gap-1.5 min-w-0">
           <span class="shrink-0 text-base">⚠️</span>
           <p class="truncate">
-            <strong>Impersonation Mode:</strong> Viewing as <span class="underline font-bold"><%= assigns[:current_user].email %></span>
+            <strong>Impersonation Mode:</strong>
+            Viewing as <span class="underline font-bold">{assigns[:current_user].email}</span>
           </p>
         </div>
-        <a href="/accounts/users/stop/impersonation" class="w-full sm:w-auto shrink-0 text-center bg-neutral-900 text-white hover:bg-neutral-800 active:scale-95 transition-all text-xs font-bold py-1.5 sm:py-1 px-4 rounded shadow-sm">
+        <a
+          href="/accounts/users/stop/impersonation"
+          class="w-full sm:w-auto shrink-0 text-center bg-neutral-900 text-white hover:bg-neutral-800 active:scale-95 transition-all text-xs font-bold py-1.5 sm:py-1 px-4 rounded shadow-sm"
+        >
           Exit Session
         </a>
       </div>

@@ -7,7 +7,7 @@ defmodule AshPhoenixStarterWeb.Favicon.Counter do
   attr :y, :string, default: "50%"
 
   def counter(assigns) do
-     ~H"""
+    ~H"""
     <link
       id="dynamic-svg-favicon"
       rel="icon"

@@ -5,8 +5,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive.InviteNewUserForm.form actor={@current_user} />
-
+    <AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive.InviteNewUserForm.form actor={
+      @current_user
+    } />
     <Cinder.Table.table
       resource={AshPhoenixStarter.Accounts.Invitation}
       actor={@current_user}
@@ -16,9 +17,11 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive do
       <:col :let={row} label="Email" field="email" filter sort>
         {Phoenix.Naming.humanize(row.email)}
       </:col>
+
       <:col :let={row} label="Status" field="status" filter sort>
         {Phoenix.Naming.humanize(row.status)}
       </:col>
+
       <:col :let={row} label="Team">{Phoenix.Naming.humanize(row.team)}</:col>
     </Cinder.Table.table>
     """

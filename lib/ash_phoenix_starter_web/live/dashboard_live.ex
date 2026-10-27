@@ -1,7 +1,7 @@
 defmodule AshPhoenixStarterWeb.DashboardLive do
   use AshPhoenixStarterWeb, :live_view
   use AshPhoenixStarterWeb.LiveTracking
-  
+
   alias AshPhoenixStarter.GeoBoundaries
   alias AshPhoenixStarter.Settings.Manager
   # 1. UPDATED: Swapped tracking module reference out for your core dynamic Product resource
@@ -28,7 +28,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
     active_country = Manager.get_tenant(tenant, :active_country) || "us"
 
     # 2. UPDATED: Call your new multitenant product engine code interface function
-    live_metrics = 
+    live_metrics =
       case Product.get_live_metrics_for_country(active_country, tenant: tenant) do
         {:ok, metrics} -> metrics
         _ -> %{}
@@ -39,12 +39,15 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       Phoenix.PubSub.subscribe(AshPhoenixStarter.PubSub, "products")
     end
 
-    initial_map = 
+    initial_map =
       case GeoBoundaries.get_bounds(active_country) do
         {:ok, raw_geojson} ->
-          {:ok, hydrated_geojson} = GeoBoundaries.inject_live_data({:ok, raw_geojson}, live_metrics)
+          {:ok, hydrated_geojson} =
+            GeoBoundaries.inject_live_data({:ok, raw_geojson}, live_metrics)
+
           hydrated_geojson
-        _ -> 
+
+        _ ->
           %{"type" => "FeatureCollection", "features" => []}
       end
 
@@ -53,34 +56,32 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
 
+    merchants_stock =
+      AshPhoenixStarter.Accounts.Merchant
+      |> Ash.Query.load(low_stock_products: [:alert_level])
+      |> Ash.read!(tenant: tenant, authorize?: false)
+      |> Enum.map(fn merchant ->
+        # Filter the loaded products to only display items flagged as :low or :critical
+        alert_products =
+          Enum.filter(merchant.low_stock_products, fn product ->
+            product.alert_level in [:low, :critical]
+          end)
+          |> Enum.map(fn product ->
+            %{
+              name: product.name,
+              remaining_stock: product.remaining_stock,
+              # Convert atom state (:critical -> "Critical") for your layout table
+              alert_level: product.alert_level |> Atom.to_string() |> String.capitalize()
+            }
+          end)
 
-merchants_stock =
-  AshPhoenixStarter.Accounts.Merchant
-  |> Ash.Query.load(low_stock_products: [:alert_level])
-  |> Ash.read!(tenant: tenant, authorize?: false)
-  |> Enum.map(fn merchant ->
-    # Filter the loaded products to only display items flagged as :low or :critical
-    alert_products =
-      Enum.filter(merchant.low_stock_products, fn product ->
-        product.alert_level in [:low, :critical]
-      end)
-      |> Enum.map(fn product ->
         %{
-          name: product.name,
-          remaining_stock: product.remaining_stock,
-          # Convert atom state (:critical -> "Critical") for your layout table
-          alert_level: product.alert_level |> Atom.to_string() |> String.capitalize()
+          name: merchant.name,
+          products: alert_products
         }
       end)
-
-    %{
-      name: merchant.name,
-      products: alert_products
-    }
-  end)
-  # Clean up the output list by omitting merchants who currently have 0 alerts
-  |> Enum.reject(fn merchant -> Enum.empty?(merchant.products) end)
-
+      # Clean up the output list by omitting merchants who currently have 0 alerts
+      |> Enum.reject(fn merchant -> Enum.empty?(merchant.products) end)
 
     socket =
       socket
@@ -122,7 +123,7 @@ merchants_stock =
     <Layouts.app flash={@flash} current_user={@current_user} uri={@uri}>
       <h1 class="text-3xl font-bold mb-6">Today's Overview</h1>
       
-      <!-- Stats Section -->
+    <!-- Stats Section -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div class="bg-base-100 border border-lg border-primary rounded-box p-6">
           <div class="stat-title text-lg">Total Users</div>
@@ -155,11 +156,11 @@ merchants_stock =
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <!-- Left Column: Controls & Map Graphic -->
         <div class="space-y-4">
-          <AshPhoenixStarterWeb.Map.country_selector 
-            selected={@active_country} 
-            supported_countries={@supported_countries} 
+          <AshPhoenixStarterWeb.Map.country_selector
+            selected={@active_country}
+            supported_countries={@supported_countries}
           />
-          
+
           <div class="card border border-primary bg-base-100 shadow-sm rounded-xl">
             <div class="card-body p-5">
               <h2 class="card-title text-lg font-bold mb-3 text-gray-800">Merchant Locations Map</h2>
@@ -168,7 +169,7 @@ merchants_stock =
           </div>
         </div>
         
-        <!-- Right Column: Low Stock Management Panel -->
+    <!-- Right Column: Low Stock Management Panel -->
         <div class="card bg-base-100 h-full">
           <AshPhoenixStarterWeb.Stock.low merchants={@merchants_stock} />
         </div>
@@ -182,12 +183,12 @@ merchants_stock =
     tenant = socket.assigns[:current_user].team.domain
 
     {:ok, live_metrics} = Product.get_live_metrics_for_country(country_code, tenant: tenant)
-    
+
     case GeoBoundaries.get_bounds(country_code) do
       {:ok, raw_geojson} ->
         {:ok, fresh_map} = GeoBoundaries.inject_live_data({:ok, raw_geojson}, live_metrics)
-        
-        socket = 
+
+        socket =
           socket
           |> assign(map_data: fresh_map, active_country: country_code)
           |> push_event("render_new_layer", %{geojson: fresh_map})
@@ -200,19 +201,34 @@ merchants_stock =
   end
 
   @impl true
-  def handle_info(%Phoenix.Socket.Broadcast{topic: "products", event: "updated", payload: %{data: product}}, socket) do
+  def handle_info(
+        %Phoenix.Socket.Broadcast{topic: "products", event: "updated", payload: %{data: product}},
+        socket
+      ) do
     tenant = socket.assigns[:current_user].team.domain
-    
+
     # Pre-load the merchant onto the notification payload to check its territory coordinates
     product = Ash.load!(product, [:merchant], tenant: tenant)
-    
-    if product.merchant && String.downcase(product.merchant.country_code) == String.downcase(socket.assigns.active_country) do
+
+    if product.merchant &&
+         String.downcase(product.merchant.country_code) ==
+           String.downcase(socket.assigns.active_country) do
       # Pull recalculations specifically for this updated region
-      {:ok, region_metric} = Product.get_metrics_for_region(socket.assigns.active_country, product.merchant.region_name, tenant: tenant)
+      {:ok, region_metric} =
+        Product.get_metrics_for_region(
+          socket.assigns.active_country,
+          product.merchant.region_name,
+          tenant: tenant
+        )
+
       updated_count = Map.get(region_metric, product.merchant.region_name, 0)
 
       # Stream the atomic update directly to your frontend hook
-      {:noreply, push_event(socket, "update_stock", %{"province_name" => product.merchant.region_name, "new_stock" => updated_count})}
+      {:noreply,
+       push_event(socket, "update_stock", %{
+         "province_name" => product.merchant.region_name,
+         "new_stock" => updated_count
+       })}
     else
       {:noreply, socket}
     end

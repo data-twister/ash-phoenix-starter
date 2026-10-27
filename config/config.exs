@@ -76,7 +76,12 @@ config :spark,
 config :ash_phoenix_starter,
   ecto_repos: [AshPhoenixStarter.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [AshPhoenixStarter.Core, AshPhoenixStarter.Accounts, AshPhoenixStarter.Ledger, AshPhoenixStarter.Settings]
+  ash_domains: [
+    AshPhoenixStarter.Core,
+    AshPhoenixStarter.Accounts,
+    AshPhoenixStarter.Ledger,
+    AshPhoenixStarter.Settings
+  ]
 
 # Configure super admin users who are allowed to do
 # special actions such as impersonating other
@@ -155,16 +160,16 @@ config :mime, :types, %{
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
-  
+
 config :ash_phoenix_starter, :global_cache_config,
   ttl_check_interval: :timer.seconds(120),
   global_ttl: :timer.minutes(60)
-  
-  config :ash_phoenix_starter, :tenant_cache_config,
-  ttl_check_interval: :timer.seconds(30), 
-  global_ttl: :timer.minutes(15) 
 
-  config :ex_aws,
+config :ash_phoenix_starter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(30),
+  global_ttl: :timer.minutes(15)
+
+config :ex_aws,
   access_key_id: System.get_env("SPACES_ACCESS_KEY"),
   secret_access_key: System.get_env("SPACES_SECRET_KEY"),
   # ExAws requires a region string, but you override the host below
@@ -176,6 +181,10 @@ config :ex_aws, :s3,
   port: 443
 
 config :waffle, storage: Waffle.Storage.Local
+
+config :ash_phoenix_starter, :timezone_cache_config,
+  ttl_check_interval: 3600,
+  global_ttl: 86400
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

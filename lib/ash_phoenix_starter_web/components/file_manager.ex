@@ -161,6 +161,7 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
             <h2 class="text-xl font-semibold tracking-tight text-base-content">
               File & Asset Manager
             </h2>
+
             <p class="text-sm text-base-content/60 mt-1">
               Select files from your library or upload new documents and media.
             </p>
@@ -233,14 +234,16 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                               d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                             />
                           </svg>
-                          <span class="text-[10px] font-bold uppercase tracking-wider">{file_extension(
-                            file.filename
-                          )}</span>
+                          <span class="text-[10px] font-bold uppercase tracking-wider">
+                            {file_extension(file.filename)}
+                          </span>
                         </div>
                       <% end %>
                     </div>
+
                     <div class="p-2.5 flex-1 flex flex-col justify-between">
                       <p class="text-xs font-medium text-base-content truncate">{file.filename}</p>
+
                       <p class="text-[10px] text-base-content/50 mt-0.5">
                         {format_size(file.file_size)}
                       </p>
@@ -269,7 +272,6 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
           <form id="upload-form" phx-submit="save_uploads" phx-change="validate" phx-target={@myself}>
             <div class="border-2 border-dashed border-base-300 rounded-xl p-8 text-center hover:border-base-content/40 transition-all bg-base-200/30">
               <.live_file_input upload={@uploads.file} class="sr-only" />
-
               <label
                 for={@uploads.file.ref}
                 class="cursor-pointer flex flex-col items-center justify-center"
@@ -316,8 +318,10 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                       </svg>
                     <% end %>
                   </div>
+
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-base-content truncate">{entry.client_name}</p>
+
                     <div class="w-full bg-base-300 rounded-full h-1.5 mt-1 overflow-hidden">
                       <div
                         class="bg-primary h-1.5 rounded-full transition-all duration-150"
@@ -326,6 +330,7 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                       </div>
                     </div>
                   </div>
+
                   <button
                     type="button"
                     phx-click="cancel-upload"
@@ -347,7 +352,6 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
           </form>
         <% end %>
       </div>
-
       <!-- Right Sidebar: Selected File Inspection Panel -->
       <div class="bg-base-200/40 p-5 rounded-xl border border-base-300 flex flex-col justify-between">
         <div>
@@ -375,9 +379,11 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                         d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                       />
                     </svg>
-                    <span class="text-xs font-semibold">{@selected_file.filename}</span>
-                    <span class="text-[10px] text-base-content/50 uppercase mt-1">{@selected_file.content_type ||
-                      "Document"}</span>
+                     <span class="text-xs font-semibold">{@selected_file.filename}</span>
+                    <span class="text-[10px] text-base-content/50 uppercase mt-1">
+                      {@selected_file.content_type ||
+                        "Document"}
+                    </span>
                   </div>
                 <% end %>
               </div>
@@ -386,14 +392,18 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                 <p class="text-base-content font-medium truncate" title={@selected_file.filename}>
                   <span class="text-base-content/50">Name:</span> {@selected_file.filename}
                 </p>
+
                 <p class="text-base-content">
                   <span class="text-base-content/50">Size:</span> {format_size(
                     @selected_file.file_size
                   )}
                 </p>
+
                 <p class="text-base-content truncate">
                   <span class="text-base-content/50">URL:</span>
-                  <a href={@selected_file.file_url} target="_blank" class="text-primary underline">Open File</a>
+                  <a href={@selected_file.file_url} target="_blank" class="text-primary underline">
+                    Open File
+                  </a>
                 </p>
               </div>
             </div>
