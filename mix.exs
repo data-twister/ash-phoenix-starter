@@ -80,6 +80,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:ash_diagram, "~> 0.2.2"},
       {:ash_ops, "~> 0.2"},
       {:ash_oban, "~> 0.8"},
+      {:ash_workflow, "~> 0.10.1"},
       {:oban, "~> 2.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:sourceror, "~> 1.8", only: [:dev, :test]},

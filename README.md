@@ -32,19 +32,16 @@ Built for fast prototype and scaling in the future.
 
 ###### User Impersonation
 
-1. Super user is added to the `super_users` list in the config/config.exs  
+1. Super user is added to the SUPER_USERS list in the environment varible  
 2. Super users can go to Settings > Users > and see Impersonate button
 3. If clicked, super users access the application as if they are the user they are impersonating
 4. Super Users can Go back to their account by clicking on top right menu and select "Go Back to My Account"
 
 ### Upcoming features
 
-1. Email send out
-2. AI integration with Ash AI
-3. Paper trail with Ash Paper Trail
-4. Workflows with ash_approver(A local package that needs to be published)
-5. Self referencing data with AshParental
-6. Documentations
+1. AI integration with Ash AI
+2. Paper trail with Ash Paper Trail
+3. Documentations
 
 
 ## Installation 
