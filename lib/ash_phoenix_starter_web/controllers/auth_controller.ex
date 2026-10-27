@@ -49,7 +49,7 @@ defmodule AshPhoenixStarterWeb.AuthController do
     return_to = get_session(conn, :return_to) || ~p"/"
 
     conn
-    |> clear_session(:AshPhoenixStarter)
+    |> clear_session(:ash_phoenix_starter)
     |> put_flash(:info, "You are now signed out")
     |> redirect(to: return_to)
   end

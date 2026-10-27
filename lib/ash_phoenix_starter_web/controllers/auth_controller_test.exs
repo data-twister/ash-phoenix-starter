@@ -8,7 +8,7 @@ defmodule AshPhoenixStarterWeb.Controllers.AuthControllerTest do
       super_user_conn = login(conn, current_user)
 
       # Ensure the user is in the super_users list to allow impersonation
-      Application.put_env(:AshPhoenixStarter, :super_users, [to_string(current_user.email)])
+      Application.put_env(:ash_phoenix_starter, :super_users, [to_string(current_user.email)])
 
       {:ok, team_member} =
         Ash.create(User, %{email: "John@example.com"},

@@ -3,7 +3,7 @@ defmodule AshPhoenixStarter.MixProject do
 
   def project do
     [
-      app: :AshPhoenixStarter,
+      app: :ash_phoenix_starter,
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -61,14 +61,14 @@ defmodule AshPhoenixStarter.MixProject do
       {:phoenix_iconify, "~> 0.3.2"},
       {:phoenix_live_favicon, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:phoenix_bakery, "~> 0.1.0", runtime: false},
+      # {:phoenix_bakery, "~> 0.1.0", runtime: false},
       {:live_debugger, "~> 0.4", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:swoosh, "~> 1.16"},
       {:ash, "~> 3.0"},
       {:ash_json_api, "~> 1.0"},
       {:ash_money, "~> 0.2"},
-      {:ash_double_entry, "~> 1.0"},
+      {:ash_double_entry, github: "data-twister/ash_double_entry"},
       {:ash_authentication_phoenix, "~> 2.0"},
       {:ash_authentication, "~> 4.0"},
       {:ash_postgres, "~> 2.0"},
@@ -85,6 +85,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:ex_cldr, "~> 2.45", override: true},
       {:ex_cldr_calendars, "~> 2.1"},
+      {:ex_cldr_currencies, "~> 2.13"},
       {:ex_cldr_units, "~> 3.18"},
       {:ex_cldr_dates_times, "~> 2.0"},
       {:ex_cldr_numbers, "~> 2.32"},
@@ -121,7 +122,16 @@ defmodule AshPhoenixStarter.MixProject do
       {:picosat_elixir, "~> 0.2"},
       {:ex_cmd, "~> 0.18.0"},
       {:mix_audit, "~> 2.1"},
-      {:altcha, github: "data-twister/altcha-lib-ex"}
+      {:altcha, github: "data-twister/altcha-lib-ex", branch: "ash"},
+      {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.5"},
+      {:hackney, "~> 4.0", override: true},
+      {:waffle, "~> 2.0"},
+      {:waffle_ecto, "~> 0.0"},
+      {:idna, "~> 7.1", override: true},
+      #{:tz_world, "~> 2.5"},
+      # {:geotz, github: "data-twister/geotz"},
+      # {:geolixir, "~> 0.1.4"},
     ]
   end
 
@@ -140,7 +150,7 @@ defmodule AshPhoenixStarter.MixProject do
       "assets.setup": [
         "tailwind.install --if-missing",
         "esbuild.install --if-missing",
-        "altcha.install"
+        "altcha.install  --if-missing"
       ],
       "assets.build": ["compile", "tailwind AshPhoenixStarter", "esbuild AshPhoenixStarter"],
       "assets.deploy": [

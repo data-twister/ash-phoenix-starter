@@ -1,6 +1,6 @@
 # Ash Phoenix Application Starter Kit
 
-![Unit Tests](https://github.com/kamaroly/ash-phoenix-starter/actions/workflows/elixir.yaml/badge.svg)
+![Unit Tests](https://github.com/data-twister/ash-phoenix-starter/actions/workflows/elixir.yaml/badge.svg)
 
 
 A starter Kit that helps you build what's unique to your application faster. 
@@ -8,8 +8,6 @@ A starter Kit that helps you build what's unique to your application faster.
 Don't reinvent the wheel for common features. Clone it, rename it and start shipping with confidence. 
 
 Built for fast prototype and scaling in the future.
-
-You can find concepts used in this kit in the [Ash Framework for Phoenix Developers](https://medium.com/@lambert.kamaro/ash-framework-for-phoenix-developpers-c29b0a147552) blog serie. I will continue to add features and documentation as time permits. 
 
 ![Ash Phoenix Starter Kit](dashboard.png "Starter Kit Dashboard")
 
@@ -26,6 +24,9 @@ You can find concepts used in this kit in the [Ash Framework for Phoenix Develop
 11. Authentication with Ash Authentication
 12. Templating with Daisy UI
 14. Accounting with AshDouble Entry
+15. Image Uploads (with multiple backends)
+16. Products
+17. Customers/Merchants/Vendors - Support for multiple sides of the supply chain; customers (buyers), vendors (suppliers) and merchants (sellers)
 
 ### On-going implementation
 
@@ -39,13 +40,11 @@ You can find concepts used in this kit in the [Ash Framework for Phoenix Develop
 ### Upcoming features
 
 1. Email send out
-2. Rich Background Jobs with Oban
-4. AI integration with Ash AI
-5. Paper trail with Ash Paper Trail
-6. Workflows with ash_approver(A local package that needs to be published)
-7. Self referencing data with AshParental
-8. Documentations
-9. Automated CI/ CD workflow with Github
+2. AI integration with Ash AI
+3. Paper trail with Ash Paper Trail
+4. Workflows with ash_approver(A local package that needs to be published)
+5. Self referencing data with AshParental
+6. Documentations
 
 
 ## Installation 
@@ -56,6 +55,8 @@ You can find concepts used in this kit in the [Ash Framework for Phoenix Develop
 4. Run `mix tailwind.install` to install tailwindcss
 5. Confirm that all is well with `mix tests`
 6. Start implementing your new features
+
+## For map boundry jsons you can access them @https://datahub.io/core/geo-boundaries-us-110m or https://www.naturalearthdata.com/downloads/110m-cultural-vectors/ and export them to the corresponding json file
 
 
 To start your Phoenix server:

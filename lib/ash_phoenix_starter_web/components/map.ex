@@ -1,132 +1,75 @@
 defmodule AshPhoenixStarterWeb.Map do
   use AshPhoenixStarterWeb, :html
 
-  def map(assigns) do
+  @doc """
+  Renders the global Leaflet CDN stylesheets and scripts required for the map hook.
+  Call this inside the <head> of your layout.
+  """
+  def assets(assigns) do
     ~H"""
-    <script src={~p"/assets/js/congo-brazaville.js"}>
-    </script>
-
     <link
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      href="https://unpkg.com"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
     <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      src="https://unpkg.com"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     >
     </script>
+    """
+  end
 
-    <div id="map" phx-hook=".Map" class="h-96" style="height:680px;"></div>
+    @doc """
+  A reusable dropdown menu for toggling map layers across dynamically provided country codes.
+  
+  ## Assigns
+    * `:selected` - The active country code string (e.g. "us", "fr").
+    * `:supported_countries` - A list of tuples containing `{"Display Name", "country_code"}`
+  """
+  def country_selector(assigns) do
+    ~H"""
+    <div class="mb-4 max-w-xs">
+      <form phx-change="select_country" class="m-0">
+        <label for="country-select" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
+          Select Territory
+        </label>
+        <select
+          id="country-select"
+          name="country_code"
+          class="block w-full rounded-lg border border-gray-300 bg-white py-2 px-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900 font-medium"
+        >
+          <%= for {name, code} <- @supported_countries do %>
+            <option value={code} selected={code == @selected}><%= name %></option>
+          <%= end %>
+        </select>
+      </form>
+    </div>
+    """
+  end
 
-    <script :type={Phoenix.LiveView.ColocatedHook} name=".Map">
-              export default {
-                mounted() {
+  @doc """
+  A reusable, streaming-ready Leaflet Map component built to match Option B (Standalone Hook).
 
-          const map = L.map('map').setView([-1, 15], 7);
+  ## Assigns
+    * `:initial_geojson` - The pre-hydrated Elixir map structure parsed by the server.
+    * `:height` - (Optional) Custom height configuration string. Defaults to "680px".
+  """
+  def map(assigns) do
+    assigns = assign_new(assigns, :height, fn -> "680px" end)
 
-          const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          }).addTo(map);
-
-          // control that shows state info on hover
-          const info = L.control();
-
-          info.onAdd = function (map) {
-          this._div = L.DomUtil.create('div', 'info');
-          this.update();
-          return this._div;
-          };
-
-          info.update = function (props) {
-          const contents = props ? `<b>${props.name}</b><br />Stock availability: ${props.density}` : 'Hover over a province';
-          this._div.innerHTML = `<h4>Merchant Stock Availability</h4>${contents}`;
-          };
-
-          info.addTo(map);
-
-      // Add legend for stock levels
-          const legend = L.control({ position: 'bottomright' });
-          legend.onAdd = function (map) {
-            const div = L.DomUtil.create('div', 'info legend');
-            div.style.backgroundColor = 'white';
-            div.style.padding = '10px';
-            div.style.border = '1px solid black';
-            div.innerHTML += '<strong>Stock Levels</strong><br>';
-            div.innerHTML += '<i style="background: orangered; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> Low (&lt;20)<br>';
-            div.innerHTML += '<i style="background: gold; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> Medium (20-49)<br>';
-            div.innerHTML += '<i style="background: lime; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> High (50+)<br>';
-            return div;
-          };
-          legend.addTo(map);
-
-          function getColor(stockLevel) {
-          return stockLevel > 1000 ? '#00ff00' :
-                 stockLevel > 20   ? '#ffcc07' : '#ff4500'
-          }
-
-          function getRandomNumber(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-          }
-
-          function style(province) {
-            var stockLevel = getRandomNumber(0, 1500)
-            var stockColor = getColor(stockLevel)
-            return {
-                weight: 2,
-                opacity: 0.9,
-                dashArray: '3',
-                fillOpacity: 0.7,
-                fillColor: stockColor,
-                color: '#000000'
-            };
-          }
-
-          function highlightFeature(e) {
-              const layer = e.target;
-
-              layer.setStyle({
-                  weight: 5,
-                  color: '#000',
-                  dashArray: '',
-                  fillOpacity: 0.7
-              });
-
-              layer.bringToFront();
-
-              info.update(layer.feature.properties);
-          }
-
-          /* global statesData */
-          const geojson =
-           L
-           .geoJson(statesData, {style, onEachFeature}).addTo(map);
-
-          function resetHighlight(e) {
-            geojson.resetStyle(e.target);
-            info.update();
-          }
-
-          function zoomToFeature(e) {
-            map.fitBounds(e.target.getBounds());
-          }
-
-          function onEachFeature(feature, layer) {
-              layer.on({
-                  mouseover: highlightFeature,
-                  mouseout: resetHighlight,
-                  click: zoomToFeature
-              });
-          }
-
-          map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
-
-                  }
-                }
-    </script>
+    ~H"""
+    <div id="reusable-map-container" phx-update="ignore">
+      <div 
+        id="leaflet-reusable-map" 
+        phx-hook="Map" 
+        data-geojson={Jason.encode!(@initial_geojson)}
+        class="w-full rounded-xl border border-gray-200 shadow-sm" 
+        style={"height: #{@height};"}
+      ></div>
+    </div>
     """
   end
 end

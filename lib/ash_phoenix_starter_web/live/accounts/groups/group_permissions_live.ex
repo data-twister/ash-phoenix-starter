@@ -149,7 +149,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
   defp get_resources(socket) do
     group_permissions = socket.assigns.group_permissions
 
-    for domain <- Application.get_env(:AshPhoenixStarter, :ash_domains) do
+    for domain <- Application.get_env(:ash_phoenix_starter, :ash_domains) do
       for resource <- Ash.Domain.Info.resources(domain) do
         resource_name = Ash.Resource.Info.short_name(resource)
 

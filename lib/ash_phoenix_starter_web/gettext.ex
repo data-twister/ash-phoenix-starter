@@ -21,5 +21,5 @@ defmodule AshPhoenixStarterWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext.Backend, otp_app: :AshPhoenixStarter
+  use Gettext.Backend, otp_app: :ash_phoenix_starter
 end

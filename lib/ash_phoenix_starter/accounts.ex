@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarter.Accounts do
   use Ash.Domain,
-    otp_app: :AshPhoenixStarter,
+    otp_app: :ash_phoenix_starter,
     extensions: [AshOps]
 
   resources do
@@ -14,5 +14,11 @@ defmodule AshPhoenixStarter.Accounts do
     resource AshPhoenixStarter.Accounts.GroupPermission
 
     resource AshPhoenixStarter.Accounts.UserImpersonation
+
+    resource AshPhoenixStarter.Accounts.Invitation
+
+    resource AshPhoenixStarter.Accounts.UserNotification do
+      define :notify, action: :create
+    end
   end
 end

@@ -55,6 +55,7 @@ defmodule AshPhoenixStarterWeb do
   def live_view do
     quote do
       use Phoenix.LiveView
+      on_mount AshPhoenixStarterWeb.Live.Hooks.NotificationHook
       unquote(ash_form())
       unquote(html_helpers())
       unquote(live_replies())
@@ -65,6 +66,7 @@ defmodule AshPhoenixStarterWeb do
   def live_component do
     quote do
       use Phoenix.LiveComponent
+      on_mount AshPhoenixStarterWeb.Live.Hooks.NotificationHook
       unquote(ash_form())
       unquote(html_helpers())
       # Liveview helpers
@@ -193,6 +195,7 @@ defmodule AshPhoenixStarterWeb do
 
       # HTML escaping functionality
       import Phoenix.HTML
+      import AshPhoenixStarterWeb.Helpers
       # Core UI components
       import AshPhoenixStarterWeb.CoreComponents
       import PhoenixIconify, only: [icon: 1]

@@ -104,6 +104,9 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
     create :register_with_password do
       description "Register a new user with a email and password."
 
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+
+
       argument :email, :ci_string do
         allow_nil? false
       end
@@ -196,8 +199,16 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       change AshAuthentication.GenerateTokenChange
     end
 
+    create :create do
+      primary? true
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+    end
+
     create :sign_in_with_magic_link do
       description "Sign in or register a user with magic link."
+
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+
 
       argument :token, :string do
         description "The token from the magic link that was sent to the user"
@@ -245,6 +256,8 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
     create :invite do
       description "Invite a new user to the team"
       accept [:email]
+
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
 
       validate AshPhoenixStarter.Accounts.User.Validations.ValidateNewToTeam
       manual AshPhoenixStarter.Accounts.User.Actions.CreateUserIfNotExists
@@ -295,7 +308,7 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       filter expr(
                (is_nil(hashed_password) or hashed_password == "") and
                  email in ^Application.compile_env(
-                   :AshPhoenixStarter,
+                   :ash_phoenix_starter,
                    :super_users,
                    "admin@example.com"
                  )

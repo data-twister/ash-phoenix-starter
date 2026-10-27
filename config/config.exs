@@ -9,7 +9,7 @@ import Config
 
 config :ash_oban, pro?: false
 
-config :AshPhoenixStarter, Oban,
+config :ash_phoenix_starter, Oban,
   engine: Oban.Engines.Basic,
   notifier: Oban.Notifiers.Postgres,
   queues: [default: 10, system: 10],
@@ -73,19 +73,19 @@ config :spark,
     ]
   ]
 
-config :AshPhoenixStarter,
+config :ash_phoenix_starter,
   ecto_repos: [AshPhoenixStarter.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [AshPhoenixStarter.Ledger, AshPhoenixStarter.Accounts, AshPhoenixStarter.Settings]
+  ash_domains: [AshPhoenixStarter.Core, AshPhoenixStarter.Accounts, AshPhoenixStarter.Ledger, AshPhoenixStarter.Settings]
 
 # Configure super admin users who are allowed to do
 # special actions such as impersonating other
 # users in the teams. Seeing all teams
 # and more...
-config :AshPhoenixStarter, super_users: ["kamaro@example.com"]
+config :ash_phoenix_starter, super_users: ["kamaro@example.com"]
 
 # Configures the endpoint
-config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
+config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
@@ -102,7 +102,7 @@ config :AshPhoenixStarter, AshPhoenixStarterWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :AshPhoenixStarter, AshPhoenixStarter.Mailer, adapter: Swoosh.Adapters.Local
+config :ash_phoenix_starter, AshPhoenixStarter.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -143,11 +143,11 @@ config :phoenix_copy,
     destination: Path.expand("../priv/static/fonts/", __DIR__)
   ]
 
-config :phoenix,
-  static_compressors: [
-    PhoenixBakery.Gzip,
-    PhoenixBakery.Zstd
-  ]
+# config :phoenix,
+#  static_compressors: [
+#    PhoenixBakery.Gzip,
+#    PhoenixBakery.Zstd
+#  ]
 
 config :mime, :types, %{
   "application/jrd+json" => ["jrd"]
@@ -155,6 +155,27 @@ config :mime, :types, %{
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
+  
+config :ash_phoenix_starter, :global_cache_config,
+  ttl_check_interval: :timer.seconds(120),
+  global_ttl: :timer.minutes(60)
+  
+  config :ash_phoenix_starter, :tenant_cache_config,
+  ttl_check_interval: :timer.seconds(30), 
+  global_ttl: :timer.minutes(15) 
+
+  config :ex_aws,
+  access_key_id: System.get_env("SPACES_ACCESS_KEY"),
+  secret_access_key: System.get_env("SPACES_SECRET_KEY"),
+  # ExAws requires a region string, but you override the host below
+  region: "us-east-1"
+
+config :ex_aws, :s3,
+  scheme: "https://",
+  host: System.get_env("SPACES_HOST") || "nyc3.digitaloceanspaces.com",
+  port: 443
+
+config :waffle, storage: Waffle.Storage.Local
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

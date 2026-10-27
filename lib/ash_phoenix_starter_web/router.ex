@@ -64,6 +64,8 @@ defmodule AshPhoenixStarterWeb.Router do
 
       live "/accounts/users", Accounts.Users.UsersLive
       live "/accounts/users/invite", Accounts.Users.InviteUserLive
+      live "/accounts/users/inviteconfirmation", Accounts.Users.InviteUserConfirmationLive
+      live "/accounts/users/invitations", Accounts.Users.UserInvitationsLive
       live "/accounts/users/:user_id/groups", Accounts.Users.UserGroupsLive
 
       live "/accounts/groups", Accounts.Groups.GroupsLive
@@ -89,6 +91,15 @@ defmodule AshPhoenixStarterWeb.Router do
 
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController
+
+    #invitations 
+    get "/accounts/users/invitations/:tenant/:token/accept",
+        TeamInvitationAcceptanceController,
+        :accept
+
+    get "/accounts/users/invitations/:tenant/:token/reject",
+        TeamInvitationAcceptanceController,
+        :reject
 
     # user Impersonations
     get "/accounts/users/impersonate/:user_id", AuthController, :impersonate
@@ -130,7 +141,7 @@ defmodule AshPhoenixStarterWeb.Router do
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:AshPhoenixStarter, :dev_routes) do
+  if Application.compile_env(:ash_phoenix_starter, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
