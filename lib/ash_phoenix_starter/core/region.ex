@@ -1,16 +1,17 @@
 defmodule AshPhoenixStarter.Core.Region do
   use Ash.Resource,
-    domain: AshPhoenixStarter.Core,
-    data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+      domain: AshPhoenixStarter.Core,
+      data_layer: AshPostgres.DataLayer,
+      authorizers: [Ash.Policy.Authorizer]
 
   postgres do
     table "regions"
     repo AshPhoenixStarter.Repo
+  end
 
-    # Enforce name uniqueness strictly within the same parent tier
-    identity :unique_name_per_parent, [:name, :parent_id], 
-      message: "A region with this name already exists in this tier."
+  identities do
+    identity :unique_name_per_parent, [:name, :parent_id],
+             message: "A region with this name already exists in this tier."
   end
 
   multitenancy do
@@ -23,7 +24,7 @@ defmodule AshPhoenixStarter.Core.Region do
 
   changes do
     change AshPhoenixStarter.Changes.SetTenant
-    
+
     # Automatically manage UTC microsecond timestamps on lifecycle events
     change set_attribute(:inserted_at, &DateTime.utc_now/0), on: :create
     change set_attribute(:updated_at, &DateTime.utc_now/0), on: [:create, :update]
@@ -123,24 +124,24 @@ defmodule AshPhoenixStarter.Core.Region do
     create :create do
       primary? true
       accept [:name, :type, :country_code, :currency_code, :parent_id]
-      
-      change into_context(:country_code, &String.upcase/1)
-      change into_context(:currency_code, &String.upcase/1)
+
+      change fn changeset, _ -> upcase_attribute(changeset, :country_code) end
+      change fn changeset, _ -> upcase_attribute(changeset, :currency_code) end
 
       # Injected ex_cldr Validation Hooks
-      validate &validate_cldr_country/2, where: [attribute_not_nil(:country_code)]
-      validate &validate_cldr_currency/2, where: [attribute_not_nil(:currency_code)]
+      validate &validate_cldr_country/2, where: [present(:country_code)]
+      validate &validate_cldr_currency/2, where: [present(:currency_code)]
     end
 
     update :update do
       primary? true
       accept [:name, :type, :country_code, :currency_code, :parent_id]
-      
-      change into_context(:country_code, &String.upcase/1)
-      change into_context(:currency_code, &String.upcase/1)
 
-      validate &validate_cldr_country/2, where: [attribute_not_nil(:country_code)]
-      validate &validate_cldr_currency/2, where: [attribute_not_nil(:currency_code)]
+      change fn changeset, _ -> upcase_attribute(changeset, :country_code) end
+      change fn changeset, _ -> upcase_attribute(changeset, :currency_code) end
+
+      validate &validate_cldr_country/2, where: [present(:country_code)]
+      validate &validate_cldr_currency/2, where: [present(:currency_code)]
     end
 
     # Custom dynamic resolution route targeting location codes inside child records
@@ -154,6 +155,19 @@ defmodule AshPhoenixStarter.Core.Region do
     # Optimized tree lookup to quickly pull top-level entry configurations
     read :roots do
       filter expr(is_nil(parent_id))
+    end
+  end
+
+  # =====================================================================
+  # 🛠️ Private Change Helpers
+  # =====================================================================
+
+  defp upcase_attribute(changeset, attribute) do
+    case Ash.Changeset.get_attribute(changeset, attribute) do
+      value when is_binary(value) ->
+        Ash.Changeset.force_change_attribute(changeset, attribute, String.upcase(value))
+      _ ->
+        changeset
     end
   end
 
@@ -190,12 +204,12 @@ defmodule AshPhoenixStarter.Core.Region do
   # 🛡️ Data Access Control Security Policies
   # =====================================================================
   policies do
-    bypass is_admin() do
-      authorize_all()
+    bypass actor(:is_admin) == true do
+      authorize_if always()
     end
 
     policy always() do
-      authorize_on_land read: true
+      authorize_if action_type(:read)
     end
   end
 end

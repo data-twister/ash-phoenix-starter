@@ -1,15 +1,16 @@
 defmodule AshPhoenixStarter.Core.RegionLocation do
   use Ash.Resource,
-    domain: AshPhoenixStarter.Core,
-    data_layer: AshPostgres.DataLayer
+      domain: AshPhoenixStarter.Core,
+      data_layer: AshPostgres.DataLayer
 
   postgres do
     table "region_locations"
     repo AshPhoenixStarter.Repo
+  end
 
-    # Enforce uniqueness for a code type value inside a single region allocation mapping
+  identities do
     identity :unique_code_per_type_in_region, [:type, :value, :region_id],
-      message: "This location mapping code is already registered to this region tier."
+             message: "This location mapping code is already registered to this region tier."
   end
 
   attributes do
@@ -30,25 +31,23 @@ defmodule AshPhoenixStarter.Core.RegionLocation do
     attribute :latitude, :float do
       allow_nil? true
       public? true
-      constraints min_value: -90.0, max_value: 90.0
+      constraints min: -90.0, max: 90.0
     end
 
     attribute :longitude, :float do
       allow_nil? true
       public? true
-      constraints min_value: -180.0, max_value: 180.0
+      constraints min: -180.0, max: 180.0
     end
 
     attribute :cached_timezone, :string do
-    allow_nil? true
-    public? true
-    constraints match: ~r/^[A-Za-z0-9_\-+]+\/[A-Za-z0-9_\-+]+$/
-  end
-
+      allow_nil? true
+      public? true
+      constraints match: ~r/^[A-Za-z0-9_\-+]+\/[A-Za-z0-9_\-+]+$/
+    end
   end
 
   relationships do
-    # Mounts a strict backward lookup link attaching straight to your Region tree nodes
     belongs_to :region, AshPhoenixStarter.Core.Region do
       attribute_type :uuid
       allow_nil? false
@@ -62,31 +61,22 @@ defmodule AshPhoenixStarter.Core.RegionLocation do
     create :create do
       primary? true
       accept [:type, :value, :region_id]
-      
-      change trimmable([:value])
 
-      # Dynamic ex_cldr validation guard tracking international layouts
-      validate &validate_postal_format_by_country/2, where: [atom_equals(:type, :postal_code)]
+      validate &validate_postal_format_by_country/2, where: [attribute_equals(:type, :postal_code)]
     end
   end
-
-  # =====================================================================
-  # 🌐 Country-Aware ex_cldr Postal Formats Engine
-  # =====================================================================
 
   defp validate_postal_format_by_country(changeset, _opts) do
     region_id = Ash.Changeset.get_attribute(changeset, :region_id)
     value = Ash.Changeset.get_attribute(changeset, :value)
 
-    # Walk up the regional hierarchy tree to resolve the effective country code
     case fetch_effective_country(region_id) do
       {:ok, country_string} ->
         country_atom = country_string |> String.downcase() |> String.to_atom()
 
         with {:ok, territory_info} <- Cldr.Config.territory_info(country_atom),
              postal_regex_string when not is_nil(postal_regex_string) <- Map.get(territory_info, :postal_code) do
-          
-          # Compile the CLDR pattern token into an executable Elixir Regex expression
+
           compiled_regex = Regex.compile!("^(" <> postal_regex_string <> ")$")
 
           if String.match?(value, compiled_regex) do
@@ -98,33 +88,31 @@ defmodule AshPhoenixStarter.Core.RegionLocation do
             )}
           end
         else
-          _ -> :ok # Fallback if CLDR data parameters do not specify a pattern for this tier
+          _ -> :ok
         end
 
       :error ->
-        :ok # Skip if the assigned region tier has no ancestral country context
+        :ok
     end
   end
 
-  # Recursive helper traversal framework to fetch country configurations up the tree
   defp fetch_effective_country(nil), do: :error
   defp fetch_effective_country(region_id) do
     case Ash.get(AshPhoenixStarter.Core.Region, region_id) do
-      {:ok, %{country_code: country}} when not is_nil(country) -> 
+      {:ok, %{country_code: country}} when not is_nil(country) ->
         {:ok, country}
 
-      {:ok, %{parent_id: parent_id}} when not is_nil(parent_id) -> 
+      {:ok, %{parent_id: parent_id}} when not is_nil(parent_id) ->
         fetch_effective_country(parent_id)
 
-      _ -> 
+      _ ->
         :error
     end
   end
 
-calculations do
-  # Modified to look for cached values first
-  calculate :resolved_timezone, :string, {AshPhoenixStarter.Core.Calculations.ResolveTimezone, []} do
-    public? true
+  calculations do
+    calculate :resolved_timezone, :string, {AshPhoenixStarter.Core.Calculations.ResolveTimezone, []} do
+      public? true
+    end
   end
-end
 end

@@ -1,8 +1,8 @@
 defmodule AshPhoenixStarter.Accounts.Merchant do
   use Ash.Resource,
-    domain: AshPhoenixStarter.Accounts,
-    data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+      domain: AshPhoenixStarter.Accounts,
+      data_layer: AshPostgres.DataLayer,
+      authorizers: [Ash.Policy.Authorizer]
 
   postgres do
     table "merchants"
@@ -19,7 +19,7 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
 
   changes do
     change AshPhoenixStarter.Changes.SetTenant
-    
+
     # Automatically manage UTC microsecond timestamp mutations on lifecycle events
     change set_attribute(:inserted_at, &DateTime.utc_now/0), on: :create
     change set_attribute(:updated_at, &DateTime.utc_now/0), on: [:create, :update]
@@ -84,6 +84,15 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
   end
 
   # =====================================================================
+  # 📐 Aggregates Definition Block
+  # =====================================================================
+  aggregates do
+    count :total_low_stock, :low_stock_products do
+      public? true
+    end
+  end
+
+  # =====================================================================
   # 🧮 Derived Computations & Calculations
   # =====================================================================
   calculations do
@@ -116,8 +125,8 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
 
     # Custom dashboard endpoint supporting clean data slicing out-of-the-box
     read :paginated_dashboard do
-      pagination offset?: true, limit?: true, required?: false, default_limit: 25
-      prepare aggregate(:total_low_stock, :count, :low_stock_products)
+      pagination offset?: true, required?: false, default_limit: 25
+      prepare fn query, _ -> Ash.Query.load(query, :total_low_stock) end
     end
   end
 

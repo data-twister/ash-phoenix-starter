@@ -27,6 +27,14 @@ defmodule AshPhoenixStarter.Application do
               ]},
             id: :tenant_settings_cache_supervisor
           )]
+
+    timezone_resolution_cache = [
+      Supervisor.child_spec( {ConCache, [
+        name: :timezone_resolution_cache,
+        # Evict cached pairs automatically after 24 hours (specified in seconds)
+        ttl_check_interval: 3600,
+        global_ttl: 86400
+      ]}, id: :timezone_resolution_cache),]
           
     children = [
       Cldr.Currency,
@@ -45,12 +53,6 @@ defmodule AshPhoenixStarter.Application do
          ttl_check_interval: ttl_check,
          global_ttl: global_ttl
        ]},
-        {ConCache, [
-      name: :timezone_resolution_cache,
-      # Evict cached pairs automatically after 24 hours (specified in seconds)
-      ttl_check_interval: 3600,
-      global_ttl: 86400
-      ]}
 
       # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
       # {AshPhoenixStarter.Worker, arg},
