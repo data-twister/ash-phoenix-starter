@@ -9,7 +9,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserConfirmationLive do
       <div class="max-w-2xl mx-auto p-6 bg-white rounded-lg border border-gray-200 shadow-sm mt-8">
         <div class="border-b border-gray-100 pb-4 mb-6">
           <h3 class="text-xl font-semibold leading-none tracking-tight text-gray-900">
-            {gettext("Invite a new member to your team")}
+            {gettext("Invite a new member to your organization")}
           </h3>
 
           <p class="text-sm text-gray-500 mt-2">
@@ -110,7 +110,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserConfirmationLive do
 
   defp load_access_groups(actor) do
     AshPhoenixStarter.Accounts.Group
-    |> Ash.read!(tenant: actor.current_team, authorize?: false)
+    |> Ash.read!(tenant: actor.current_organization, authorize?: false)
     |> Enum.map(&{&1.name, &1.id})
   end
 end

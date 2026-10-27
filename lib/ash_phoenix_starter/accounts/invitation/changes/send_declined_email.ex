@@ -4,7 +4,7 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendDeclinedEmail do
   An Ash Resource Change that sends a declination email after an invitation is declined.
 
   This module handles the process of sending an email notification to the user
-  who declined a team invitation. It integrates with Oban for async email delivery.
+  who declined a organization invitation. It integrates with Oban for async email delivery.
   """
 
   use Ash.Resource.Change
@@ -34,15 +34,15 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendDeclinedEmail do
     end
   end
 
-  defp build_email_data(%{email: email, token: token, team: team}) do
-    message = build_email_body(team)
+  defp build_email_data(%{email: email, token: token, organization: organization}) do
+    message = build_email_body(organization)
 
     email_data = %{
       id: token,
       params: %{
         html_message: message,
         text_message: message,
-        subject: "You declined an invitation to join #{team}",
+        subject: "You declined an invitation to join #{organization}",
         from: nil,
         to: email
       }
@@ -51,11 +51,11 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendDeclinedEmail do
     {:ok, email_data}
   end
 
-  defp build_email_body(team) do
+  defp build_email_body(organization) do
     """
     <p>Hello,</p>
-    <p>You have declined the invitation to join the <strong>#{team}</strong> team.</p>
-    <p>If this was a mistake, please contact the team administrator.</p>
+    <p>You have declined the invitation to join the <strong>#{organization}</strong> organization.</p>
+    <p>If this was a mistake, please contact the organization administrator.</p>
     """
   end
 

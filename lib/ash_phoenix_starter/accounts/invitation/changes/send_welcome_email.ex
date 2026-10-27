@@ -35,7 +35,7 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendWelcomeEmail do
 
   ## Parameters
     - _changeset: The Ash changeset (unused, kept for hook compatibility)
-    - invitation: The invitation struct containing email, token, and team
+    - invitation: The invitation struct containing email, token, and organization
 
   ## Returns
     - {:ok, invitation} on successful email scheduling
@@ -51,15 +51,15 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendWelcomeEmail do
     end
   end
 
-  defp build_email_data(%{email: email, token: token, team: team}) do
-    message = build_email_body(email, token, team)
+  defp build_email_data(%{email: email, token: token, organization: organization}) do
+    message = build_email_body(email, token, organization)
 
     email_data = %{
       id: token,
       params: %{
         html_message: message,
         text_message: message,
-        subject: "Welcome to #{team}!",
+        subject: "Welcome to #{organization}!",
         from: nil,
         to: email
       }
@@ -68,15 +68,15 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendWelcomeEmail do
     {:ok, email_data}
   end
 
-  defp build_email_body(email, token, team) do
+  defp build_email_body(email, token, organization) do
     sign_in_url = url(~p"/auth/user/magic_link/?token=#{token}")
 
     """
     <p>Hello, #{email}!</p>
-    <p>Welcome to the <strong>#{team}</strong> team!</p>
+    <p>Welcome to the <strong>#{organization}</strong> organization!</p>
     <p>Please click the link below to sign in and get started:</p>
     <p><a href="#{sign_in_url}">Sign In</a></p>
-    <p>If you have any issues, please contact the team administrator.</p>
+    <p>If you have any issues, please contact the organization administrator.</p>
     """
   end
 

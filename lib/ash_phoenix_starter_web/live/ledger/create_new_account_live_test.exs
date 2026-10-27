@@ -2,7 +2,7 @@ defmodule AshPhoenixStarterWeb.Ledger.CreateNewAccountLiveTest do
   use AshPhoenixStarterWeb.ConnCase
 
   describe "Create new Ledger Account" do
-    test "Create User Team", %{conn: conn} do
+    test "Create User Organization", %{conn: conn} do
       user = create_user()
 
       {:ok, view, html} =

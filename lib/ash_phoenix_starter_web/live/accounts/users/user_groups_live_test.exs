@@ -5,7 +5,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLiveTest do
     Ash.Seed.seed!(
       AshPhoenixStarter.Accounts.Group,
       %{name: "Group 1", description: "Test"},
-      tenant: actor.current_team
+      tenant: actor.current_organization
     )
   end
 

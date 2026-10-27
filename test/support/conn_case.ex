@@ -57,8 +57,8 @@ defmodule AshPhoenixStarterWeb.ConnCase do
   end
 
   def create_user() do
-    # Create a user and the person team automatically.
-    # The person team will be the tenant for the query
+    # Create a user and the person organization automatically.
+    # The person organization will be the tenant for the query
 
     case Ash.read_first(AshPhoenixStarter.Accounts.User, authorize?: false) do
       {:ok, nil} ->
@@ -103,12 +103,12 @@ defmodule AshPhoenixStarterWeb.ConnCase do
 
     group_attrs = [
       %{name: "Accountant", description: "Finance accountant"},
-      %{name: "Manager", description: "Team manager"},
+      %{name: "Manager", description: "Organization manager"},
       %{name: "Developer", description: "Software developer"},
       %{name: "Admin", description: "System administrator"},
       %{name: "HR", description: "Human resources specialist"}
     ]
 
-    Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: actor.current_team)
+    Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: actor.current_organization)
   end
 end

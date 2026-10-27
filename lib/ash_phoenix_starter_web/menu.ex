@@ -69,9 +69,9 @@ defmodule AshPhoenixStarterWeb.Menu do
           #   text: gettext("General")
           # },
           %{
-            href: "/accounts/teams",
+            href: "/accounts/organizations",
             icon: "hero-building-library",
-            text: gettext("Teams")
+            text: gettext("Organizations")
           },
           %{
             href: "/accounts/users",
@@ -124,9 +124,9 @@ defmodule AshPhoenixStarterWeb.Menu do
           #   text: gettext("General")
           # },
           %{
-            href: "/accounts/teams",
+            href: "/accounts/organizations",
             icon: "hero-building-library",
-            text: gettext("Teams")
+            text: gettext("Organizations")
           },
           %{
             href: "/accounts/users",

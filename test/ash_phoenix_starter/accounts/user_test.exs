@@ -3,7 +3,7 @@ defmodule AshPhoenixStarter.Accounts.UserTest do
   require Ash.Query
 
   describe "User tests:" do
-    test "User creation - creates personal team automatically" do
+    test "User creation - creates personal organization automatically" do
       # Create a new user
       user_params = %{
         email: "john.tester@example.com",
@@ -19,16 +19,16 @@ defmodule AshPhoenixStarter.Accounts.UserTest do
           authorize?: false
         )
 
-      # Confirm that the new user has a personal team created for them automatically
+      # Confirm that the new user has a personal organization created for them automatically
       refute AshPhoenixStarter.Accounts.User
              |> Ash.Query.filter(id == ^user.id)
              |> Ash.Query.load(:groups)
              |> Ash.Query.filter(email == ^user_params.email)
-             |> Ash.Query.filter(is_nil(current_team))
+             |> Ash.Query.filter(is_nil(current_organization))
              |> Ash.exists?(actor: user, authorize?: false)
     end
 
-    test "User can be invited and be added to the team" do
+    test "User can be invited and be added to the organization" do
       user = create_user()
 
       {:ok, invited_user} =
@@ -38,11 +38,11 @@ defmodule AshPhoenixStarter.Accounts.UserTest do
           action: :invite,
           actor: user,
           authorize?: false,
-          load: :teams
+          load: :organizations
         )
 
-      assert invited_user.current_team == user.current_team
-      assert Enum.count(invited_user.teams) == 1
+      assert invited_user.current_organization == user.current_organization
+      assert Enum.count(invited_user.organizations) == 1
     end
   end
 end

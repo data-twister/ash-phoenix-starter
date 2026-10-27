@@ -1,4 +1,4 @@
-defmodule AshPhoenixStarter.Accounts.Team.Changes.AddTeamOwner do
+defmodule AshPhoenixStarter.Accounts.Organization.Changes.AddOrganizationOwner do
   use Ash.Resource.Change
 
   @impl Ash.Resource.Change

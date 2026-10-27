@@ -165,16 +165,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "user_impersonations_team_id_fkey",
+        "name": "user_impersonations_organization_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "teams"
+        "table": "organizations"
       },
       "scale": null,
       "size": null,
-      "source": "team_id",
+      "source": "organization_id",
       "type": "uuid"
     }
   ],

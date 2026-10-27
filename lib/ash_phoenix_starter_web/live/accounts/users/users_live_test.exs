@@ -3,7 +3,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UsersLiveTest do
   import Phoenix.LiveViewTest
 
   describe "Users live test" do
-    test "List team users", %{conn: conn} do
+    test "List organization users", %{conn: conn} do
       user = create_user()
 
       {:ok, users_live, html} =

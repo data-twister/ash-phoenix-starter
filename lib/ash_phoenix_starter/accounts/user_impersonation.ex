@@ -82,9 +82,9 @@ defmodule AshPhoenixStarter.Accounts.UserImpersonation do
       description "The user who is being impersonated."
     end
 
-    belongs_to :team, AshPhoenixStarter.Accounts.Team do
-      source_attribute :team_domain
-      description "The team of the user who is being impersonated"
+    belongs_to :organization, AshPhoenixStarter.Accounts.Organization do
+      source_attribute :organization_domain
+      description "The organization of the user who is being impersonated"
     end
   end
 end

@@ -26,7 +26,7 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
 
   def can(actor, module, action) when is_atom(action) do
     cond do
-      is_current_team_owner?(actor) -> true
+      is_current_organization_owner?(actor) -> true
       true -> check_database_permissions(actor, module, action)
     end
   end
@@ -35,11 +35,11 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
     can(actor, module, String.to_existing_atom(action))
   end
 
-  # Confirms if the actor is the owner of the current team
-  defp is_current_team_owner?(actor) do
-    AshPhoenixStarter.Accounts.Team
+  # Confirms if the actor is the owner of the current organization
+  defp is_current_organization_owner?(actor) do
+    AshPhoenixStarter.Accounts.Organization
     |> Ash.Query.filter(owner_user_id == ^actor.id)
-    |> Ash.Query.filter(domain == ^actor.current_team)
+    |> Ash.Query.filter(domain == ^actor.current_organization)
     |> Ash.exists?()
   end
 
@@ -51,6 +51,6 @@ defmodule AshPhoenixStarter.Accounts.Checks.Authorize do
     |> Ash.Query.filter(user_id == ^actor.id)
     |> Ash.Query.filter(group.permissions.action == ^action_name)
     |> Ash.Query.filter(group.permissions.resource == ^short_name)
-    |> Ash.exists?(tenant: actor.current_team, authorize?: false)
+    |> Ash.exists?(tenant: actor.current_organization, authorize?: false)
   end
 end

@@ -32,7 +32,7 @@ defmodule AshPhoenixStarter.Repo do
   """
   @impl AshPostgres.Repo
   def all_tenants do
-    AshPhoenixStarter.Accounts.Team
+    AshPhoenixStarter.Accounts.Organization
     |> Ash.read!()
     |> Enum.map(& &1.domain)
   end

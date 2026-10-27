@@ -19,7 +19,7 @@ defmodule AshPhoenixStarterWeb.Ledger.ChartOfAccountsLiveTest do
   describe "Chart of Accounts" do
     test "It should list accounts in chart of accounts", %{conn: conn} do
       user = create_user()
-      accounts = create_accounts(user.current_team)
+      accounts = create_accounts(user.current_organization)
 
       {:ok, view, html} =
         conn

@@ -1,4 +1,4 @@
-defmodule AshPhoenixStarter.Accounts.User.Validations.ValidateNewToTeam do
+defmodule AshPhoenixStarter.Accounts.User.Validations.ValidateNewToOrganization do
   use Ash.Resource.Validation
 
   @impl Ash.Resource.Validation
@@ -7,7 +7,7 @@ defmodule AshPhoenixStarter.Accounts.User.Validations.ValidateNewToTeam do
   @impl Ash.Resource.Validation
   def validate(changeset, _opts, context) do
     if Map.has_key?(changeset.attributes, :email) do
-      if user_new_to_team?(changeset, context) do
+      if user_new_to_organization?(changeset, context) do
         :ok
       else
         {:error, field: :email, message: "User exists"}
@@ -20,10 +20,10 @@ defmodule AshPhoenixStarter.Accounts.User.Validations.ValidateNewToTeam do
   @impl Ash.Resource.Validation
   def atomic(changeset, opts, context), do: validate(changeset, opts, context)
 
-  defp user_new_to_team?(changeset, context) do
+  defp user_new_to_organization?(changeset, context) do
     AshPhoenixStarter.Accounts.User
     |> Ash.Query.filter(email == ^changeset.attributes.email)
-    |> Ash.Query.filter(teams.domain == ^context.actor.current_team)
+    |> Ash.Query.filter(organizations.domain == ^context.actor.current_organization)
     |> Ash.exists?(authorize?: false) == false
   end
 end

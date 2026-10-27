@@ -1,4 +1,4 @@
-defmodule AshPhoenixStarter.Accounts.Team do
+defmodule AshPhoenixStarter.Accounts.Organization do
   require Ash.Resource.Change.Builtins
 
   use Ash.Resource,
@@ -21,7 +21,7 @@ defmodule AshPhoenixStarter.Accounts.Team do
   end
 
   postgres do
-    table "teams"
+    table "organizations"
     repo AshPhoenixStarter.Repo
 
     manage_tenant do
@@ -37,16 +37,16 @@ defmodule AshPhoenixStarter.Accounts.Team do
 
     create :create do
       primary? true
-      change AshPhoenixStarter.Accounts.Team.Changes.AddUserTeam
-      change AshPhoenixStarter.Accounts.Team.Changes.AddTeamOwner
-      change AshPhoenixStarter.Accounts.Team.Changes.SwitchActorTeam
+      change AshPhoenixStarter.Accounts.Organization.Changes.AddUserOrganization
+      change AshPhoenixStarter.Accounts.Organization.Changes.AddOrganizationOwner
+      change AshPhoenixStarter.Accounts.Organization.Changes.SwitchActorOrganization
     end
 
     read :by_domain do
       get? true
       argument :domain, :string
       filter expr(domain == ^arg(:domain))
-      description "Get team details by its domain"
+      description "Get organization details by its domain"
     end
   end
 
@@ -56,20 +56,20 @@ defmodule AshPhoenixStarter.Accounts.Team do
     attribute :name, :string do
       allow_nil? false
       public? true
-      description "Team or organisation name"
+      description "Organization or organisation name"
     end
 
     attribute :domain, :string do
       allow_nil? false
       public? true
-      description "Domain name of the team or organisation"
+      description "Domain name of the organization or organisation"
     end
 
     attribute :active, :boolean do
       allow_nil? false
       default true
       public? true
-      description "Team Active?"
+      description "Organization Active?"
     end
 
     attribute :description, :string, allow_nil?: true, public?: true
@@ -83,15 +83,15 @@ defmodule AshPhoenixStarter.Accounts.Team do
     end
 
     many_to_many :users, AshPhoenixStarter.Accounts.User do
-      through AshPhoenixStarter.Accounts.UserTeam
-      source_attribute_on_join_resource :team_id
+      through AshPhoenixStarter.Accounts.UserOrganization
+      source_attribute_on_join_resource :organization_id
       destination_attribute_on_join_resource :user_id
     end
   end
 
   identities do
     identity :unique_domain, [:domain] do
-      description "Identity to find a team by its domain"
+      description "Identity to find a organization by its domain"
     end
   end
 end

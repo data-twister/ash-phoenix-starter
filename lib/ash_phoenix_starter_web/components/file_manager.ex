@@ -23,20 +23,20 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
 
   @impl true
   def update(assigns, socket) do
-    team_id = assigns.current_user.team.id
+    organization_id = assigns.current_user.organization.id
 
     socket =
-      if socket.assigns[:team_id] != team_id do
+      if socket.assigns[:organization_id] != organization_id do
         existing_files =
           FileAsset
           |> Ash.Query.for_read(:read)
-          |> filter(team_id == ^team_id)
+          |> filter(organization_id == ^organization_id)
           |> sort(inserted_at: :desc)
           |> limit(100)
           |> Ash.read!()
 
         socket
-        |> assign(:team_id, team_id)
+        |> assign(:organization_id, organization_id)
         |> assign(:file_library, existing_files)
         |> assign(:has_more, length(existing_files) == 100)
       else
@@ -59,13 +59,13 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
     if not socket.assigns.has_more do
       {:noreply, socket}
     else
-      team_id = socket.assigns.team_id
+      organization_id = socket.assigns.organization_id
       new_offset = socket.assigns.offset + 100
 
       more_files =
         FileAsset
         |> Ash.Query.for_read(:read)
-        |> filter(team_id == ^team_id)
+        |> filter(organization_id == ^organization_id)
         |> sort(inserted_at: :desc)
         |> offset(new_offset)
         |> limit(100)
@@ -84,11 +84,11 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
 
   @impl true
   def handle_event("save_uploads", _params, socket) do
-    team_id = socket.assigns.team_id
+    organization_id = socket.assigns.organization_id
 
     results =
       consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
-        scope = %{team_id: team_id}
+        scope = %{organization_id: organization_id}
         file_input = %{filename: entry.client_name, path: path}
 
         case ImageUploader.store({file_input, scope}) do
@@ -102,7 +102,7 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
                 file_url: url,
                 file_size: entry.client_size,
                 content_type: entry.client_type,
-                team_id: team_id
+                organization_id: organization_id
               })
               |> Ash.create!()
 

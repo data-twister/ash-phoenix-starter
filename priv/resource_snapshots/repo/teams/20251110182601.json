@@ -91,7 +91,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "teams_owner_user_id_fkey",
+        "name": "organizations_owner_user_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -114,7 +114,7 @@
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "teams_unique_domain_index",
+      "index_name": "organizations_unique_domain_index",
       "keys": [
         {
           "type": "atom",
@@ -133,5 +133,5 @@
   },
   "repo": "Elixir.ash_phoenix_starter.Repo",
   "schema": null,
-  "table": "teams"
+  "table": "organizations"
 }

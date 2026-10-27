@@ -99,7 +99,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
 
     AshPhoenixStarter.Accounts.UserGroup
     |> Ash.Changeset.for_create(:sync, %{user_groups: user_groups})
-    |> Ash.create(actor: current_user, tenant: current_user.current_team)
+    |> Ash.create(actor: current_user, tenant: current_user.current_organization)
   end
 
   defp assign_groups(%{assigns: %{current_user: current_user}} = socket) do
@@ -114,12 +114,12 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
     Ash.get!(AshPhoenixStarter.Accounts.User, user_id,
       authorize?: false,
       load: :groups,
-      tenant: current_user.current_team
+      tenant: current_user.current_organization
     )
   end
 
   defp get_groups(current_user) do
-    {:ok, groups} = Ash.read(AshPhoenixStarter.Accounts.Group, tenant: current_user.current_team)
+    {:ok, groups} = Ash.read(AshPhoenixStarter.Accounts.Group, tenant: current_user.current_organization)
     groups
   end
 

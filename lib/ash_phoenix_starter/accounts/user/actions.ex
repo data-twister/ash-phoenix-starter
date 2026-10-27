@@ -24,7 +24,7 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
 
     read :admin_read do
       description "List users as admin"
-      filter expr(teams.domain == ^actor(:current_team))
+      filter expr(organizations.domain == ^actor(:current_organization))
     end
 
     update :change_password do
@@ -104,7 +104,7 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
     create :register_with_password do
       description "Register a new user with a email and password."
 
-      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalOrganizationNotification]
 
       argument :email, :ci_string do
         allow_nil? false
@@ -200,13 +200,13 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
 
     create :create do
       primary? true
-      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalOrganizationNotification]
     end
 
     create :sign_in_with_magic_link do
       description "Sign in or register a user with magic link."
 
-      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalOrganizationNotification]
 
       argument :token, :string do
         description "The token from the magic link that was sent to the user"
@@ -233,33 +233,33 @@ defmodule AshPhoenixStarter.Accounts.User.Actions do
       run AshAuthentication.Strategy.MagicLink.Request
     end
 
-    update :set_current_team do
-      description "Set user's current team"
+    update :set_current_organization do
+      description "Set user's current organization"
 
-      argument :team, :string do
+      argument :organization, :string do
         allow_nil? false
         sensitive? false
       end
 
-      change set_attribute(:current_team, arg(:team))
+      change set_attribute(:current_organization, arg(:organization))
     end
 
-    update :switch_team_to do
-      description "Swith user team to the new one"
-      argument :team, :string
-      validate AshPhoenixStarter.Accounts.User.Validations.ValidateBelongsToTeam
-      change set_attribute(:current_team, arg(:team))
+    update :switch_organization_to do
+      description "Swith user organization to the new one"
+      argument :organization, :string
+      validate AshPhoenixStarter.Accounts.User.Validations.ValidateBelongsToOrganization
+      change set_attribute(:current_organization, arg(:organization))
     end
 
     create :invite do
-      description "Invite a new user to the team"
+      description "Invite a new user to the organization"
       accept [:email]
 
-      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalTeamNotification]
+      notifiers [AshPhoenixStarter.Accounts.User.Notifiers.CreatePersonalOrganizationNotification]
 
-      validate AshPhoenixStarter.Accounts.User.Validations.ValidateNewToTeam
+      validate AshPhoenixStarter.Accounts.User.Validations.ValidateNewToOrganization
       manual AshPhoenixStarter.Accounts.User.Actions.CreateUserIfNotExists
-      change AshPhoenixStarter.Accounts.User.Changes.AddToTeam
+      change AshPhoenixStarter.Accounts.User.Changes.AddToOrganization
     end
 
     action :force_sign_in, :map do

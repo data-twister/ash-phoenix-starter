@@ -8,8 +8,8 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UsersLive do
     <Layouts.account_users flash={@flash} current_user={@current_user} uri={@uri}>
       <Cinder.Table.table query={get_query(@current_user)}>
         <:col :let={user} field="email" filter sort>{user.email}</:col>
-        <:col :let={user} field="current_team" search>
-          {Phoenix.Naming.humanize(user.current_team)}
+        <:col :let={user} field="current_organization" search>
+          {Phoenix.Naming.humanize(user.current_organization)}
         </:col>
         <:col :let={user}>
           <.button phx-click={JS.patch("/accounts/users/#{user.id}/groups")}>

@@ -14,9 +14,9 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    tenant = socket.assigns[:current_user].team.domain
+    tenant = socket.assigns[:current_user].organization.domain
     total_users = Ash.count!(AshPhoenixStarter.Accounts.User, authorize?: false)
-    total_teams = Ash.count!(AshPhoenixStarter.Accounts.Team, authorize?: false)
+    total_organizations = Ash.count!(AshPhoenixStarter.Accounts.Organization, authorize?: false)
 
     supported_countries = [
       {"United States", "us"},
@@ -51,8 +51,8 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
           %{"type" => "FeatureCollection", "features" => []}
       end
 
-    active_teams =
-      AshPhoenixStarter.Accounts.Team
+    active_organizations =
+      AshPhoenixStarter.Accounts.Organization
       |> Ash.Query.filter(active == true)
       |> Ash.count!(authorize?: false)
 
@@ -88,8 +88,8 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:page_name, "Dashboard")
       |> assign(:total_users, total_users)
       |> assign(:active_users, Enum.count(list_online_users()))
-      |> assign(:total_teams, total_teams)
-      |> assign(:active_teams, active_teams)
+      |> assign(:total_organizations, total_organizations)
+      |> assign(:active_organizations, active_organizations)
       |> assign(:transactions_today, "\$72,000")
       |> assign(:transactions_processed, "500")
       |> assign(:map_data, initial_map)
@@ -134,10 +134,10 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         </div>
 
         <div class="bg-primary text-primary-content rounded-box p-6">
-          <div class="stat-title text-lg text-base-200">Total Teams</div>
-          <div class="stat-value">{@total_teams}</div>
+          <div class="stat-title text-lg text-base-200">Total Organizations</div>
+          <div class="stat-value">{@total_organizations}</div>
           <div class="stat-desc text-base-100">Active Tenants</div>
-          <div class="text-xs">{@active_teams}</div>
+          <div class="text-xs">{@active_organizations}</div>
         </div>
 
         <div class="bg-base-300 text-primary-content border border-lg border-primary rounded-box p-6">
@@ -181,7 +181,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
 
   @impl true
   def handle_event("select_country", %{"country_code" => country_code}, socket) do
-    tenant = socket.assigns[:current_user].team.domain
+    tenant = socket.assigns[:current_user].organization.domain
 
     {:ok, live_metrics} = Product.get_live_metrics_for_country(country_code, tenant: tenant)
 
@@ -206,7 +206,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
         %Phoenix.Socket.Broadcast{topic: "products", event: "updated", payload: %{data: product}},
         socket
       ) do
-    tenant = socket.assigns[:current_user].team.domain
+    tenant = socket.assigns[:current_user].organization.domain
 
     # Pre-load the merchant onto the notification payload to check its territory coordinates
     product = Ash.load!(product, [:merchant], tenant: tenant)

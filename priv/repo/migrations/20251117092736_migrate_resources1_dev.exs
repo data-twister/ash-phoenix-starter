@@ -9,16 +9,16 @@ defmodule AshPhoenixStarter.Repo.Migrations.MigrateResources1 do
 
   def up do
     alter table(:user_impersonations) do
-      remove :team_id
+      remove :organization_id
       remove :end_timestamp
       remove :start_timestamp
       add :started_at, :utc_datetime, null: false
       add :ended_at, :utc_datetime
 
-      add :team_domain,
-          references(:teams,
+      add :organization_domain,
+          references(:organizations,
             column: :id,
-            name: "user_impersonations_team_domain_fkey",
+            name: "user_impersonations_organization_domain_fkey",
             type: :uuid,
             prefix: "public"
           )
@@ -26,19 +26,19 @@ defmodule AshPhoenixStarter.Repo.Migrations.MigrateResources1 do
   end
 
   def down do
-    drop constraint(:user_impersonations, "user_impersonations_team_domain_fkey")
+    drop constraint(:user_impersonations, "user_impersonations_organization_domain_fkey")
 
     alter table(:user_impersonations) do
-      remove :team_domain
+      remove :organization_domain
       remove :ended_at
       remove :started_at
       add :start_timestamp, :utc_datetime, null: false
       add :end_timestamp, :utc_datetime
 
-      add :team_id,
-          references(:teams,
+      add :organization_id,
+          references(:organizations,
             column: :id,
-            name: "user_impersonations_team_id_fkey",
+            name: "user_impersonations_organization_id_fkey",
             type: :uuid,
             prefix: "public"
           )

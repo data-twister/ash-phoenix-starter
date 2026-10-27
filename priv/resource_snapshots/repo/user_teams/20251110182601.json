@@ -55,7 +55,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "user_teams_user_id_fkey",
+        "name": "user_organizations_user_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
@@ -86,16 +86,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "user_teams_team_id_fkey",
+        "name": "user_organizations_organization_id_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": true,
         "schema": "public",
-        "table": "teams"
+        "table": "organizations"
       },
       "scale": null,
       "size": null,
-      "source": "team_id",
+      "source": "organization_id",
       "type": "uuid"
     }
   ],
@@ -109,7 +109,7 @@
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "user_teams_unique_user_team_index",
+      "index_name": "user_organizations_unique_user_organization_index",
       "keys": [
         {
           "type": "atom",
@@ -117,10 +117,10 @@
         },
         {
           "type": "atom",
-          "value": "team_id"
+          "value": "organization_id"
         }
       ],
-      "name": "unique_user_team",
+      "name": "unique_user_organization",
       "nils_distinct?": true,
       "where": null
     }
@@ -132,5 +132,5 @@
   },
   "repo": "Elixir.ash_phoenix_starter.Repo",
   "schema": null,
-  "table": "user_teams"
+  "table": "user_organizations"
 }

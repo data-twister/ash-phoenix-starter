@@ -272,11 +272,11 @@ defmodule AshPhoenixStarterWeb.Layouts do
   slot :inner_block, required: true
   attr :uri, URI, default: %URI{}
 
-  def account_teams(assigns) do
+  def account_organizations(assigns) do
     ~H"""
     <.app flash={@flash} current_user={@current_user} uri={@uri}>
-      <.button variant="primary" phx-click={JS.patch("/accounts/teams/new")}>
-        {gettext("New Team")}
+      <.button variant="primary" phx-click={JS.patch("/accounts/organizations/new")}>
+        {gettext("New Organization")}
       </.button>
       {render_slot(@inner_block)}
     </.app>
@@ -363,8 +363,8 @@ defmodule AshPhoenixStarterWeb.Layouts do
     """
   end
 
-  defp app_name(%{team: nil}), do: "Social Fund"
-  defp app_name(%{team: %{name: name}}), do: Phoenix.Naming.humanize(name)
+  defp app_name(%{organization: nil}), do: "Social Fund"
+  defp app_name(%{organization: %{name: name}}), do: Phoenix.Naming.humanize(name)
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
   # skeleton of your application, namely HTML headers

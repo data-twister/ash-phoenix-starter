@@ -67,16 +67,16 @@
           "global": null,
           "strategy": null
         },
-        "name": "users_current_team_fkey",
+        "name": "users_current_organization_fkey",
         "on_delete": null,
         "on_update": null,
         "primary_key?": false,
         "schema": "public",
-        "table": "teams"
+        "table": "organizations"
       },
       "scale": null,
       "size": null,
-      "source": "current_team",
+      "source": "current_organization",
       "type": "text"
     },
     {

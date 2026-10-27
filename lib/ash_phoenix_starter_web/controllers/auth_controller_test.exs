@@ -10,7 +10,7 @@ defmodule AshPhoenixStarterWeb.Controllers.AuthControllerTest do
       # Ensure the user is in the super_users list to allow impersonation
       Application.put_env(:ash_phoenix_starter, :super_users, [to_string(current_user.email)])
 
-      {:ok, team_member} =
+      {:ok, organization_member} =
         Ash.create(User, %{email: "John@example.com"},
           action: :invite,
           actor: current_user,
@@ -18,7 +18,7 @@ defmodule AshPhoenixStarterWeb.Controllers.AuthControllerTest do
         )
 
       # Attempt impersonation
-      impersonated_conn = get(super_user_conn, ~p"/accounts/users/impersonate/#{team_member.id}")
+      impersonated_conn = get(super_user_conn, ~p"/accounts/users/impersonate/#{organization_member.id}")
 
       refute impersonated_conn.private.plug_session["user_token"] ==
                super_user_conn.private.plug_session["user_token"]
@@ -28,7 +28,7 @@ defmodule AshPhoenixStarterWeb.Controllers.AuthControllerTest do
       current_user = create_user()
       super_user_conn = login(conn, current_user)
 
-      {:ok, team_member} =
+      {:ok, organization_member} =
         Ash.create(User, %{email: "John@example.com"},
           action: :invite,
           actor: current_user,
@@ -36,7 +36,7 @@ defmodule AshPhoenixStarterWeb.Controllers.AuthControllerTest do
         )
 
       # Attempt impersonation
-      impersonated_conn = get(super_user_conn, ~p"/accounts/users/impersonate/#{team_member.id}")
+      impersonated_conn = get(super_user_conn, ~p"/accounts/users/impersonate/#{organization_member.id}")
 
       # TODO: Retrieve user by token
       assert impersonated_conn.private.plug_session["user_token"] ==

@@ -22,7 +22,7 @@ defmodule AshPhoenixStarter.Accounts.Invitation do
       description """
       This action assumes that inserting new data == inviting a new users. It will then:
       1. Generate a unique token for the invitation and add it to the changeset
-      2. Set new invitation attributes such as:  expires_at, team, etc.
+      2. Set new invitation attributes such as:  expires_at, organization, etc.
       3. Sends an invitation to the newly invited user via email
       """
 
@@ -41,9 +41,9 @@ defmodule AshPhoenixStarter.Accounts.Invitation do
     update :accept do
       description """
       When an invitee accepts invitation, this action will be called:
-      1. Add invitee to the team based on the invitation data
+      1. Add invitee to the organization based on the invitation data
       2. Add invitee to the permission group based on the invitation data
-      3. Send invitee a welcome email to the newly added user to the team
+      3. Send invitee a welcome email to the newly added user to the organization
       """
 
       accept []
@@ -51,7 +51,7 @@ defmodule AshPhoenixStarter.Accounts.Invitation do
       validate AshPhoenixStarter.Accounts.Invitation.Validations.EnsurePendingStatus
 
       change atomic_update(:status, :accepted)
-      change AshPhoenixStarter.Accounts.Invitation.Changes.AddUserToTeam
+      change AshPhoenixStarter.Accounts.Invitation.Changes.AddUserToOrganization
       change AshPhoenixStarter.Accounts.Invitation.Changes.SendWelcomeEmail
     end
 
@@ -75,14 +75,14 @@ defmodule AshPhoenixStarter.Accounts.Invitation do
   pub_sub do
     module AshPhoenixStarterWeb.Endpoint
     prefix "invitations"
-    publish_all :update, [[:id, :team, nil]]
-    publish_all :create, [[:id, :team, nil]]
-    publish_all :destroy, [[:id, :team, nil]]
+    publish_all :update, [[:id, :organization, nil]]
+    publish_all :create, [[:id, :organization, nil]]
+    publish_all :destroy, [[:id, :organization, nil]]
   end
 
   preparations do
     prepare AshPhoenixStarter.Preparations.SetTenant
-    prepare AshPhoenixStarter.Accounts.Invitation.Preparations.ForCurrentTeam
+    prepare AshPhoenixStarter.Accounts.Invitation.Preparations.ForCurrentOrganization
   end
 
   changes do
@@ -115,9 +115,9 @@ defmodule AshPhoenixStarter.Accounts.Invitation do
       description "The token in the URL to identify this invitation"
     end
 
-    attribute :team, :string do
+    attribute :organization, :string do
       allow_nil? false
-      description "The team the user will be added to after accepting invitation"
+      description "The organization the user will be added to after accepting invitation"
     end
 
     attribute :expires_at, :utc_datetime do

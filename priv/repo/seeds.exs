@@ -1,6 +1,6 @@
 alias Ash.Generator
 alias AshPhoenixStarter.Generators.User
-alias AshPhoenixStarter.Generators.Team
+alias AshPhoenixStarter.Generators.Organization
 
 super_user =
   List.first(Application.get_env(:ash_phoenix_starter, :super_users)) || "admin@example.com"
@@ -19,8 +19,8 @@ admin_user =
   )
   |> Ash.Generator.generate()
 
-team =
-  AshPhoenixStarter.Accounts.Team
+organization =
+  AshPhoenixStarter.Accounts.Organization
   |> Ash.Changeset.for_create(
     :create,
     %{
@@ -39,11 +39,11 @@ group_attrs = [
   %{name: "Tenant", description: "Tenant"}
 ]
 
-groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: team.domain)
+groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
 
 user_groups = Enum.map(groups, fn x -> %{user_id: admin_user.id, group_id: x.id} end)
 
-AshPhoenixStarter.Utils.sync_user_groups_for_seed(user_groups, team.domain)
+AshPhoenixStarter.Utils.sync_user_groups_for_seed(user_groups, organization.domain)
 
 IO.puts("Successfully created admin user: #{admin_user.username} (#{admin_user.email})")
 
@@ -52,8 +52,8 @@ users = Generator.generate_many(User.user(), 3)
 Enum.each(users, fn u ->
   local_part = u.email |> String.split("@") |> hd()
 
-  team =
-    AshPhoenixStarter.Accounts.Team
+  organization =
+    AshPhoenixStarter.Accounts.Organization
     |> Ash.Changeset.for_create(
       :create,
       %{
@@ -65,11 +65,11 @@ Enum.each(users, fn u ->
     )
     |> Ash.create!()
 
-  groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: team.domain)
+  groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
 
   user_groups = Enum.map(groups, fn x -> %{user_id: u.id, group_id: x.id} end)
 
-  AshPhoenixStarter.Utils.sync_user_groups_for_seed(user_groups, team.domain)
+  AshPhoenixStarter.Utils.sync_user_groups_for_seed(user_groups, organization.domain)
 end)
 
 AshPhoenixStarter.SelfCertGenerator.generate_self_signed()

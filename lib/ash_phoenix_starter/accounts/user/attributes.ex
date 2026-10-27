@@ -15,8 +15,8 @@ defmodule AshPhoenixStarter.Accounts.User.Attributes do
 
     attribute :confirmed_at, :utc_datetime_usec
 
-    attribute :current_team, :string do
-      description "Current team of the user"
+    attribute :current_organization, :string do
+      description "Current organization of the user"
       allow_nil? true
     end
 

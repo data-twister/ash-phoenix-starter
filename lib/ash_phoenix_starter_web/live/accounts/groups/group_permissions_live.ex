@@ -131,7 +131,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLive do
 
     AshPhoenixStarter.Accounts.GroupPermission
     |> Ash.Changeset.for_create(:sync, %{permissions: permission_attributes})
-    |> Ash.create(actor: current_user, tenant: current_user.current_team)
+    |> Ash.create(actor: current_user, tenant: current_user.current_organization)
   end
 
   defp assign_group_permission_form(socket) do

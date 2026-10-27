@@ -5,7 +5,7 @@ defmodule AshPhoenixStarter.Settings.TenantConfiguration do
 
   `TenantConfiguration` acts as the persistent storage layer for tenant-specific
   overrides (such as custom CDN domains, branding, or operational rules) while leveraging
-  attribute-based multi-tenancy (`team_id`) for strict data isolation.
+  attribute-based multi-tenancy (`organization_id`) for strict data isolation.
   """
 
   use Ash.Resource,
@@ -80,7 +80,7 @@ defmodule AshPhoenixStarter.Settings.TenantConfiguration do
   end
 
   identities do
-    # Ensures keys are unique *per tenant* (via team_id context/multitenancy scoping)
+    # Ensures keys are unique *per tenant* (via organization_id context/multitenancy scoping)
     identity :unique_tenant_key, [:key], message: "configuration keys must be unique per tenant"
   end
 end

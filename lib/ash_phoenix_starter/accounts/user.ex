@@ -94,10 +94,10 @@ defmodule AshPhoenixStarter.Accounts.User do
   end
 
   preparations do
-    prepare build(load: :team)
+    prepare build(load: :organization)
   end
 
   changes do
-    change AshPhoenixStarter.Accounts.User.Changes.CreatePersonTeam
+    change AshPhoenixStarter.Accounts.User.Changes.CreatePersonOrganization
   end
 end

@@ -39,10 +39,10 @@ defmodule AshPhoenixStarter.Repo.Migrations.AddUserImpersonationTable do
             prefix: "public"
           )
 
-      add :team_id,
-          references(:teams,
+      add :organization_id,
+          references(:organizations,
             column: :id,
-            name: "user_impersonations_team_id_fkey",
+            name: "user_impersonations_organization_id_fkey",
             type: :uuid,
             prefix: "public"
           )
@@ -54,7 +54,7 @@ defmodule AshPhoenixStarter.Repo.Migrations.AddUserImpersonationTable do
 
     drop constraint(:user_impersonations, "user_impersonations_impersonated_user_id_fkey")
 
-    drop constraint(:user_impersonations, "user_impersonations_team_id_fkey")
+    drop constraint(:user_impersonations, "user_impersonations_organization_id_fkey")
 
     drop table(:user_impersonations)
   end

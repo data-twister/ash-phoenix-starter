@@ -13,7 +13,7 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
       add :email, :citext, null: false
       add :hashed_password, :text
       add :confirmed_at, :utc_datetime_usec
-      add :current_team, :text
+      add :current_organization, :text
 
       add :inserted_at, :utc_datetime_usec,
         null: false,
@@ -24,7 +24,7 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
         default: fragment("(now() AT TIME ZONE 'utc')")
     end
 
-    create table(:user_teams, primary_key: false) do
+    create table(:user_organizations, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
 
       add :inserted_at, :utc_datetime_usec,
@@ -38,12 +38,12 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
       add :user_id,
           references(:users,
             column: :id,
-            name: "user_teams_user_id_fkey",
+            name: "user_organizations_user_id_fkey",
             type: :uuid,
             prefix: "public"
           )
 
-      add :team_id, :uuid
+      add :organization_id, :uuid
     end
 
     create table(:tokens, primary_key: false) do
@@ -62,25 +62,25 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
         default: fragment("(now() AT TIME ZONE 'utc')")
     end
 
-    create table(:teams, primary_key: false) do
+    create table(:organizations, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
     end
 
-    alter table(:user_teams) do
-      modify :team_id,
-             references(:teams,
+    alter table(:user_organizations) do
+      modify :organization_id,
+             references(:organizations,
                column: :id,
-               name: "user_teams_team_id_fkey",
+               name: "user_organizations_organization_id_fkey",
                type: :uuid,
                prefix: "public"
              )
     end
 
-    create unique_index(:user_teams, [:user_id, :team_id],
-             name: "user_teams_unique_user_team_index"
+    create unique_index(:user_organizations, [:user_id, :organization_id],
+             name: "user_organizations_unique_user_organization_index"
            )
 
-    alter table(:teams) do
+    alter table(:organizations) do
       add :name, :text, null: false
       add :domain, :text, null: false
       add :description, :text
@@ -96,19 +96,19 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
       add :owner_user_id,
           references(:users,
             column: :id,
-            name: "teams_owner_user_id_fkey",
+            name: "organizations_owner_user_id_fkey",
             type: :uuid,
             prefix: "public"
           )
     end
 
-    create unique_index(:teams, [:domain], name: "teams_unique_domain_index")
+    create unique_index(:organizations, [:domain], name: "organizations_unique_domain_index")
 
     alter table(:users) do
-      modify :current_team,
-             references(:teams,
+      modify :current_organization,
+             references(:organizations,
                column: :domain,
-               name: "users_current_team_fkey",
+               name: "users_current_organization_fkey",
                type: :text,
                prefix: "public"
              )
@@ -120,17 +120,17 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
   def down do
     drop_if_exists unique_index(:users, [:email], name: "users_unique_email_index")
 
-    drop constraint(:users, "users_current_team_fkey")
+    drop constraint(:users, "users_current_organization_fkey")
 
     alter table(:users) do
-      modify :current_team, :text
+      modify :current_organization, :text
     end
 
-    drop_if_exists unique_index(:teams, [:domain], name: "teams_unique_domain_index")
+    drop_if_exists unique_index(:organizations, [:domain], name: "organizations_unique_domain_index")
 
-    drop constraint(:teams, "teams_owner_user_id_fkey")
+    drop constraint(:organizations, "organizations_owner_user_id_fkey")
 
-    alter table(:teams) do
+    alter table(:organizations) do
       remove :owner_user_id
       remove :updated_at
       remove :inserted_at
@@ -139,23 +139,23 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
       remove :name
     end
 
-    drop_if_exists unique_index(:user_teams, [:user_id, :team_id],
-                     name: "user_teams_unique_user_team_index"
+    drop_if_exists unique_index(:user_organizations, [:user_id, :organization_id],
+                     name: "user_organizations_unique_user_organization_index"
                    )
 
-    drop constraint(:user_teams, "user_teams_team_id_fkey")
+    drop constraint(:user_organizations, "user_organizations_organization_id_fkey")
 
-    alter table(:user_teams) do
-      modify :team_id, :uuid
+    alter table(:user_organizations) do
+      modify :organization_id, :uuid
     end
 
-    drop table(:teams)
+    drop table(:organizations)
 
     drop table(:tokens)
 
-    drop constraint(:user_teams, "user_teams_user_id_fkey")
+    drop constraint(:user_organizations, "user_organizations_user_id_fkey")
 
-    drop table(:user_teams)
+    drop table(:user_organizations)
 
     drop table(:users)
   end

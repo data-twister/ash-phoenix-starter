@@ -17,9 +17,9 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SetInvitationAttributes 
 
     changeset
     |> Ash.Changeset.force_change_attribute(:expires_at, expires_at)
-    |> Ash.Changeset.force_change_attribute(:team, changeset.tenant)
+    |> Ash.Changeset.force_change_attribute(:organization, changeset.tenant)
     |> Ash.Changeset.force_change_attribute(:token, Ash.UUIDv7.generate())
-    |> Ash.Changeset.force_change_attribute(:team, context.actor.current_team)
+    |> Ash.Changeset.force_change_attribute(:organization, context.actor.current_organization)
     |> Ash.Changeset.force_change_attribute(:inviter_user_id, context.actor.id)
   end
 end

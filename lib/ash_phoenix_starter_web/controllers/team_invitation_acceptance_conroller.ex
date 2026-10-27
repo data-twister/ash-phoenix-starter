@@ -1,9 +1,9 @@
-# lib/AshPhoenixStarter_web/controllers/team_invitation_acceptance_controller.ex
-defmodule AshPhoenixStarterWeb.TeamInvitationAcceptanceController do
+# lib/AshPhoenixStarter_web/controllers/organization_invitation_acceptance_controller.ex
+defmodule AshPhoenixStarterWeb.OrganizationInvitationAcceptanceController do
   use AshPhoenixStarterWeb, :controller
 
   @doc """
-  Accepts a team invitation using a tenant and token, updating the invitation status.
+  Accepts a organization invitation using a tenant and token, updating the invitation status.
   Redirects to the homepage with appropriate flash messages based on the outcome.
   """
   def accept(conn, %{"tenant" => tenant, "token" => token}) do

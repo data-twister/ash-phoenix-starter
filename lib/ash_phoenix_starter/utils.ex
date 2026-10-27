@@ -52,7 +52,7 @@ defmodule AshPhoenixStarter.Utils do
     |> Timex.end_of_day()
   end
 
-  def sync_user_groups_for_seed(user_groups, team_domain) do
+  def sync_user_groups_for_seed(user_groups, organization_domain) do
     require Ash.Query
 
     # 1. Extract user_id to clean up existing records for that user within the tenant
@@ -60,8 +60,8 @@ defmodule AshPhoenixStarter.Utils do
       %{user_id: user_id} ->
         AshPhoenixStarter.Accounts.UserGroup
         |> Ash.Query.filter(user_id == ^user_id)
-        |> Ash.Query.set_tenant(team_domain)
-        |> Ash.bulk_destroy!(:destroy, %{}, tenant: team_domain, authorize?: false)
+        |> Ash.Query.set_tenant(organization_domain)
+        |> Ash.bulk_destroy!(:destroy, %{}, tenant: organization_domain, authorize?: false)
 
       _ ->
         :ok
@@ -69,7 +69,7 @@ defmodule AshPhoenixStarter.Utils do
 
     # 2. Seed new user group records directly
     Enum.map(user_groups, fn attrs ->
-      Ash.Seed.seed!(AshPhoenixStarter.Accounts.UserGroup, attrs, tenant: team_domain)
+      Ash.Seed.seed!(AshPhoenixStarter.Accounts.UserGroup, attrs, tenant: organization_domain)
     end)
   end
 end

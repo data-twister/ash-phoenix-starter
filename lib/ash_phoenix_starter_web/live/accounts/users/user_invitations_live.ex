@@ -20,7 +20,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive do
         {Phoenix.Naming.humanize(row.status)}
       </:col>
 
-      <:col :let={row} label="Team">{Phoenix.Naming.humanize(row.team)}</:col>
+      <:col :let={row} label="Organization">{Phoenix.Naming.humanize(row.organization)}</:col>
     </Cinder.Table.table>
     """
   end

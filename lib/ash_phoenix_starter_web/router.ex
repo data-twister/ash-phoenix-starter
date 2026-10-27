@@ -59,8 +59,8 @@ defmodule AshPhoenixStarterWeb.Router do
       live "/reports/graphs", Reports.GraphsLive
       live "/reports/summaries", Reports.SummariesLive
 
-      live "/accounts/teams", Accounts.Teams.TeamsLive
-      live "/accounts/teams/new", Accounts.Teams.CreateLive
+      live "/accounts/organizations", Accounts.Organizations.OrganizationsLive
+      live "/accounts/organizations/new", Accounts.Organizations.CreateLive
 
       live "/accounts/users", Accounts.Users.UsersLive
       live "/accounts/users/invite", Accounts.Users.InviteUserLive
@@ -94,11 +94,11 @@ defmodule AshPhoenixStarterWeb.Router do
 
     # invitations 
     get "/accounts/users/invitations/:tenant/:token/accept",
-        TeamInvitationAcceptanceController,
+        OrganizationInvitationAcceptanceController,
         :accept
 
     get "/accounts/users/invitations/:tenant/:token/reject",
-        TeamInvitationAcceptanceController,
+        OrganizationInvitationAcceptanceController,
         :reject
 
     # user Impersonations

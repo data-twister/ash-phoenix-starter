@@ -11,7 +11,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupsLiveTest do
       ]
 
       groups =
-        Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: user.current_team)
+        Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: user.current_organization)
 
       {:ok, groups_live, html} =
         conn

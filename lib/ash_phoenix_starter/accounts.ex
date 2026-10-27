@@ -6,8 +6,8 @@ defmodule AshPhoenixStarter.Accounts do
   resources do
     resource AshPhoenixStarter.Accounts.Token
     resource AshPhoenixStarter.Accounts.User
-    resource AshPhoenixStarter.Accounts.Team
-    resource AshPhoenixStarter.Accounts.UserTeam
+    resource AshPhoenixStarter.Accounts.Organization
+    resource AshPhoenixStarter.Accounts.UserOrganization
 
     resource AshPhoenixStarter.Accounts.Merchant
     resource AshPhoenixStarter.Accounts.Customer

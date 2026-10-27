@@ -17,7 +17,7 @@ defmodule AshPhoenixStarter.Core.FileAsset do
     defaults [:read, :destroy]
 
     create :create do
-      accept [:filename, :file_url, :file_size, :content_type, :team_id, :type]
+      accept [:filename, :file_url, :file_size, :content_type, :organization_id, :type]
     end
   end
 
@@ -27,7 +27,7 @@ defmodule AshPhoenixStarter.Core.FileAsset do
     attribute :file_url, :string, allow_nil?: false
     attribute :file_size, :integer
     attribute :content_type, :string
-    attribute :team_id, :uuid, allow_nil?: true
+    attribute :organization_id, :uuid, allow_nil?: true
 
     attribute :type, :atom do
       constraints one_of: [:general]

@@ -5,7 +5,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLiveTest do
     Ash.Seed.seed!(
       AshPhoenixStarter.Accounts.Group,
       %{name: "Group 1", description: "Test"},
-      tenant: actor.current_team
+      tenant: actor.current_organization
     )
   end
 
@@ -23,7 +23,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLiveTest do
 
       params = %{
         "group" => %{"read" => "on", "update" => "on"},
-        "user_team" => %{"read" => "on"}
+        "user_organization" => %{"read" => "on"}
       }
 
       user_groups_live
@@ -48,7 +48,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Groups.GroupPermissionsLiveTest do
       assert Enum.any?(perms, fn perm -> perm.action == "update" and perm.resource == "group" end)
 
       assert Enum.any?(perms, fn perm ->
-               perm.action == "read" and perm.resource == "user_team"
+               perm.action == "read" and perm.resource == "user_organization"
              end)
     end
   end

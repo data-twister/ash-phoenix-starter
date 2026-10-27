@@ -3,7 +3,7 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendInvitationEmail do
   @moduledoc """
   An Ash Resource Change that sends an invitation email to a user.
 
-  This module handles sending an email to invite a user to join a team,
+  This module handles sending an email to invite a user to join a organization,
   including a link to accept the invitation. It uses Oban for asynchronous
   email delivery.
   """
@@ -38,15 +38,15 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendInvitationEmail do
     end
   end
 
-  defp build_email_data(%{email: email, token: token, team: team}) do
-    message = build_email_body(email, token, team)
+  defp build_email_data(%{email: email, token: token, organization: organization}) do
+    message = build_email_body(email, token, organization)
 
     email_data = %{
       id: token,
       params: %{
         html_message: message,
         text_message: message,
-        subject: "You're Invited to Join #{team}",
+        subject: "You're Invited to Join #{organization}",
         from: nil,
         to: email
       }
@@ -55,15 +55,15 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.SendInvitationEmail do
     {:ok, email_data}
   end
 
-  defp build_email_body(email, token, team) do
-    accept_url = url(~p"/accounts/users/invitations/#{team}/#{token}/accept")
+  defp build_email_body(email, token, organization) do
+    accept_url = url(~p"/accounts/users/invitations/#{organization}/#{token}/accept")
 
     """
     <p>Hello, #{email}!</p>
-    <p>You've been invited to join the <strong>#{team}</strong> team.</p>
+    <p>You've been invited to join the <strong>#{organization}</strong> organization.</p>
     <p>Please click the link below to accept the invitation:</p>
     <p><a href="#{accept_url}">Accept Invitation</a></p>
-    <p>If you believe this invitation was sent in error, please contact the team administrator.</p>
+    <p>If you believe this invitation was sent in error, please contact the organization administrator.</p>
     """
   end
 

@@ -51,7 +51,7 @@ defmodule AshPhoenixStarter.Settings.Manager do
   """
 
   alias AshPhoenixStarter.Settings
-  alias AshPhoenixStarter.Settings.Team
+  alias AshPhoenixStarter.Settings.Organization
   alias AshPhoenixStarter.Settings.Payment.Gateway.Setting, as: Gateway
 
   @cache_name :app_settings_cache
@@ -114,7 +114,7 @@ defmodule AshPhoenixStarter.Settings.Manager do
     key_str = to_string(id) <> ":" <> to_string(key)
 
     ConCache.get_or_store(@tenant_cache_name, key_str, fn ->
-      case Ash.get(Team, [key: to_string(key)], tenant: id, not_found_error?: false) do
+      case Ash.get(Organization, [key: to_string(key)], tenant: id, not_found_error?: false) do
         nil ->
           {:error, :not_found}
 
@@ -143,14 +143,14 @@ defmodule AshPhoenixStarter.Settings.Manager do
     attrs = %{key: to_string(key), value: string_value, type: inferred_type}
 
     result =
-      case Ash.get(Team, [key: to_string(key)], tenant: id, not_found_error?: false) do
+      case Ash.get(Organization, [key: to_string(key)], tenant: id, not_found_error?: false) do
         nil ->
-          Team
+          Organization
           |> Ash.Changeset.for_create(:create, attrs, tenant: id)
           |> Ash.create()
 
         {:ok, nil} ->
-          Team
+          Organization
           |> Ash.Changeset.for_create(:create, attrs, tenant: id)
           |> Ash.create()
 

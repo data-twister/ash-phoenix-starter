@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
   @moduledoc """
-  LiveComponent that renders a form to invite a new user to the current user's team.
+  LiveComponent that renders a form to invite a new user to the current user's organization.
   The form includes fields for the user's email and the access group they should be assigned to.
   When the form is submitted, an invitation is created in the system, and an invitation email
   is sent to the provided email address.
@@ -35,12 +35,12 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
       <.modal id="invite-user-modal">
         <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
           <h3 class="text-xl font-semibold leading-none tracking-tight">
-            {gettext("Invite a new member to your team")}
+            {gettext("Invite a new member to your organization")}
           </h3>
           
           <p class="text-sm text-gray-500">
             {gettext(
-              "Invite a new user to your team by entering their email address below. They will receive an invitation email with instructions on how to join your team."
+              "Invite a new user to your organization by entering their email address below. They will receive an invitation email with instructions on how to join your organization."
             )}
           </p>
         </div>
@@ -144,7 +144,7 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
 
     groups =
       AshPhoenixStarter.Accounts.Group
-      |> Ash.read!(tenant: actor.current_team, authorize?: false)
+      |> Ash.read!(tenant: actor.current_organization, authorize?: false)
       |> Enum.map(&{&1.name, &1.id})
 
     assign(socket, :access_groups, groups)
