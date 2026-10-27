@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   test_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22
     name: Test and Deploy on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
