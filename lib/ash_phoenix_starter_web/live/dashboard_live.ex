@@ -5,7 +5,7 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
   alias AshPhoenixStarter.GeoBoundaries
   alias AshPhoenixStarter.Settings.Manager
   # 1. UPDATED: Swapped tracking module reference out for your core dynamic Product resource
-  alias AshPhoenixStarter.Merchants.Product
+  alias AshPhoenixStarter.Core.Product
 
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
@@ -97,8 +97,9 @@ defmodule AshPhoenixStarterWeb.DashboardLive do
       |> assign(:currency, get_currency_atom(active_country))
       |> assign(:merchants_stock, merchants_stock)
       |> assign(:supported_countries, supported_countries)
-      |> Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
-      |> Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
+
+    Favicon.set_dynamic("favicon-32", "subfolder", "dashboard")
+    Favicon.set_dynamic("favicon-16", "subfolder", "dashboard")
 
     {:ok, socket}
   end

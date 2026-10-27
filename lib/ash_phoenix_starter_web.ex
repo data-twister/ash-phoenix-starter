@@ -60,6 +60,8 @@ defmodule AshPhoenixStarterWeb do
       unquote(html_helpers())
       unquote(live_replies())
       unquote(live_view_helpers())
+
+      defoverridable handle_event: 3
     end
   end
 
@@ -78,7 +80,7 @@ defmodule AshPhoenixStarterWeb do
     quote do
       use Phoenix.Component
 
-      @impl Phoenix.LiveView
+      @impl true
       def handle_event("validate", %{"form" => params}, socket) do
         {:noreply, assign(socket, :form, AshPhoenix.Form.validate(socket.assigns.form, params))}
       end

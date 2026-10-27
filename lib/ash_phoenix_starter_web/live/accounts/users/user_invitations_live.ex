@@ -5,9 +5,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive.InviteNewUserForm.form actor={
-      @current_user
-    } />
+    <AshPhoenixStarterWeb.Components.InviteNewUserForm.render actor={@current_user} id="invitation_live" />
     <Cinder.Table.table
       resource={AshPhoenixStarter.Accounts.Invitation}
       actor={@current_user}

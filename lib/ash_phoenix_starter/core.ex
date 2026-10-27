@@ -4,8 +4,10 @@ defmodule AshPhoenixStarter.Core do
     extensions: [AshOps]
 
   resources do
+    resource AshPhoenixStarter.Core.Area
     resource AshPhoenixStarter.Core.FileAsset
     resource AshPhoenixStarter.Core.Product
     resource AshPhoenixStarter.Core.Region
+    resource AshPhoenixStarter.Core.RegionLocation
   end
 end

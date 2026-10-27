@@ -598,4 +598,54 @@ defmodule AshPhoenixStarterWeb.CoreComponents do
     <% end %>
     """
   end
+
+  @doc """
+  Renders a modal.
+
+  ## Examples
+
+      <.modal id="confirm-modal">
+        This is a modal.
+      </.modal>
+  """
+  attr :id, :string, required: true
+  slot :inner_block, required: true
+
+  def modal(assigns) do
+    ~H"""
+    <div id={@id} class="relative z-50 hidden" data-cancel={hide_modal(@id)}>
+      <div id="#-{id}-bg" class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true" />
+      <div class="fixed inset-0 overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+              <button
+                type="button"
+                phx-click={hide_modal(@id)}
+                class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <.core_icon name="hero-x-mark" class="size-6" />
+              </button>
+            </div>
+            {render_slot(@inner_block)}
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def show_modal(js \\ %JS{}, id) do
+    js
+    |> JS.show(to: "##{id}")
+    |> JS.show(to: "##{id}-bg")
+    |> JS.add_class("overflow-hidden", to: "body")
+  end
+
+  def hide_modal(js \\ %JS{}, id) do
+    js
+    |> JS.hide(to: "##{id}")
+    |> JS.hide(to: "##{id}-bg")
+    |> JS.remove_class("overflow-hidden", to: "body")
+  end
 end

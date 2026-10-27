@@ -134,6 +134,7 @@ defmodule AshPhoenixStarter.Core.Region do
     end
 
     update :update do
+      require_atomic? false
       primary? true
       accept [:name, :type, :country_code, :currency_code, :parent_id]
 
@@ -179,7 +180,7 @@ defmodule AshPhoenixStarter.Core.Region do
     country = Ash.Changeset.get_attribute(changeset, :country_code)
     atom_country = country |> String.downcase() |> String.to_atom()
 
-    case Cldr.Territory.known_territory?(atom_country) do
+    case Cldr.Territory.known_territories(atom_country)  do
       true -> :ok
       false -> {:error, Ash.Error.Changes.InvalidAttribute.exception(
         attribute: :country_code,
@@ -191,7 +192,7 @@ defmodule AshPhoenixStarter.Core.Region do
   defp validate_cldr_currency(changeset, _opts) do
     currency = Ash.Changeset.get_attribute(changeset, :currency_code)
 
-    case Cldr.Currency.known_currency?(currency) do
+    case Cldr.Currency.known_currency_code?(currency) do
       true -> :ok
       false -> {:error, Ash.Error.Changes.InvalidAttribute.exception(
         attribute: :currency_code,

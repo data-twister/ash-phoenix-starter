@@ -1,7 +1,8 @@
 # lib/AshPhoenixStarter_web/live/accounts/users/user_invitations_live/invite_user_live.ex
-defmodule AshPhoenixStarterWeb.Accounts.Users.UserInvitationsLive.InviteUserConfirmationLive do
+defmodule AshPhoenixStarterWeb.Accounts.Users.InviteUserConfirmationLive do
   use AshPhoenixStarterWeb, :live_view
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.account_users flash={@flash} current_user={@current_user} uri={@uri}>

@@ -72,23 +72,32 @@ defmodule AshPhoenixStarter.Core.RegionLocation do
 
     case fetch_effective_country(region_id) do
       {:ok, country_string} ->
-        country_atom = country_string |> String.downcase() |> String.to_atom()
+        country_atom =
+          try do
+            country_string |> String.upcase() |> String.to_existing_atom()
+          rescue
+            ArgumentError -> nil
+          end
 
-        with {:ok, territory_info} <- Cldr.Config.territory_info(country_atom),
-             postal_regex_string when not is_nil(postal_regex_string) <- Map.get(territory_info, :postal_code) do
+        if country_atom && country_atom in Cldr.Territory.country_codes() do
+          with {:ok, territory_info} <- Cldr.Territory.info(country_atom),
+               postal_regex_string when not is_nil(postal_regex_string) <- Map.get(territory_info, :postal_code) do
 
-          compiled_regex = Regex.compile!("^(" <> postal_regex_string <> ")$")
+            compiled_regex = Regex.compile!("^(" <> postal_regex_string <> ")$")
 
-          if String.match?(value, compiled_regex) do
-            :ok
+            if String.match?(value, compiled_regex) do
+              :ok
+            else
+              {:error, Ash.Error.Changes.InvalidAttribute.exception(
+                attribute: :value,
+                message: "Postal code '#{value}' does not match the valid structure for country #{country_string}."
+              )}
+            end
           else
-            {:error, Ash.Error.Changes.InvalidAttribute.exception(
-              attribute: :value,
-              message: "Postal code '#{value}' does not match the valid structure for country #{country_string}."
-            )}
+            _ -> :ok
           end
         else
-          _ -> :ok
+          :ok
         end
 
       :error ->

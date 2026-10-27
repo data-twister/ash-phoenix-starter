@@ -177,7 +177,7 @@ if config_env() == :prod do
   storage_backend =
     case System.get_env("STORAGE_BACKEND") do
       nil -> Waffle.Storage.Local
-      val -> Waffle.Storage.S3
+      _ -> Waffle.Storage.S3
     end
 
   # Default to Local storage in dev/test, switch to S3/Spaces in production

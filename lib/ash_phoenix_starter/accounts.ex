@@ -9,6 +9,10 @@ defmodule AshPhoenixStarter.Accounts do
     resource AshPhoenixStarter.Accounts.Team
     resource AshPhoenixStarter.Accounts.UserTeam
 
+    resource AshPhoenixStarter.Accounts.Merchant
+    resource AshPhoenixStarter.Accounts.Customer
+    resource AshPhoenixStarter.Accounts.Vendor
+
     resource AshPhoenixStarter.Accounts.Group
     resource AshPhoenixStarter.Accounts.UserGroup
     resource AshPhoenixStarter.Accounts.GroupPermission

@@ -79,6 +79,7 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
     end
 
     has_many :low_stock_products, AshPhoenixStarter.Core.Product do
+      destination_attribute :vendor_id
       public? true
     end
   end

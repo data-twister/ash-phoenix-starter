@@ -2,6 +2,7 @@ defmodule AshPhoenixStarterWeb.Accounts.Teams.TeamsLive do
   use AshPhoenixStarterWeb, :live_view
   on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_user_required}
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.account_teams flash={@flash} current_user={@current_user} uri={@uri}>

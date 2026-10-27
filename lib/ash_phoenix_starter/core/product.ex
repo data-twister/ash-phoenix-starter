@@ -70,6 +70,12 @@ defmodule AshPhoenixStarter.Core.Product do
       allow_nil? false
       public? true
     end
+
+    belongs_to :vendor, AshPhoenixStarter.Accounts.Vendor do
+      attribute_type :uuid
+      allow_nil? false
+      public? true
+    end
   end
 
   calculations do
@@ -87,12 +93,12 @@ defmodule AshPhoenixStarter.Core.Product do
 
     create :create do
       primary? true
-      accept [:name, :remaining_stock, :price, :low_stock_threshold, :critical_stock_threshold, :merchant_id]
+      accept [:name, :remaining_stock, :price, :low_stock_threshold, :critical_stock_threshold, :merchant_id, :vendor_id]
     end
 
     update :update do
       primary? true
-      accept [:name, :remaining_stock, :price, :low_stock_threshold, :critical_stock_threshold, :merchant_id]
+      accept [:name, :remaining_stock, :price, :low_stock_threshold, :critical_stock_threshold, :merchant_id, :vendor_id]
     end
 
     # =========================================================================
@@ -109,7 +115,7 @@ defmodule AshPhoenixStarter.Core.Product do
         requested_country = input.arguments.country_code |> String.trim() |> String.downcase()
         requested_region = input.arguments.region_name |> String.trim() |> String.downcase()
 
-        case Ash.read(AshPhoenixStarter.Merchants.Product, load: [:merchant], tenant: context.tenant) do
+        case Ash.read(AshPhoenixStarter.Core.Product, load: [:merchant], tenant: context.tenant) do
           {:ok, products} ->
             total_qty = 
               products
@@ -137,7 +143,7 @@ defmodule AshPhoenixStarter.Core.Product do
       run fn input, context ->
         requested_country = input.arguments.country_code |> String.trim() |> String.downcase()
 
-        case Ash.read(AshPhoenixStarter.Merchants.Product, load: [:merchant], tenant: context.tenant) do
+        case Ash.read(AshPhoenixStarter.Core.Product, load: [:merchant], tenant: context.tenant) do
           {:ok, products} ->
             metrics_map = 
               products
@@ -161,7 +167,7 @@ defmodule AshPhoenixStarter.Core.Product do
       description "Aggregates and transforms all catalog remaining_stock entries across all regions and countries"
       
       run fn _input, context ->
-        case Ash.read(AshPhoenixStarter.Merchants.Product, load: [:merchant], tenant: context.tenant) do
+        case Ash.read(AshPhoenixStarter.Core.Product, load: [:merchant], tenant: context.tenant) do
           {:ok, products} ->
             metrics_map = 
               products
