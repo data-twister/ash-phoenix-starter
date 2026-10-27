@@ -87,7 +87,6 @@ config :ash_phoenix_starter,
 # special actions such as impersonating other
 # users in the teams. Seeing all teams
 # and more...
-config :ash_phoenix_starter, super_users: ["kamaro@example.com"]
 
 # Configures the endpoint
 config :ash_phoenix_starter, AshPhoenixStarterWeb.Endpoint,
