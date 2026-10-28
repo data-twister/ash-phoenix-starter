@@ -17,14 +17,6 @@ defmodule AshPhoenixStarter.Accounts.Customer do
     prepare AshPhoenixStarter.Preparations.SetTenant
   end
 
-  changes do
-    change AshPhoenixStarter.Changes.SetTenant
-    
-    # Automatically manage UTC microsecond timestamp mutations on lifecycle events
-    change set_attribute(:inserted_at, &DateTime.utc_now/0), on: :create
-    change set_attribute(:updated_at, &DateTime.utc_now/0), on: [:create, :update]
-  end
-
   # =====================================================================
   # 📊 Attributes Definition Block
   # =====================================================================
@@ -34,26 +26,17 @@ defmodule AshPhoenixStarter.Accounts.Customer do
     attribute :name, :string do
       allow_nil? false
       public? true
-      # Enforce basic validation strings to match form entry expectations
       constraints min_length: 2, max_length: 100
     end
 
     attribute :country_code, :string do
       allow_nil? false
       public? true
-      # Restrict strings to standard ISO-2 character codes
       constraints max_length: 2, match: ~r/^[A-Z]{2}$/
     end
 
-    attribute :inserted_at, :utc_datetime_usec do
-      allow_nil? false
-      public? true
-    end
-
-    attribute :updated_at, :utc_datetime_usec do
-      allow_nil? false
-      public? true
-    end
+    # Automatically handles inserted_at and updated_at with microsecond precision
+    timestamps(type: :utc_datetime_usec, public?: true)
   end
 
   # =====================================================================
@@ -67,11 +50,15 @@ defmodule AshPhoenixStarter.Accounts.Customer do
     end
   end
 
-
   # =====================================================================
   # 🎬 Actions Lifecycle Engine
   # =====================================================================
   actions do
+    # GLOBAL CHANGES MUST LIVE INSIDE ACTIONS
+    changes do
+      change AshPhoenixStarter.Changes.SetTenant
+    end
+
     defaults [:read, :destroy]
 
     create :create do
@@ -85,7 +72,10 @@ defmodule AshPhoenixStarter.Accounts.Customer do
     end
   end
 
-    policies do
+  # =====================================================================
+  # 🔒 Policies
+  # =====================================================================
+  policies do
     bypass AshOban.Checks.AshObanInteraction do
       authorize_if always()
     end
