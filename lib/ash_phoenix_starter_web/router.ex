@@ -29,6 +29,14 @@ defmodule AshPhoenixStarterWeb.Router do
     plug :set_actor, :user
   end
 
+  pipeline :tus do
+    plug :fetch_session
+    plug :load_from_session
+    plug :load_from_bearer
+    plug :set_actor, :user
+    plug :require_tus_user
+  end
+
   scope "/api/json" do
     pipe_through [:api]
 
@@ -37,6 +45,16 @@ defmodule AshPhoenixStarterWeb.Router do
       default_model_expand_depth: 4
 
     forward "/", AshPhoenixStarterWeb.AshJsonApiRouter
+  end
+
+  scope "/files", AshPhoenixStarterWeb do
+    pipe_through [:tus]
+
+    options "/", TusController, :options
+    post "/", TusController, :post
+    head "/:uid", TusController, :head
+    patch "/:uid", TusController, :patch
+    delete "/:uid", TusController, :delete
   end
 
   scope "/", AshPhoenixStarterWeb do
@@ -79,6 +97,7 @@ defmodule AshPhoenixStarterWeb.Router do
       live "/ledger/chart-of-accounts/new", Ledger.CreateNewAccountLive
 
       live "/ussd", Ussd.UssdsLive
+      live "/files/manage", Files.FileManagerLive
     end
   end
 
@@ -92,7 +111,7 @@ defmodule AshPhoenixStarterWeb.Router do
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController
 
-    # invitations 
+    # invitations
     get "/accounts/users/invitations/:tenant/:token/accept",
         OrganizationInvitationAcceptanceController,
         :accept
@@ -135,18 +154,8 @@ defmodule AshPhoenixStarterWeb.Router do
     )
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", AshPhoenixStarterWeb do
-  #   pipe_through :api
-  # end
-
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:ash_phoenix_starter, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
@@ -154,6 +163,16 @@ defmodule AshPhoenixStarterWeb.Router do
 
       live_dashboard "/dashboard", metrics: AshPhoenixStarterWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
+  end
+
+  defp require_tus_user(conn, _opts) do
+    if conn.assigns[:current_user] do
+      conn
+    else
+      conn
+      |> send_resp(401, "Unauthorized")
+      |> halt()
     end
   end
 end
