@@ -6,6 +6,11 @@ defmodule AshPhoenixStarter.Accounts.MerchantRegionLocation do
   postgres do
     table "merchant_region_locations"
     repo AshPhoenixStarter.Repo
+
+     references do
+      reference :merchant, on_delete: :delete
+      reference :region_location, on_delete: :delete
+    end
   end
 
   multitenancy do

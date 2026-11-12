@@ -99,6 +99,21 @@ defmodule AshPhoenixStarterWeb.Router do
 
       live "/ussd", Ussd.UssdsLive
       live "/files/manage", Files.FileManagerLive
+
+      # Vendor routes
+      live "/vendors", VendorIndexLive, :index
+      live "/vendors/new", VendorFormLive, :new
+      live "/vendors/:id/edit", VendorFormLive, :edit
+
+      # Merchant routes
+      live "/merchants", MerchantIndexLive, :index
+      live "/merchants/new", MerchantFormLive, :new
+      live "/merchants/:id/edit", MerchantFormLive, :edit
+
+    # Product routes
+    live "/products", ProductIndexLive, :index
+    live "/products/new", ProductFormLive, :new
+    live "/products/:id/edit", ProductFormLive, :edit
     end
   end
 
@@ -108,6 +123,10 @@ defmodule AshPhoenixStarterWeb.Router do
     get "/", PageController, :home
 
     live "/landing", LandingLive, :index
+
+    live "/inventory/dashboard", InventoryDashboardLive, :index
+
+    
 
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController

@@ -2,11 +2,16 @@ defmodule AshPhoenixStarter.Core.Product do
   use Ash.Resource,
     domain: AshPhoenixStarter.Core,
     data_layer: AshPostgres.DataLayer
-    # notifiers: [Ash.Notifier.PubSub]
+    notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "products"
     repo AshPhoenixStarter.Repo
+
+    references do
+      reference :merchant, on_delete: :nilify
+      reference :vendor, on_delete: :nilify
+    end
   end
 
   multitenancy do
@@ -192,9 +197,11 @@ defmodule AshPhoenixStarter.Core.Product do
     define :get_all_live_metrics
   end
 
-  # pub_sub do
-  #   module AshPhoenixStarterWeb.Endpoint
-  #   prefix "products"
-  #   publish :update, ["merchant", :merchant_id, "updated"], "updated"
-  # end
+  pub_sub do
+    module AshPhoenixStarterWeb.Endpoint
+    prefix "products"
+    publish_all :update, [:_tenant], event: "updated"
+    publish_all :create, [:_tenant], event: "updated"
+    publish_all :destroy, [:_tenant], event: "updated"
+  end
 end

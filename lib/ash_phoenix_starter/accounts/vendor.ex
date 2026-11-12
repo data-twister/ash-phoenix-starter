@@ -80,7 +80,8 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
 
     has_many :low_stock_products, AshPhoenixStarter.Core.Product do
       destination_attribute :vendor_id
-      public? true
+      filter expr(remaining_stock <= low_stock_threshold)
+    public? true
     end
 
     many_to_many :region_locations, AshPhoenixStarter.Accounts.RegionLocation do
@@ -125,11 +126,30 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
     create :create do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
+
+      argument :region_location_ids, {:array, :uuid} do
+        allow_nil? true
+        public? true
+      end
+
+      change manage_relationship(:region_location_ids, :region_locations,
+               type: :append_and_remove
+             )
     end
 
     update :update do
       primary? true
       accept [:name, :country_code, :region_name, :user_id, :region_id]
+      require_atomic? false
+
+      argument :region_location_ids, {:array, :uuid} do
+        allow_nil? true
+        public? true
+      end
+
+      change manage_relationship(:region_location_ids, :region_locations,
+               type: :append_and_remove
+             )
     end
 
     # Custom paginated read action tailored for internal dashboard components
@@ -138,6 +158,7 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
       prepare fn query, _ -> Ash.Query.load(query, :total_low_stock) end
     end
   end
+  
 
   policies do
     bypass AshOban.Checks.AshObanInteraction do
@@ -148,8 +169,19 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
       authorize_if always()
     end
 
-    policy always() do
-      forbid_if always()
+    # Allow any authenticated user in the current tenant context to read records
+    policy action_type(:read) do
+      authorize_if actor_present()
+    end
+
+    # Allow authenticated users to create records where user_id matches their own ID
+    policy action_type(:create) do
+      authorize_if relating_to_actor(:user)
+    end
+
+    # Allow only the record's owner to update or destroy it
+    policy action_type([:update, :destroy]) do
+      authorize_if expr(user_id == ^actor(:id))
     end
   end
 end
