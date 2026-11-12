@@ -112,7 +112,18 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
   end
 
   defp get_tenant_setting(nil, _key), do: nil
-  defp get_tenant_setting(organization_id, key), do: Manager.get_tenant(organization_id, key)
+
+  defp get_tenant_setting(organization_id, key) do
+    case Manager.get_tenant(organization_id, key) do
+      val when is_binary(val) ->
+        case String.trim(val) do
+          "" -> nil
+          trimmed -> trimmed
+        end
+
+      val ->
+        val
+    end
 
   defp region_for_provider("r2"), do: "auto"
   defp region_for_provider("s3"), do: System.get_env("AWS_REGION") || "us-east-1"

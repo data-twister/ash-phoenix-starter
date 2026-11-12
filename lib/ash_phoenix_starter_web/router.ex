@@ -15,6 +15,7 @@ defmodule AshPhoenixStarterWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :load_from_session
+    plug AshPhoenixStarterWeb.Plugs.MaintenanceMode
 
     plug Cldr.Plug.PutLocale,
       apps: [:cldr, :gettext],
@@ -27,6 +28,7 @@ defmodule AshPhoenixStarterWeb.Router do
     plug :accepts, ["json"]
     plug :load_from_bearer
     plug :set_actor, :user
+    plug AshPhoenixStarterWeb.Plugs.MaintenanceMode
   end
 
   pipeline :tus do
@@ -35,6 +37,7 @@ defmodule AshPhoenixStarterWeb.Router do
     plug :load_from_bearer
     plug :set_actor, :user
     plug :require_tus_user
+    plug AshPhoenixStarterWeb.Plugs.MaintenanceMode
   end
 
   scope "/api/json" do
@@ -73,6 +76,7 @@ defmodule AshPhoenixStarterWeb.Router do
       # on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_no_user}
 
       live "/dashboard", DashboardLive
+      live "/settings", Settings.SettingsLive
 
       live "/reports/graphs", Reports.GraphsLive
       live "/reports/summaries", Reports.SummariesLive

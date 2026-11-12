@@ -71,11 +71,16 @@ defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
   # ============================================================================
 
   defp resolve_waffle_backend(organization_id) do
-    case TenantConfig.provider(organization_id) do
-      p when p in @s3_providers -> Waffle.Storage.S3
-      _ -> Waffle.Storage.Local
+    if AshPhoenixStarter.Settings.Manager.get(:image_mode) == :local do
+      Waffle.Storage.Local
+    else
+      case TenantConfig.provider(organization_id) do
+        p when p in @s3_providers -> Waffle.Storage.S3
+        _ -> Waffle.Storage.Local
+      end
     end
   end
+
 
   defp resolve_tus_backend(organization_id) do
     case TenantConfig.provider(organization_id) do

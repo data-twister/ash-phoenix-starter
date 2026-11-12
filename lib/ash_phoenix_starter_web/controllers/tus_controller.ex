@@ -3,11 +3,15 @@ defmodule AshPhoenixStarterWeb.TusController do
   use Tus.Controller
 
   alias AshPhoenixStarter.Core.FileAsset
+  alias AshPhoenixStarter.Settings.Manager
   alias AshPhoenixStarter.Uploads.{StorageDispatcher, TenantConfig}
+
+  @default_max_size 500 * 1024 * 1024
 
   @impl Tus.Controller
   def init_config(conn) do
     org_id = resolve_organization_id(conn)
+    max_size = Manager.get(:max_upload_size) || @default_max_size
 
     s3_prefix =
       if org_id do
@@ -21,7 +25,7 @@ defmodule AshPhoenixStarterWeb.TusController do
       cache: Tus.Cache.Memory,
       organization_id: org_id,
       s3_prefix: s3_prefix,
-      max_size: 500 * 1024 * 1024
+      max_size: max_size
     }
   end
 
