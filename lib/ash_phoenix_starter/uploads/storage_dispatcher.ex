@@ -1,6 +1,7 @@
 defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
   @behaviour Waffle.Storage
 
+  alias AshPhoenixStarter.Settings.Manager
   alias AshPhoenixStarter.Uploads.TenantConfig
 
   @s3_providers ["spaces", "s3", "r2", "minio"]
@@ -39,29 +40,29 @@ defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
   end
 
   # ============================================================================
-  # TUS STORAGE CALLBACKS
+  # TUSSLE STORAGE CALLBACKS
   # ============================================================================
 
   def create(file, config) when is_map(config) do
-    org_id = Map.get(config, :organization_id)
+    org_id = resolve_org_id(file, config)
     backend = resolve_tus_backend(org_id)
     backend.create(file, prepare_tus_config(backend, org_id, config))
   end
 
   def append(file, config, body) when is_map(config) do
-    org_id = Map.get(config, :organization_id)
+    org_id = resolve_org_id(file, config)
     backend = resolve_tus_backend(org_id)
     backend.append(file, prepare_tus_config(backend, org_id, config), body)
   end
 
   def complete_upload(file, config) when is_map(config) do
-    org_id = Map.get(config, :organization_id)
+    org_id = resolve_org_id(file, config)
     backend = resolve_tus_backend(org_id)
     backend.complete_upload(file, prepare_tus_config(backend, org_id, config))
   end
 
   def delete(file, config) when is_map(config) do
-    org_id = Map.get(config, :organization_id)
+    org_id = resolve_org_id(file, config)
     backend = resolve_tus_backend(org_id)
     backend.delete(file, prepare_tus_config(backend, org_id, config))
   end
@@ -71,7 +72,7 @@ defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
   # ============================================================================
 
   defp resolve_waffle_backend(organization_id) do
-    if AshPhoenixStarter.Settings.Manager.get(:image_mode) == :local do
+    if Manager.get(:image_mode) == :local do
       Waffle.Storage.Local
     else
       case TenantConfig.provider(organization_id) do
@@ -81,15 +82,22 @@ defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
     end
   end
 
-
   defp resolve_tus_backend(organization_id) do
     case TenantConfig.provider(organization_id) do
-      p when p in @s3_providers -> Tus.Storage.S3
-      _ -> Tus.Storage.Local
+      p when p in @s3_providers -> Tussle.Storage.S3
+      _ -> Tussle.Storage.Local
     end
   end
 
-  defp prepare_tus_config(Tus.Storage.Local, org_id, config) do
+  defp prepare_tus_config(Tussle.Storage.S3, org_id, config) do
+    prefix = if org_id, do: "uploads/organizations/#{org_id}/tus", else: "uploads/tus"
+
+    config
+    |> Map.put(:organization_id, org_id)
+    |> Map.put_new(:s3_prefix, prefix)
+  end
+
+  defp prepare_tus_config(Tussle.Storage.Local, org_id, config) do
     default_dir =
       if org_id do
         "priv/static/uploads/organizations/#{org_id}/tus"
@@ -97,10 +105,13 @@ defmodule AshPhoenixStarter.Uploads.StorageDispatcher do
         "priv/static/uploads/tus"
       end
 
-    Map.put_new(config, :base_path, default_dir)
+    Map.put(config, :base_path, default_dir)
   end
 
-  defp prepare_tus_config(_backend, _org_id, config), do: config
+  defp resolve_org_id(file, config) do
+    Map.get(config, :organization_id) ||
+      get_in(file, [:metadata, "organization_id"])
+  end
 
   defp extract_org_id(%{organization_id: org_id}), do: org_id
   defp extract_org_id(_), do: nil

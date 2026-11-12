@@ -62,7 +62,6 @@ defmodule AshPhoenixStarter.Application do
          ]},
         id: :tenant_settings_cache_supervisor
       ),
-      {Tus.Cache.Memory, []},
       {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
       AshPhoenixStarterWeb.Presence,
       AshPhoenixStarterWeb.Endpoint,

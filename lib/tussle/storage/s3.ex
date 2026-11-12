@@ -1,12 +1,12 @@
-defmodule Tus.Storage.S3 do
+defmodule Tussle.Storage.S3 do
   @moduledoc """
-  Amazon S3 (and S3-compatible) storage backend for the [Tus](https://hex.pm) server.
+  Multi-tenant Amazon S3 (and S3-compatible) storage backend for the [Tussle](https://hex.pm) server.
 
   ## Telemetry Events
 
-  * `[:tus, :storage, :s3, :request, :start]`
-  * `[:tus, :storage, :s3, :request, :stop]`
-  * `[:tus, :storage, :s3, :request, :exception]`
+  * `[:tussle, :storage, :s3, :request, :start]`
+  * `[:tussle, :storage, :s3, :request, :stop]`
+  * `[:tussle, :storage, :s3, :request, :exception]`
 
   Metadata includes `:operation`, `:bucket`, `:key`, and `:result` (`:ok` or `:error` on `:stop`).
   """
@@ -54,7 +54,7 @@ defmodule Tus.Storage.S3 do
       prefix: "",
       host: @default_host,
       min_part_size: @default_min_part_size,
-      client: Tus.Storage.S3.DefaultClient
+      client: Tussle.Storage.S3.DefaultClient
     ]
 
     def new(%{organization_id: org_id} = raw_config) when not is_nil(org_id) do
@@ -74,7 +74,7 @@ defmodule Tus.Storage.S3 do
         secret_access_key: Keyword.get(aws_cfg, :secret_access_key),
         acl: Map.get(raw_config, :s3_acl),
         min_part_size: Map.get(raw_config, :s3_min_part_size, @default_min_part_size),
-        client: Map.get(raw_config, :s3_client, Tus.Storage.S3.DefaultClient)
+        client: Map.get(raw_config, :s3_client, Tussle.Storage.S3.DefaultClient)
       }
     end
 
@@ -91,7 +91,7 @@ defmodule Tus.Storage.S3 do
         secret_access_key: Map.get(raw_config, :s3_secret_access_key),
         acl: Map.get(raw_config, :s3_acl),
         min_part_size: Map.get(raw_config, :s3_min_part_size, @default_min_part_size),
-        client: Map.get(raw_config, :s3_client, Tus.Storage.S3.DefaultClient)
+        client: Map.get(raw_config, :s3_client, Tussle.Storage.S3.DefaultClient)
       }
     end
 
@@ -218,7 +218,7 @@ defmodule Tus.Storage.S3 do
   defp execute(operation, %Config{client: client} = cfg, op_name, key) do
     metadata = %{operation: op_name, bucket: cfg.bucket, key: key}
 
-    :telemetry.span([:tus, :storage, :s3, :request], metadata, fn ->
+    :telemetry.span([:tussle, :storage, :s3, :request], metadata, fn ->
       result = client.request(operation, Config.request_opts(cfg))
       status = if match?({:ok, _}, result), do: :ok, else: :error
       {result, Map.put(metadata, :result, status)}

@@ -1,6 +1,6 @@
 defmodule AshPhoenixStarterWeb.TusController do
   use AshPhoenixStarterWeb, :controller
-  use Tus.Controller
+  use Tussle.Controller
 
   alias AshPhoenixStarter.Core.FileAsset
   alias AshPhoenixStarter.Settings.Manager
@@ -8,31 +8,24 @@ defmodule AshPhoenixStarterWeb.TusController do
 
   @default_max_size 500 * 1024 * 1024
 
-  @impl Tus.Controller
-  def init_config(conn) do
-    org_id = resolve_organization_id(conn)
+  # Runs on POST when upload begins; stamps `organization_id` onto `file.metadata`
+  # so every chunk (`PATCH`) and `on_complete_upload` knows which tenant owns the file.
+  def on_begin_upload(file, conn) do
     max_size = Manager.get(:max_upload_size) || @default_max_size
 
-    s3_prefix =
-      if org_id do
-        "uploads/organizations/#{org_id}/tus"
-      else
-        "uploads/tus"
-      end
-
-    %{
-      storage: StorageDispatcher,
-      cache: Tus.Cache.Memory,
-      organization_id: org_id,
-      s3_prefix: s3_prefix,
-      max_size: max_size
-    }
+    if file.size > max_size do
+      {:error, :file_too_large}
+    else
+      org_id = resolve_organization_id(conn)
+      updated_meta = Map.put(file.metadata || %{}, "organization_id", org_id)
+      {:ok, %{file | metadata: updated_meta}}
+    end
   end
 
-  @impl Tus.Controller
-  def on_complete_upload(file, config) do
-    org_id = config.organization_id
+  # Triggered when all chunks finish uploading
+  def on_complete_upload(file) do
     meta = Map.get(file, :metadata, %{})
+    org_id = Map.get(meta, "organization_id")
     object_key = normalize_object_key(file.path)
 
     asset_params = %{
@@ -45,15 +38,11 @@ defmodule AshPhoenixStarterWeb.TusController do
     }
 
     case FileAsset.create(asset_params) do
-      {:ok, _asset} ->
-        :ok
-
-      {:error, reason} ->
-        {:error, reason}
+      {:ok, _asset} -> :ok
+      {:error, reason} -> {:error, reason}
     end
   end
 
-  # Strips "priv/static/" when Tus.Storage.Local writes to disk so public URLs resolve cleanly
   defp normalize_object_key(path) when is_binary(path) do
     path
     |> String.trim_leading("/")

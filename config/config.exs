@@ -185,6 +185,13 @@ config :ash_phoenix_starter, :timezone_cache_config,
   ttl_check_interval: 3600,
   global_ttl: 86400
 
+  config :tussle, AshPhoenixStarterWeb.TusController,
+  storage: AshPhoenixStarter.Uploads.StorageDispatcher,
+  cache: Tussle.Cache.Memory,
+  base_path: "priv/static/uploads/tus",
+  expiration_period: 3600,
+  max_size: 500 * 1024 * 1024
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

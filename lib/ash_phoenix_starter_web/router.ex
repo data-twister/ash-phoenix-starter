@@ -6,6 +6,7 @@ defmodule AshPhoenixStarterWeb.Router do
   use AshPhoenixStarter.Cldr.Routes, helpers: false
 
   import AshAuthentication.Plug.Helpers
+  import Tussle.Routes
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -53,11 +54,7 @@ defmodule AshPhoenixStarterWeb.Router do
   scope "/files", AshPhoenixStarterWeb do
     pipe_through [:tus]
 
-    options "/", TusController, :options
-    post "/", TusController, :post
-    head "/:uid", TusController, :head
-    patch "/:uid", TusController, :patch
-    delete "/:uid", TusController, :delete
+    add_tus_routes TusController
   end
 
   scope "/", AshPhoenixStarterWeb do
