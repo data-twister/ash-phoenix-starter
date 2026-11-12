@@ -132,15 +132,15 @@ defmodule AshPhoenixStarterWeb.Layouts do
 
   def left_nav_link(assigns) do
     ~H"""
-    <a
-      href={@href}
+    <.link
+      navigate={@href}
       class={[
         "group -mx-2 -my-1 w-full inline-flex items-center gap-3 rounded-lg px-2 py-1 hover:text-primary hover:bg-base-100 hover:border hover:border-primary",
-        @active && "w-full bg-primary text-primary-content"
+        @active && "w-full bg-primary text-primary-content hover:text-primary-content hover:bg-primary"
       ]}
     >
       <.icon name={@icon} class="w-5 h-5" /> {render_slot(@inner_block)}
-    </a>
+    </.link>
     """
   end
 
@@ -150,7 +150,7 @@ defmodule AshPhoenixStarterWeb.Layouts do
   def left_nav(assigns) do
     ~H"""
     <div :for={section <- @menu} class="mb-4">
-      <h3 :if={section.title} class="text-md font-semibold text-primary/90 uppercase mb-2">
+      <h3 :if={section.title != ""} class="text-md font-semibold text-primary/90 uppercase mb-2">
         {section.title}
       </h3>
       <ul class="space-y-2">
@@ -158,7 +158,7 @@ defmodule AshPhoenixStarterWeb.Layouts do
           <.left_nav_link
             href={link.href}
             icon={link.icon}
-            active={@uri.path == link.href}
+            active={AshPhoenixStarterWeb.Menu.active_link?(@uri, link.href)}
           >
             {link.text}
           </.left_nav_link>
@@ -167,6 +167,7 @@ defmodule AshPhoenixStarterWeb.Layouts do
     </div>
     """
   end
+
 
   defp top_search_box(assigns) do
     ~H"""

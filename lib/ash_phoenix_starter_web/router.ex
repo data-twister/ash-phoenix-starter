@@ -71,6 +71,8 @@ defmodule AshPhoenixStarterWeb.Router do
       #
       # If an authenticated user must *not* be present:
       # on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_no_user}
+      #         AshPhoenixStarterWeb.LiveUri
+
 
       live "/dashboard", DashboardLive
       live "/settings", Settings.SettingsLive
