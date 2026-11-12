@@ -81,6 +81,14 @@ defmodule AshPhoenixStarter.Accounts.Merchant do
     has_many :low_stock_products, AshPhoenixStarter.Core.Product do
       public? true
     end
+
+     many_to_many :region_locations, AshPhoenixStarter.Accounts.RegionLocation do
+      through AshPhoenixStarter.Accounts.MerchantRegionLocation
+      source_attribute_on_join_resource :merchant_id
+      destination_attribute_on_join_resource :region_location_id
+      join_relationship :merchant_region_locations
+      public? true
+    end
   end
 
   # =====================================================================

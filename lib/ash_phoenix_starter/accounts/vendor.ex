@@ -82,6 +82,14 @@ defmodule AshPhoenixStarter.Accounts.Vendor do
       destination_attribute :vendor_id
       public? true
     end
+
+    many_to_many :region_locations, AshPhoenixStarter.Accounts.RegionLocation do
+      through AshPhoenixStarter.Accounts.VendorRegionLocation
+      source_attribute_on_join_resource :vendor_id
+      destination_attribute_on_join_resource :region_location_id
+      join_relationship :vendor_region_locations
+      public? true
+    end    
   end
 
   # =====================================================================
