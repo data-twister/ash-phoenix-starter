@@ -1,10 +1,21 @@
 defmodule AshPhoenixStarter.MixProject do
   use Mix.Project
 
+     @version (case File.read("VERSION") do
+              {:ok, content} ->
+                case String.trim(content) do
+                  "" -> "0.1.0"
+                  version -> version
+                end
+
+              {:error, _} ->
+                "0.1.0"
+            end) 
+
   def project do
     [
       app: :ash_phoenix_starter,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
