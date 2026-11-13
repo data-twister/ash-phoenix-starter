@@ -47,7 +47,9 @@ defmodule AshPhoenixStarterWeb.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json, AshJsonApi.Plug.Parser],
     pass: ["*/*"],
-    json_decoder: Phoenix.json_library()
+    json_decoder: Phoenix.json_library(),
+    # Skip body parsing for Tus routes so Tus.Controller can stream raw binary chunks
+    if: {__MODULE__, :parse_body?, []}
 
   plug Plug.MethodOverride
   plug Plug.Head
@@ -86,4 +88,7 @@ defmodule AshPhoenixStarterWeb.Endpoint do
 
   # Fallthrough clause so other routes like /register pass through safely to the router
   def serve_altcha_challenge(conn, _opts), do: conn
+
+  def parse_body?(%Plug.Conn{request_path: "/files" <> _}), do: false
+  def parse_body?(_conn), do: true
 end

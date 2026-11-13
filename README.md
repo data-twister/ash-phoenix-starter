@@ -24,7 +24,7 @@ Built for fast prototype and scaling in the future.
 11. Authentication with Ash Authentication
 12. Templating with Daisy UI
 14. Accounting with AshDouble Entry
-15. Image Uploads (with multiple backends)
+15. Image Uploads (with multiple backends including Tus uploads)
 16. Products
 17. Customers/Merchants/Vendors - Support for multiple sides of the supply chain; customers (buyers), vendors (suppliers) and merchants (sellers)
 

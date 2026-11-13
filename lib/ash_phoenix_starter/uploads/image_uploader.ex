@@ -3,9 +3,11 @@ defmodule AshPhoenixStarter.Uploads.ImageUploader do
   use Waffle.Ecto.Definition
 
   alias AshPhoenixStarter.Settings.Manager
+  alias AshPhoenixStarter.Uploads.TenantConfig
 
   @versions [:original, :thumb]
   @extensions ~w(jpg jpeg png webp)
+  @default_max_size 500 * 1024 * 1024
 
   # Point Waffle to our multi-backend dispatcher
   def storage do
@@ -14,79 +16,33 @@ defmodule AshPhoenixStarter.Uploads.ImageUploader do
 
   # Dynamically pull the correct bucket name from ConCache
   def bucket(_version, {_, scope}) do
-    Manager.get_tenant(scope.organization_id, :storage_bucket) ||
-      System.get_env("DEFAULT_BUCKET") ||
-      "app-uploads"
+    TenantConfig.bucket(scope.organization_id)
   end
 
-  # Dynamically configure ExAws credentials & custom endpoints (vital for Cloudflare R2 or MinIO)
+  # Dynamically configure ExAws credentials & custom endpoints
   def ex_aws_config({_, scope}) do
-    organization_id = scope.organization_id
-    provider = Manager.get_tenant(organization_id, :storage_provider) || "spaces"
-
-    access_key =
-      Manager.get_tenant(organization_id, :storage_access_key) ||
-        System.get_env("STORAGE_ACCESS_KEY")
-
-    secret_key =
-      Manager.get_tenant(organization_id, :storage_secret_key) ||
-        System.get_env("STORAGE_SECRET_KEY")
-
-    # Custom host/endpoint mapping for different S3-compatible providers
-    host =
-      case provider do
-        "r2" ->
-          # Cloudflare R2 requires a custom account endpoint URL
-          Manager.get_tenant(organization_id, :storage_host) || System.get_env("R2_HOST")
-
-        "minio" ->
-          Manager.get_tenant(organization_id, :storage_host) || "localhost:9000"
-
-        _ ->
-          # Default to DigitalOcean Spaces region endpoint
-          Manager.get_tenant(organization_id, :storage_host) || "nyc3.digitaloceanspaces.com"
-      end
-
-    scheme =
-      if provider == "minio" and not String.starts_with?(host, "https"),
-        do: "http://",
-        else: "https://"
-
-    [
-      access_key_id: access_key,
-      secret_access_key: secret_key,
-      region: get_region_for_provider(provider),
-      s3: [
-        scheme: scheme,
-        host: host,
-        port: if(scheme == "http://", do: 9000, else: 443),
-        # Cloudflare R2 often requires virtual-hosted style requests
-        virtual_host: provider == "r2"
-      ]
-    ]
+    TenantConfig.ex_aws_config(scope.organization_id)
   end
 
-  defp get_region_for_provider("r2"), do: "auto"
-  defp get_region_for_provider("s3"), do: System.get_env("AWS_REGION") || "us-east-1"
-  defp get_region_for_provider(_), do: "us-east-1"
-
-  # Custom CDN URL mapping from ConCache
+  # Respect global `:image_mode` (:local vs :cdn) before resolving tenant cloud URLs
   def url(version, {_file, scope} = file_scope, options) do
-    cdn_url = Manager.get_tenant(scope.organization_id, :storage_cdn_url)
+    image_mode = Manager.get(:image_mode) || :cdn
 
-    if cdn_url do
-      "#{String.trim_trailing(cdn_url, "/")}/#{storage_dir(version, file_scope)}/#{filename(version, file_scope)}"
-    else
-      super(version, file_scope, options)
+    case {image_mode, TenantConfig.provider(scope.organization_id)} do
+      {:local, _} ->
+        super(version, file_scope, options)
+
+      {_, p} when p in ["spaces", "s3", "r2", "minio"] ->
+        object_key = full_object_key(version, file_scope)
+        TenantConfig.public_url(scope.organization_id, object_key)
+
+      _ ->
+        super(version, file_scope, options)
     end
   end
 
   def validate({file, _spec}) do
-    file.file_name
-    |> Path.extname()
-    |> String.downcase()
-    |> String.trim_leading(".")
-    |> then(&Enum.member?(@extensions, &1))
+    valid_extension?(file) and valid_file_size?(file)
   end
 
   def transform(:thumb, _) do
@@ -103,16 +59,53 @@ defmodule AshPhoenixStarter.Uploads.ImageUploader do
 
   def storage_dir_version_prefix?, do: true
 
-  # `scope.type` is :service, :feature, etc. (see AshPhoenixStarter.Core.FileAsset's
-  # `:type` attribute) -- this is what actually produces
-  # "uploads/service/<name>.ext" / "uploads/feature/<name>.ext". Tenant
-  # isolation still happens one layer up, via `bucket/2` selecting a
-  # per-organization bucket, so this doesn't need a organizations/<organization_id> segment too.
   def storage_dir(_, {_, scope}) do
     case scope.type do
       :service -> "uploads/service/"
       :feature -> "uploads/feature/"
       _ -> "uploads/organizations/#{scope.organization_id}/#{scope.type}"
     end
+  end
+
+  # ============================================================================
+  # PRIVATE HELPERS
+  # ============================================================================
+
+  defp valid_extension?(file) do
+    file.file_name
+    |> Path.extname()
+    |> String.downcase()
+    |> String.trim_leading(".")
+    |> then(&Enum.member?(@extensions, &1))
+  end
+
+  defp valid_file_size?(file) do
+    max_size = Manager.get(:max_upload_size) || @default_max_size
+
+    case get_file_size(file) do
+      {:ok, size} -> size <= max_size
+      :error -> false
+    end
+  end
+
+  defp get_file_size(%{binary: binary}) when is_binary(binary) do
+    {:ok, byte_size(binary)}
+  end
+
+  defp get_file_size(%{path: path}) when is_binary(path) do
+    case File.stat(path) do
+      {:ok, %File.Stat{size: size}} -> {:ok, size}
+      {:error, _} -> :error
+    end
+  end
+
+  defp get_file_size(_), do: :error
+
+  defp full_object_key(version, {file, _scope} = file_scope) do
+    dir = storage_dir(version, file_scope) |> String.trim("/")
+    ext = if version == :thumb, do: ".jpg", else: Path.extname(file.file_name)
+    file_with_ext = "#{filename(version, file_scope)}#{ext}"
+
+    "#{dir}/#{file_with_ext}"
   end
 end

@@ -24,7 +24,8 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/ash_phoenix_starter"
 import { SVGInject } from '../vendor/svg-inject';
-import ReusableMapHook from "./reusable_map_hook"
+import ReusableMapHook from "./hooks/reusable_map_hook"
+import TusUploader from "./hooks/tus_uploader";
 import topbar from "../vendor/topbar"
 import "phoenix_live_head"
 import 'altcha'

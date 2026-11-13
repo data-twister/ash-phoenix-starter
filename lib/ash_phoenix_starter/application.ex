@@ -1,6 +1,4 @@
 defmodule AshPhoenixStarter.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
@@ -64,9 +62,6 @@ defmodule AshPhoenixStarter.Application do
          ]},
         id: :tenant_settings_cache_supervisor
       ),
-      # Start a worker by calling: AshPhoenixStarter.Worker.start_link(arg)
-      # {AshPhoenixStarter.Worker, arg},
-      # Start to serve requests, typically the last entry
       {Phoenix.PubSub, name: AshPhoenixStarter.PubSub},
       AshPhoenixStarterWeb.Presence,
       AshPhoenixStarterWeb.Endpoint,
@@ -75,14 +70,10 @@ defmodule AshPhoenixStarter.Application do
 
     children = timezone_resolution_children ++ children
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: AshPhoenixStarter.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
     AshPhoenixStarterWeb.Endpoint.config_change(changed, removed)

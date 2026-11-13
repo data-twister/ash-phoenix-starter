@@ -2,6 +2,19 @@ defmodule AshPhoenixStarterWeb.Menu do
   use Gettext, backend: AshPhoenixStarterWeb.Gettext
   use AshPhoenixStarterWeb, :html
 
+    @doc """
+  Matches exact paths as well as nested sub-routes (e.g. `/vendors/new` or `/vendors/:id/edit`).
+  """
+  def active_link?(%URI{path: current_path}, href) when is_binary(current_path) do
+    link_path = URI.parse(href).path || href
+
+    current_path == link_path or
+      String.starts_with?(current_path, String.trim_trailing(link_path, "/") <> "/")
+  end
+
+  def active_link?(_, _), do: false
+
+
   @doc """
   Configure left menu in the application
   """
@@ -22,6 +35,31 @@ defmodule AshPhoenixStarterWeb.Menu do
             href: ~p"/dashboard",
             icon: "hero-chart-bar-solid",
             text: gettext("Dashboard")
+          }
+        ]
+      },
+      %{
+        title: gettext("Supply Chain"),
+        links: [
+          %{
+            href: ~p"/vendors",
+            icon: "hero-truck",
+            text: gettext("Vendors")
+          },
+          %{
+            href: ~p"/merchants",
+            icon: "hero-building-storefront",
+            text: gettext("Merchants")
+          },
+          %{
+            href: ~p"/products",
+            icon: "hero-cube",
+            text: gettext("Products")
+          },
+          %{
+            href: ~p"/inventory/dashboard",
+            icon: "hero-map-pin",
+            text: gettext("Regional Inventory")
           }
         ]
       },
@@ -63,11 +101,6 @@ defmodule AshPhoenixStarterWeb.Menu do
       %{
         title: gettext("Settings"),
         links: [
-          # %{
-          #   href: ~p"/settings",
-          #   icon: "hero-cog-6-tooth",
-          #   text: gettext("General")
-          # },
           %{
             href: "/accounts/organizations",
             icon: "hero-building-library",
@@ -101,6 +134,31 @@ defmodule AshPhoenixStarterWeb.Menu do
         ]
       },
       %{
+        title: gettext("Supply Chain"),
+        links: [
+          %{
+            href: ~p"/vendors",
+            icon: "hero-truck",
+            text: gettext("Vendors")
+          },
+          %{
+            href: ~p"/merchants",
+            icon: "hero-building-storefront",
+            text: gettext("Merchants")
+          },
+          %{
+            href: ~p"/products",
+            icon: "hero-cube",
+            text: gettext("Products")
+          },
+          %{
+            href: ~p"/inventory/dashboard",
+            icon: "hero-map-pin",
+            text: gettext("Regional Inventory")
+          }
+        ]
+      },
+      %{
         title: gettext("Reports"),
         links: [
           %{
@@ -118,11 +176,6 @@ defmodule AshPhoenixStarterWeb.Menu do
       %{
         title: gettext("Settings"),
         links: [
-          # %{
-          #   href: ~p"/settings",
-          #   icon: "hero-cog-6-tooth",
-          #   text: gettext("General")
-          # },
           %{
             href: "/accounts/organizations",
             icon: "hero-building-library",

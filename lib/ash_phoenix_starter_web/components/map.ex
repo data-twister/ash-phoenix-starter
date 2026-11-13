@@ -58,10 +58,14 @@ defmodule AshPhoenixStarterWeb.Map do
 
   ## Assigns
     * `:initial_geojson` - The pre-hydrated Elixir map structure parsed by the server.
+    * `:pins` - (Optional) A list of pin maps (`%{lat, lng, label, type, code}`) to plot as markers.
     * `:height` - (Optional) Custom height configuration string. Defaults to "680px".
   """
   def map(assigns) do
-    assigns = assign_new(assigns, :height, fn -> "680px" end)
+    assigns =
+      assigns
+      |> assign_new(:height, fn -> "680px" end)
+      |> assign_new(:pins, fn -> [] end)
 
     ~H"""
     <div id="reusable-map-container" phx-update="ignore">
@@ -69,6 +73,7 @@ defmodule AshPhoenixStarterWeb.Map do
         id="leaflet-reusable-map"
         phx-hook="Map"
         data-geojson={Jason.encode!(@initial_geojson)}
+        data-pins={Jason.encode!(@pins)}
         class="w-full rounded-xl border border-gray-200 shadow-sm"
         style={"height: #{@height};"}
       >
@@ -76,4 +81,5 @@ defmodule AshPhoenixStarterWeb.Map do
     </div>
     """
   end
+
 end
