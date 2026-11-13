@@ -52,6 +52,7 @@ Built for fast prototype and scaling in the future.
 4. Run `mix tailwind.install` to install tailwindcss
 5. Confirm that all is well with `mix tests`
 6. Start implementing your new features
+7. After adding new changes run mix project_name.version (patch, minor, major, --tag tag (you can run mix help version))
 
 ## For map boundry jsons you can access them @https://datahub.io/core/geo-boundaries-us-110m or https://www.naturalearthdata.com/downloads/110m-cultural-vectors/ and export them to the corresponding json file
 
