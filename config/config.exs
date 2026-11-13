@@ -193,6 +193,8 @@ config :ash_phoenix_starter, :timezone_cache_config,
   max_size: 500 * 1024 * 1024
 
   config :ash_phoenix_starter,
+  font_dir: "assets/fonts",
+  font_url_prefix: "../fonts",
   font_css_path: "assets/css/fonts.css",
   fonts: [
     %{
