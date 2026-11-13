@@ -7,11 +7,12 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
 
       mix ash_phoenix_starter.version patch
       mix ash_phoenix_starter.version minor --tag
-      mix ash_phoenix_starter.version major -t
+      mix ash_phoenix_starter.version major -t -f
 
   ### Options
 
     * `--tag`, `-t` - Creates an annotated Git tag (e.g., `v0.1.1`) after committing.
+    * `--force`, `-f` - Skips the uncommitted changes confirmation prompt.
   """
   @shortdoc "Updates AshPhoenixStarter's version"
 
@@ -24,20 +25,25 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
   @spec run([String.t()]) :: :ok
   def run(args) do
     {opts, positional, _invalid} =
-      OptionParser.parse(args, switches: [tag: :boolean], aliases: [t: :tag])
+      OptionParser.parse(args,
+        switches: [tag: :boolean, force: :boolean],
+        aliases: [t: :tag, f: :force]
+      )
 
     case positional do
       [level] when level in ["patch", "minor", "major"] ->
-        ensure_clean_or_confirm!()
+        ensure_clean_or_confirm!(Keyword.get(opts, :force, false))
         bump_and_commit(level, Keyword.get(opts, :tag, false))
 
       _ ->
-        Mix.raise("Usage: mix ash_phoenix_starter.version [patch | minor | major] [--tag]")
+        Mix.raise("Usage: mix ash_phoenix_starter.version [patch | minor | major] [--tag] [--force]")
     end
   end
 
-  @spec ensure_clean_or_confirm!() :: :ok
-  defp ensure_clean_or_confirm! do
+  @spec ensure_clean_or_confirm!(boolean()) :: :ok
+  defp ensure_clean_or_confirm!(true), do: :ok
+
+  defp ensure_clean_or_confirm!(false) do
     case System.cmd("git", ["status", "--porcelain"]) do
       {"", 0} ->
         :ok
