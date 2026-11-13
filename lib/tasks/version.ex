@@ -28,10 +28,32 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
 
     case positional do
       [level] when level in ["patch", "minor", "major"] ->
+        ensure_clean_or_confirm!()
         bump_and_commit(level, Keyword.get(opts, :tag, false))
 
       _ ->
         Mix.raise("Usage: mix ash_phoenix_starter.version [patch | minor | major] [--tag]")
+    end
+  end
+
+  @spec ensure_clean_or_confirm!() :: :ok
+  defp ensure_clean_or_confirm! do
+    case System.cmd("git", ["status", "--porcelain"]) do
+      {"", 0} ->
+        :ok
+
+      {changes, 0} ->
+        Mix.shell().error("Warning: You have uncommitted changes in your working tree:\n")
+        Mix.shell().info(String.trim_trailing(changes) <> "\n")
+
+        unless Mix.shell().yes?("Do you want to continue and commit only #{@version_file}?") do
+          Mix.raise("Aborted version bump due to uncommitted changes.")
+        end
+
+        :ok
+
+      {error_out, _code} ->
+        Mix.raise("Failed to check git status: #{String.trim(error_out)}")
     end
   end
 
@@ -51,7 +73,9 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
     {add_out, 0} = System.cmd("git", ["add", @version_file])
     if add_out != "", do: Mix.shell().info(String.trim(add_out))
 
-    {commit_out, 0} = System.cmd("git", ["commit", "-m", "Bump version to #{new_version_number}"])
+    {commit_out, 0} =
+      System.cmd("git", ["commit", @version_file, "-m", "Bump version to #{new_version_number}"])
+
     Mix.shell().info(String.trim(commit_out))
 
     if create_tag? do
