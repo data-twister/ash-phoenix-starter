@@ -6,6 +6,9 @@ defmodule Mix.Tasks.FetchFonts do
   @fonts_dir "priv/static/fonts"
 
   def run(_args) do
+    if "--if-missing" in args and fonts_already_exist?() do
+      Mix.shell().info("==> Fonts already exist in #{@fonts_dir}, skipping download.")
+    else
     Mix.shell().info("==> Starting font fetching...")
 
     Application.ensure_all_started(:inets)
@@ -29,6 +32,13 @@ defmodule Mix.Tasks.FetchFonts do
       Mix.shell().info("==> All font tasks complete!")
     end
   end
+  end
+
+  defp fonts_already_exist? do
+    case File.ls(@fonts_dir) do
+      {:ok, files} -> Enum.any?(files, &(not String.starts_with?(&1, ".")))
+      {:error, _} -> false
+    end
 
   defp process_url(url) do
     filename =
