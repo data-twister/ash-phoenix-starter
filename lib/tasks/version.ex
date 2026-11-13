@@ -13,6 +13,23 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
 
     * `--tag`, `-t` - Creates an annotated Git tag (e.g., `v0.1.1`) after committing.
     * `--force`, `-f` - Skips the uncommitted changes confirmation prompt.
+
+    mix.exs needs to be modified add at the top after module delcaration
+            @version (case File.read("VERSION") do
+              {:ok, content} ->
+                case String.trim(content) do
+                  "" -> "0.1.0"
+                  version -> version
+                end
+
+              {:error, _} ->
+                "0.1.0"
+            end) 
+
+    def project do
+      [
+        version: @version
+    end
   """
   @shortdoc "Updates AshPhoenixStarter's version"
 
