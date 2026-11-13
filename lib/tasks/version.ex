@@ -1,13 +1,17 @@
 defmodule Mix.Tasks.AshPhoenixStarter.Version do
   @moduledoc """
-  Bumps the semantic version stored in the `VERSION` file (defaulting to `0.1.0`)
-  and creates a Git commit for the release.
+  Bumps the semantic version stored in the `VERSION` file (defaulting to `0.1.0`),
+  creates a Git commit, and optionally creates an annotated Git tag.
 
   ## Usage
 
       mix ash_phoenix_starter.version patch
-      mix ash_phoenix_starter.version minor
-      mix ash_phoenix_starter.version major
+      mix ash_phoenix_starter.version minor --tag
+      mix ash_phoenix_starter.version major -t
+
+  ### Options
+
+    * `--tag`, `-t` - Creates an annotated Git tag (e.g., `v0.1.1`) after committing.
   """
   @shortdoc "Updates AshPhoenixStarter's version"
 
@@ -18,7 +22,21 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
 
   @impl Mix.Task
   @spec run([String.t()]) :: :ok
-  def run([level]) when level in ["patch", "minor", "major"] do
+  def run(args) do
+    {opts, positional, _invalid} =
+      OptionParser.parse(args, switches: [tag: :boolean], aliases: [t: :tag])
+
+    case positional do
+      [level] when level in ["patch", "minor", "major"] ->
+        bump_and_commit(level, Keyword.get(opts, :tag, false))
+
+      _ ->
+        Mix.raise("Usage: mix ash_phoenix_starter.version [patch | minor | major] [--tag]")
+    end
+  end
+
+  @spec bump_and_commit(String.t(), boolean()) :: :ok
+  defp bump_and_commit(level, create_tag?) do
     current_version = read_current_version()
 
     new_version_number =
@@ -36,11 +54,13 @@ defmodule Mix.Tasks.AshPhoenixStarter.Version do
     {commit_out, 0} = System.cmd("git", ["commit", "-m", "Bump version to #{new_version_number}"])
     Mix.shell().info(String.trim(commit_out))
 
-    :ok
-  end
+    if create_tag? do
+      tag_name = "v#{new_version_number}"
+      {_tag_out, 0} = System.cmd("git", ["tag", "-a", tag_name, "-m", "Release #{tag_name}"])
+      Mix.shell().info("Created tag: #{tag_name}")
+    end
 
-  def run(_args) do
-    Mix.raise("Usage: mix ash_phoenix_starter.version [patch | minor | major]")
+    :ok
   end
 
   @spec read_current_version() :: String.t()
