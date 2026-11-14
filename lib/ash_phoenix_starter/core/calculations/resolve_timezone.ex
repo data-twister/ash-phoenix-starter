@@ -79,10 +79,11 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
     )
 
     case Req.get(@timeapi_url,
-           query: [latitude: lat, longitude: lon],
-           retry: false,
-           receive_timeout: 2_000
-         ) do
+        Keyword.merge(
+          [query: [latitude: lat, longitude: lon], retry: false, receive_timeout: 2_000],
+          req_options()
+        )
+      ) do
       {:ok, %Req.Response{status: 200, body: %{"timeZone" => tz_string}}} ->
         tz_string
 
@@ -104,4 +105,9 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
   defp round_coord(%Decimal{} = val), do: val |> Decimal.to_float() |> Float.round(3)
   defp round_coord(val) when is_float(val), do: Float.round(val, 3)
   defp round_coord(val) when is_integer(val), do: val / 1.0
+
+  defp req_options do
+  Application.get_env(:ash_phoenix_starter, :timezone_req_options, [])
+end
+
 end
