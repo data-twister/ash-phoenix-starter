@@ -138,8 +138,6 @@ defmodule AshPhoenixStarter.MixProject do
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
       {:hackney, "~> 4.0", override: true},
-      {:waffle, "~> 2.0"},
-      {:waffle_ecto, "~> 0.0"},
       {:tussle, "~> 0.4.0"},
       {:idna, "~> 7.1", override: true}
       # {:tz_world, "~> 2.5"},
