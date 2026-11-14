@@ -192,6 +192,49 @@ config :tussle, AshPhoenixStarterWeb.TusController,
   expiration_period: 3600,
   max_size: 500 * 1024 * 1024
 
+  config :ash_phoenix_starter,
+  font_dir: "assets/fonts",
+  font_url_prefix: "../fonts",
+  font_css_path: "assets/css/fonts.css",
+  fonts: [
+    %{
+      family: "Roboto",
+      weight: 400,
+      style: "normal",
+      url: "https://jsdelivr.net",
+      filename: "roboto-400-normal.woff2"
+    },
+    %{
+      family: "Roboto",
+      weight: 400,
+      style: "italic",
+      url: "https://jsdelivr.net",
+      filename: "roboto-400-italic.woff2"
+    },
+    %{
+      family: "Roboto",
+      weight: 500,
+      style: "normal",
+      url: "https://jsdelivr.net",
+      filename: "roboto-500-normal.woff2"
+    },
+    %{
+      family: "Roboto",
+      weight: 700,
+      style: "normal",
+      url: "https://jsdelivr.net",
+      filename: "roboto-700-normal.woff2"
+    },
+    %{
+      family: "Roboto",
+      weight: 700,
+      style: "italic",
+      url: "https://jsdelivr.net",
+      filename: "roboto-700-italic.woff2"
+    }
+  ]
+
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
