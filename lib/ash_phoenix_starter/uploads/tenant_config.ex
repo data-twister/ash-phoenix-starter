@@ -1,17 +1,65 @@
 defmodule AshPhoenixStarter.Uploads.TenantConfig do
   @moduledoc """
-  Resolves per-organization ExAws and storage settings from Cachex/Manager.
-  Shared between image uploads and Tus chunked uploads.
+  Resolves per-organization storage settings and `ExAws` configuration from
+  `AshPhoenixStarter.Settings.Manager` with fallback to environment variables.
+
+  Shared across `ImageUploader`, `StorageDispatcher`, `FileAsset`, and `Tussle`
+  chunked uploads.
+
+  ## Supported Storage Providers
+
+  * `"local"` — Local filesystem under `priv/static/uploads` (default when unconfigured)
+  * `"s3"` — Amazon S3
+  * `"r2"` — Cloudflare R2 (automatically defaults `region` to `"auto"` and `virtual_host` to `true`)
+  * `"spaces"` — DigitalOcean Spaces
+  * `"minio"` — Self-hosted MinIO (defaults to `http://` on port `9000` when no scheme is provided)
+
+  ## Tenant Setting Keys
+
+  Reads the following keys via `Manager.get_tenant(organization_id, key)`:
+
+  * `:storage_provider` — `"local"`, `"s3"`, `"r2"`, `"spaces"`, or `"minio"`
+  * `:storage_bucket` — Target bucket name (falls back to `DEFAULT_BUCKET` env var)
+  * `:storage_host` — Endpoint hostname (e.g., `"://digitaloceanspaces.com"` or `"localhost:9000"`)
+  * `:storage_access_key` — S3 access key ID (falls back to `STORAGE_ACCESS_KEY` env var)
+  * `:storage_secret_key` — S3 secret access key (falls back to `STORAGE_SECRET_KEY` env var)
+  * `:storage_cdn_url` — Optional custom public CDN base URL (e.g., `"https://example.com"`)
+  * `:storage_virtual_host` — Boolean overriding virtual-hosted vs. path-style S3 URLs
+
+  ## Examples
+
+      # Inspect ExAws keyword configuration for an organization
+      TenantConfig.ex_aws_config(org_id)
+      # => [
+      #      access_key_id: "...",
+      #      secret_access_key: "...",
+      #      region: "auto",
+      #      s3: [scheme: "https://", host: "://cloudflarestorage.com", port: 443, virtual_host: true]
+      #    ]
+
+      # Resolve the public URL for an uploaded object key
+      TenantConfig.public_url(org_id, "uploads/organizations/123/general/logo.png")
+      # => "https://example.com/uploads/organizations/123/general/logo.png"
   """
 
   alias AshPhoenixStarter.Settings.Manager
 
   @s3_providers ~w(spaces s3 r2 minio)
 
+  @doc """
+  Returns `true` if the organization is configured to use an S3-compatible provider
+  (`"s3"`, `"r2"`, `"spaces"`, or `"minio"`).
+  """
+  @spec s3_provider?(String.t() | nil) :: boolean()
   def s3_provider?(organization_id) do
     provider(organization_id) in @s3_providers
   end
 
+  @doc """
+  Returns the normalized lowercase storage provider string for `organization_id`.
+  Defaults to `"local"` when `organization_id` is `nil` or unconfigured.
+  """
+  @spec provider(String.t() | nil) :: String.t()
   def provider(nil), do: "local"
 
   def provider(organization_id) do
@@ -19,6 +67,11 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
     |> String.downcase()
   end
 
+  @doc """
+  Returns the configured bucket name for `organization_id`, falling back to
+  `DEFAULT_BUCKET` or `"app-uploads"`.
+  """
+  @spec bucket(String.t() | nil) :: String.t()
   def bucket(nil), do: System.get_env("DEFAULT_BUCKET") || "app-uploads"
 
   def bucket(organization_id) do
@@ -27,12 +80,21 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
       "app-uploads"
   end
 
+  @doc """
+  Returns the custom public CDN URL configured for `organization_id`, or `nil`.
+  """
+  @spec cdn_url(String.t() | nil) :: String.t() | nil
   def cdn_url(nil), do: nil
 
   def cdn_url(organization_id) do
     get_tenant_setting(organization_id, :storage_cdn_url)
   end
 
+  @doc """
+  Returns whether virtual-hosted-style URLs (`https://bucket.host`) should be used
+  instead of path-style URLs (`https://host/bucket/key`). Defaults to `true` for `"r2"`.
+  """
+  @spec virtual_host?(String.t() | nil) :: boolean()
   def virtual_host?(nil), do: false
 
   def virtual_host?(organization_id) do
@@ -44,6 +106,11 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
     end
   end
 
+  @doc """
+  Builds a complete `ExAws` configuration keyword list for `organization_id`,
+  ready to pass to `ExAws.request(op, config)`.
+  """
+  @spec ex_aws_config(String.t() | nil) :: keyword()
   def ex_aws_config(organization_id) do
     provider = provider(organization_id)
 
@@ -64,10 +131,10 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
           get_tenant_setting(organization_id, :storage_host) || "localhost:9000"
 
         "spaces" ->
-          get_tenant_setting(organization_id, :storage_host) || "nyc3.digitaloceanspaces.com"
+          get_tenant_setting(organization_id, :storage_host) || "://digitaloceanspaces.com"
 
         _ ->
-          get_tenant_setting(organization_id, :storage_host) || "s3.amazonaws.com"
+          get_tenant_setting(organization_id, :storage_host) || "://amazonaws.com"
       end
 
     {scheme, clean_host, port} = parse_endpoint(provider, raw_host)
@@ -85,6 +152,13 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
     ]
   end
 
+  @doc """
+  Resolves the publicly accessible URL for `object_key` under `organization_id`.
+
+  Prefers `:storage_cdn_url` if configured; otherwise constructs either a virtual-hosted
+  S3 URL, path-style S3 URL, or relative local path (`/uploads/...`).
+  """
+  @spec public_url(String.t() | nil, String.t()) :: String.t()
   def public_url(organization_id, object_key) do
     clean_key = String.trim_leading(object_key, "/")
 
@@ -106,7 +180,7 @@ defmodule AshPhoenixStarter.Uploads.TenantConfig do
       aws_cfg = ex_aws_config(organization_id)
       s3_cfg = Keyword.get(aws_cfg, :s3, [])
       scheme = Keyword.get(s3_cfg, :scheme, "https://")
-      host = Keyword.get(s3_cfg, :host, "s3.amazonaws.com")
+      host = Keyword.get(s3_cfg, :host, "://amazonaws.com")
       bucket = bucket(organization_id)
 
       if virtual_host?(organization_id) do
