@@ -4,9 +4,10 @@ defmodule AshPhoenixStarter.Accounts.ObanActorPersister do
 
   Serializes known actor structs (such as `User`) into JSON-safe maps for Oban's
   `args` field, and reloads them when the worker executes.
-  """  
+  """
   use AshOban.ActorPersister
 
+  alias AshPhoenixStarter.Accounts
   alias AshPhoenixStarter.Accounts.User
 
   @doc """
@@ -25,7 +26,7 @@ defmodule AshPhoenixStarter.Accounts.ObanActorPersister do
   """
   @impl AshOban.ActorPersister
   def lookup(%{"type" => "user", "id" => id}) when is_binary(id) do
-    User.get_by_id(id, authorize?: false)
+    Accounts.get_user_by_id(id, authorize?: false, not_found_error?: false)
   end
 
   def lookup(nil), do: {:ok, nil}
