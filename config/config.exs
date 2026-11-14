@@ -185,7 +185,7 @@ config :ash_phoenix_starter, :timezone_cache_config,
   ttl_check_interval: 3600,
   global_ttl: 86400
 
-  config :tussle, AshPhoenixStarterWeb.TusController,
+config :tussle, AshPhoenixStarterWeb.TusController,
   storage: AshPhoenixStarter.Uploads.StorageDispatcher,
   cache: Tussle.Cache.Memory,
   base_path: "priv/static/uploads/tus",

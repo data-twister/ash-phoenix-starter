@@ -12,7 +12,10 @@ defmodule AshPhoenixStarter.Accounts.Organization.Changes.AddUserOrganization do
 
   defp associate_owner_to_organization(_changeset, organization) do
     AshPhoenixStarter.Accounts.UserOrganization
-    |> Ash.Changeset.for_create(:create, %{user_id: organization.owner_user_id, organization_id: organization.id})
+    |> Ash.Changeset.for_create(:create, %{
+      user_id: organization.owner_user_id,
+      organization_id: organization.id
+    })
     |> Ash.create!()
 
     {:ok, organization}

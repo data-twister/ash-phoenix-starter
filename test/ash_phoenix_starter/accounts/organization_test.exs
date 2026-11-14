@@ -9,9 +9,14 @@ defmodule AshPhoenixStarter.Accounts.OrganizationTest do
       # Create a new organization for the user
       uuid = Ash.UUIDv7.generate()
       organization_count = Ash.count!(AshPhoenixStarter.Accounts.Organization) + 1
-      organization_attrs = %{name: "Organization #{organization_count} #{uuid}", domain: "organization_#{organization_count}_#{uuid}"}
 
-      {:ok, organization} = Ash.create(AshPhoenixStarter.Accounts.Organization, organization_attrs, actor: user)
+      organization_attrs = %{
+        name: "Organization #{organization_count} #{uuid}",
+        domain: "organization_#{organization_count}_#{uuid}"
+      }
+
+      {:ok, organization} =
+        Ash.create(AshPhoenixStarter.Accounts.Organization, organization_attrs, actor: user)
 
       # New organization should be stored successfully.
       assert AshPhoenixStarter.Accounts.Organization

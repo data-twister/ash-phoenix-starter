@@ -35,7 +35,9 @@ defmodule AshPhoenixStarterWeb.Plugs.MaintenanceMode do
   end
 
   # Adjust this pattern if your User resource uses a different role/admin attribute
-  defp admin_user?(%{role: role}) when role in [:admin, "admin", :superadmin, "superadmin"], do: true
+  defp admin_user?(%{role: role}) when role in [:admin, "admin", :superadmin, "superadmin"],
+    do: true
+
   defp admin_user?(%{is_admin: true}), do: true
   defp admin_user?(_), do: false
 
@@ -43,7 +45,10 @@ defmodule AshPhoenixStarterWeb.Plugs.MaintenanceMode do
     if json_request?(conn) do
       conn
       |> put_resp_content_type("application/json")
-      |> send_resp(503, Jason.encode!(%{error: "Service temporarily unavailable for maintenance."}))
+      |> send_resp(
+        503,
+        Jason.encode!(%{error: "Service temporarily unavailable for maintenance."})
+      )
       |> halt()
     else
       conn

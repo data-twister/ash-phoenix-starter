@@ -39,7 +39,8 @@ group_attrs = [
   %{name: "Tenant", description: "Tenant"}
 ]
 
-groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
+groups =
+  Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
 
 user_groups = Enum.map(groups, fn x -> %{user_id: admin_user.id, group_id: x.id} end)
 
@@ -65,7 +66,8 @@ Enum.each(users, fn u ->
     )
     |> Ash.create!()
 
-  groups = Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
+  groups =
+    Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: organization.domain)
 
   user_groups = Enum.map(groups, fn x -> %{user_id: u.id, group_id: x.id} end)
 

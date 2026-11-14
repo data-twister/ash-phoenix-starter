@@ -126,7 +126,9 @@ defmodule AshPhoenixStarter.Repo.Migrations.InitialMigrations do
       modify :current_organization, :text
     end
 
-    drop_if_exists unique_index(:organizations, [:domain], name: "organizations_unique_domain_index")
+    drop_if_exists unique_index(:organizations, [:domain],
+                     name: "organizations_unique_domain_index"
+                   )
 
     drop constraint(:organizations, "organizations_owner_user_id_fkey")
 

@@ -2,13 +2,13 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
   use Ash.Resource.Calculation
   require Logger
 
-  # Define the named ConCache atom reference configured in your application supervision tree
+  # Define the named Cachex atom reference configured in your application supervision tree
   @cache_name :timezone_resolution_cache
 
   @impl true
   def describe(_opts),
     do:
-      "Resolves IANA timezone using database columns, ConCache memory, TzWorld, Geotz, or API fallbacks"
+      "Resolves IANA timezone using database columns, Cachex memory, TzWorld, Geotz, or API fallbacks"
 
   @impl true
   def calculate(records, _opts, _context) do
@@ -94,11 +94,14 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
     end
   end
 
-  # --- ConCache Memory Registry Store/Fetch Mechanics ---
+  # --- Cachex Memory Registry Store/Fetch Mechanics ---
 
   defp fetch_from_memory_cache(lat, lon) do
-    if Code.ensure_loaded?(ConCache) and Process.whereis(@cache_name) do
-      ConCache.get(@cache_name, {lat, lon})
+    if cache_available?() do
+      case Cachex.get(@cache_name, {lat, lon}) do
+        {:ok, timezone_string} -> timezone_string
+        _ -> nil
+      end
     else
       nil
     end
@@ -107,11 +110,15 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
   defp store_in_memory_cache(_lat, _lon, nil), do: nil
 
   defp store_in_memory_cache(lat, lon, timezone_string) do
-    if Code.ensure_loaded?(ConCache) and Process.whereis(@cache_name) do
-      ConCache.put(@cache_name, {lat, lon}, timezone_string)
+    if cache_available?() do
+      Cachex.put(@cache_name, {lat, lon}, timezone_string)
     end
 
     timezone_string
+  end
+
+  defp cache_available? do
+    Code.ensure_loaded?(Cachex) and not is_nil(Process.whereis(@cache_name))
   end
 
   defp has_attribute?(record, attr) do

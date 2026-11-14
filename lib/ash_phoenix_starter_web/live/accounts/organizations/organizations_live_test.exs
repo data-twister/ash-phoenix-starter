@@ -19,7 +19,8 @@ defmodule AshPhoenixStarterWeb.Accounts.Organizations.OrganizationsLiveTest do
       unique_id = String.replace(Ash.UUIDv7.generate(), "-", "_")
       params = %{name: "Organization #{unique_id}", domain: "organization_#{unique_id}"}
 
-      {:ok, organization_2} = Ash.create(AshPhoenixStarter.Accounts.Organization, params, actor: user)
+      {:ok, organization_2} =
+        Ash.create(AshPhoenixStarter.Accounts.Organization, params, actor: user)
 
       {:ok, view, html} =
         conn

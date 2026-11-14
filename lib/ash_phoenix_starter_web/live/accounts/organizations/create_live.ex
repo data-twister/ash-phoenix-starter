@@ -12,7 +12,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Organizations.CreateLive do
         
     <!-- Member Identification Section -->
         <div class=" p-6 rounded-lg border border-gray-200">
-          <h2 class="text-2xl font-semibold text-gray-700 mb-4">{gettext("Create new organization")}</h2>
+          <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+            {gettext("Create new organization")}
+          </h2>
           <.input
             field={@form[:name]}
             label={gettext("Organization Name")}

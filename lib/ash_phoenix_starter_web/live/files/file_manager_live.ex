@@ -29,12 +29,12 @@ defmodule AshPhoenixStarterWeb.Files.FileManagerLive do
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold">Files & Assets</h1>
+
           <p class="text-sm opacity-70">
             Resumable chunked uploads routed to your organization's active storage backend.
           </p>
         </div>
       </div>
-
       <%!-- Tus Uploader Dropzone / Input --%>
       <div
         id="tus-uploader-container"
@@ -49,13 +49,12 @@ defmodule AshPhoenixStarterWeb.Files.FileManagerLive do
           class="file-input file-input-bordered w-full max-w-md"
           disabled={@uploading?}
         />
-
         <%= if @uploading? do %>
           <div class="max-w-md mx-auto space-y-2">
             <div class="flex justify-between text-xs font-medium">
-              <span class="truncate">{@upload_filename}</span>
-              <span>{@upload_progress}%</span>
+              <span class="truncate">{@upload_filename}</span> <span>{@upload_progress}%</span>
             </div>
+
             <progress
               class="progress progress-primary w-full"
               value={@upload_progress}
@@ -66,37 +65,40 @@ defmodule AshPhoenixStarterWeb.Files.FileManagerLive do
         <% end %>
 
         <%= if @upload_error do %>
-          <div class="alert alert-error max-w-md mx-auto text-sm">
-            <span>{@upload_error}</span>
-          </div>
+          <div class="alert alert-error max-w-md mx-auto text-sm"><span>{@upload_error}</span></div>
         <% end %>
       </div>
-
       <%!-- Uploaded FileAssets Table --%>
       <div class="overflow-x-auto bg-base-100 rounded-xl border border-base-300">
         <table class="table w-full">
           <thead>
             <tr>
               <th>Filename</th>
+
               <th>Type</th>
+
               <th>Size</th>
+
               <th class="text-right">Actions</th>
             </tr>
           </thead>
+
           <tbody id="file-assets-list" phx-update="stream">
             <tr id="file-assets-empty" class="hidden only:table-row">
-              <td colspan="4" class="text-center py-8 opacity-60">
-                No files uploaded yet.
-              </td>
+              <td colspan="4" class="text-center py-8 opacity-60">No files uploaded yet.</td>
             </tr>
+
             <tr :for={{dom_id, asset} <- @streams.assets} id={dom_id}>
               <td class="font-medium">
                 <a href={asset.file_url} target="_blank" rel="noopener" class="link link-primary">
                   {asset.filename}
                 </a>
               </td>
+
               <td class="text-xs opacity-75">{asset.content_type || "—"}</td>
+
               <td class="text-xs opacity-75">{format_bytes(asset.file_size)}</td>
+
               <td class="text-right">
                 <button
                   type="button"

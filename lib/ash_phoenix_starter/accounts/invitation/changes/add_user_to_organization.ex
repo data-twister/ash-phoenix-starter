@@ -43,7 +43,8 @@ defmodule AshPhoenixStarter.Accounts.Invitation.Changes.AddUserToOrganization do
     with {:ok, user} <- get_or_create_user(invitation),
          {:ok, _user_organization} <- add_user_to_organization(user.id, invitation.organization),
          {:ok, _user_updated} <- set_user_current_organization(user, invitation.organization),
-         {:ok, _user_group} <- add_user_to_group(user.id, invitation.group_id, invitation.organization) do
+         {:ok, _user_group} <-
+           add_user_to_group(user.id, invitation.group_id, invitation.organization) do
       {:ok, invitation}
     else
       {:error, reason} ->

@@ -16,9 +16,15 @@ defmodule AshPhoenixStarter.Accounts.User.Changes.CreatePersonOrganization do
 
   defp create_personal_organization(_changeset, user) do
     organization_count = Ash.count!(AshPhoenixStarter.Accounts.Organization) + 1
-    organization_attrs = %{name: "Personal Organization", domain: "personal_organization_#{organization_count}"}
 
-    {:ok, _organization} = Ash.create(AshPhoenixStarter.Accounts.Organization, organization_attrs, actor: user)
+    organization_attrs = %{
+      name: "Personal Organization",
+      domain: "personal_organization_#{organization_count}"
+    }
+
+    {:ok, _organization} =
+      Ash.create(AshPhoenixStarter.Accounts.Organization, organization_attrs, actor: user)
+
     {:ok, Map.put(user, :current_organization, organization_attrs.domain)}
   end
 end

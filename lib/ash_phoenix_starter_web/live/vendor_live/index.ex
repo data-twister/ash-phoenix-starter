@@ -77,13 +77,14 @@ defmodule AshPhoenixStarterWeb.VendorIndexLive do
         >
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-semibold text-lg"><%= vendor.name %></h2>
+              <h2 class="font-semibold text-lg">{vendor.name}</h2>
+
               <.link
                 :if={is_integer(vendor.total_low_stock) and vendor.total_low_stock > 0}
                 navigate={~p"/products?#{[vendor_id: vendor.id, low_stock: true]}"}
                 class="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-full underline"
               >
-                <%= vendor.total_low_stock %> low stock
+                {vendor.total_low_stock} low stock
               </.link>
               <span
                 :if={!is_integer(vendor.total_low_stock) or vendor.total_low_stock == 0}
@@ -93,24 +94,20 @@ defmodule AshPhoenixStarterWeb.VendorIndexLive do
               </span>
             </div>
 
-            <p class="text-sm text-zinc-500">
-              <%= vendor.region_name %> (<%= vendor.country_code %>)
-            </p>
+            <p class="text-sm text-zinc-500">{vendor.region_name} ({vendor.country_code})</p>
+
             <div class="flex flex-wrap gap-1 mt-2">
               <span
                 :for={loc <- vendor.region_locations}
                 class="px-2 py-0.5 text-xs bg-zinc-100 rounded-full"
               >
-                <%= loc.value %>
+                {loc.value}
               </span>
             </div>
           </div>
 
           <div class="flex items-center space-x-4">
-            <.link navigate={~p"/vendors/#{vendor.id}/edit"} class="text-sm underline">
-              Edit
-            </.link>
-
+            <.link navigate={~p"/vendors/#{vendor.id}/edit"} class="text-sm underline">Edit</.link>
             <button
               :if={vendor.user_id == @current_user.id}
               type="button"

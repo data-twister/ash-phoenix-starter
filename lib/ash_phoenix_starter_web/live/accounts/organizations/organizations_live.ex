@@ -7,7 +7,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Organizations.OrganizationsLive do
     ~H"""
     <Layouts.account_organizations flash={@flash} current_user={@current_user} uri={@uri}>
       <Cinder.Table.table query={get_query(@current_user)}>
-        <:col :let={organization} field="Name" filter>{organization.name}({organization.domain})</:col>
+        <:col :let={organization} field="Name" filter>
+          {organization.name}({organization.domain})
+        </:col>
         <:col :let={organization}>
           <.button
             :if={organization.domain !== @current_user.current_organization}
@@ -38,7 +40,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Organizations.OrganizationsLive do
 
   defp switch_organization_to(organization, %{current_user: current_user}) do
     current_user
-    |> Ash.Changeset.for_update(:switch_organization_to, %{organization: organization}, authorize?: false)
+    |> Ash.Changeset.for_update(:switch_organization_to, %{organization: organization},
+      authorize?: false
+    )
     |> Ash.update()
   end
 

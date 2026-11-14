@@ -54,7 +54,7 @@ defmodule AshPhoenixStarterWeb.Router do
   scope "/files", AshPhoenixStarterWeb do
     pipe_through [:tus]
 
-    add_tus_routes TusController
+    add_tus_routes(TusController)
   end
 
   scope "/", AshPhoenixStarterWeb do
@@ -72,7 +72,6 @@ defmodule AshPhoenixStarterWeb.Router do
       # If an authenticated user must *not* be present:
       # on_mount {AshPhoenixStarterWeb.LiveUserAuth, :live_no_user}
       #         AshPhoenixStarterWeb.LiveUri
-
 
       live "/dashboard", DashboardLive
       live "/settings", Settings.SettingsLive
@@ -112,10 +111,10 @@ defmodule AshPhoenixStarterWeb.Router do
       live "/merchants/new", MerchantFormLive, :new
       live "/merchants/:id/edit", MerchantFormLive, :edit
 
-    # Product routes
-    live "/products", ProductIndexLive, :index
-    live "/products/new", ProductFormLive, :new
-    live "/products/:id/edit", ProductFormLive, :edit
+      # Product routes
+      live "/products", ProductIndexLive, :index
+      live "/products/new", ProductFormLive, :new
+      live "/products/:id/edit", ProductFormLive, :edit
     end
   end
 
@@ -127,8 +126,6 @@ defmodule AshPhoenixStarterWeb.Router do
     live "/landing", LandingLive, :index
 
     live "/inventory/dashboard", InventoryDashboardLive, :index
-
-    
 
     auth_routes AuthController, AshPhoenixStarter.Accounts.User, path: "/auth"
     sign_out_route AuthController

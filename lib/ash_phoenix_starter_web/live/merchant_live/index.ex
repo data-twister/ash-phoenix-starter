@@ -77,13 +77,14 @@ defmodule AshPhoenixStarterWeb.MerchantIndexLive do
         >
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-semibold text-lg"><%= merchant.name %></h2>
+              <h2 class="font-semibold text-lg">{merchant.name}</h2>
+
               <.link
                 :if={is_integer(merchant.total_low_stock) and merchant.total_low_stock > 0}
                 navigate={~p"/products?#{[merchant_id: merchant.id, low_stock: true]}"}
                 class="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-full underline"
               >
-                <%= merchant.total_low_stock %> low stock
+                {merchant.total_low_stock} low stock
               </.link>
               <span
                 :if={!is_integer(merchant.total_low_stock) or merchant.total_low_stock == 0}
@@ -93,15 +94,14 @@ defmodule AshPhoenixStarterWeb.MerchantIndexLive do
               </span>
             </div>
 
-            <p class="text-sm text-zinc-500">
-              <%= merchant.region_name %> (<%= merchant.country_code %>)
-            </p>
+            <p class="text-sm text-zinc-500">{merchant.region_name} ({merchant.country_code})</p>
+
             <div class="flex flex-wrap gap-1 mt-2">
               <span
                 :for={loc <- merchant.region_locations}
                 class="px-2 py-0.5 text-xs bg-zinc-100 rounded-full"
               >
-                <%= loc.value %>
+                {loc.value}
               </span>
             </div>
           </div>
@@ -110,7 +110,6 @@ defmodule AshPhoenixStarterWeb.MerchantIndexLive do
             <.link navigate={~p"/merchants/#{merchant.id}/edit"} class="text-sm underline">
               Edit
             </.link>
-
             <button
               :if={merchant.user_id == @current_user.id}
               type="button"

@@ -37,14 +37,14 @@ defmodule AshPhoenixStarterWeb.Components.InviteNewUserForm do
           <h3 class="text-xl font-semibold leading-none tracking-tight">
             {gettext("Invite a new member to your organization")}
           </h3>
-          
+
           <p class="text-sm text-gray-500">
             {gettext(
               "Invite a new user to your organization by entering their email address below. They will receive an invitation email with instructions on how to join your organization."
             )}
           </p>
         </div>
-        
+
         <.form
           for={@form}
           phx-change="validate"

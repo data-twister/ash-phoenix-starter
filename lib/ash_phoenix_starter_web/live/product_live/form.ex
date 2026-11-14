@@ -44,7 +44,10 @@ defmodule AshPhoenixStarterWeb.ProductFormLive do
 
     {:noreply,
      socket
-     |> assign(:page_title, if(socket.assigns.live_action == :new, do: "New Product", else: "Edit Product"))
+     |> assign(
+       :page_title,
+       if(socket.assigns.live_action == :new, do: "New Product", else: "Edit Product")
+     )
      |> assign(:form, to_form(form))}
   end
 
@@ -72,11 +75,10 @@ defmodule AshPhoenixStarterWeb.ProductFormLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-2xl mx-auto p-6">
-      <h1 class="text-2xl font-bold mb-6"><%= @page_title %></h1>
+      <h1 class="text-2xl font-bold mb-6">{@page_title}</h1>
 
       <.form for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
         <.input field={@form[:name]} type="text" label="Product Name" placeholder="Solar Panel Kit" />
-
         <div class="grid grid-cols-2 gap-4">
           <.input
             field={@form[:vendor_id]}
@@ -85,7 +87,6 @@ defmodule AshPhoenixStarterWeb.ProductFormLive do
             options={Enum.map(@vendors, &{&1.name, &1.id})}
             prompt="Select a vendor"
           />
-
           <.input
             field={@form[:merchant_id]}
             type="select"
@@ -102,12 +103,14 @@ defmodule AshPhoenixStarterWeb.ProductFormLive do
 
         <div class="grid grid-cols-2 gap-4">
           <.input field={@form[:low_stock_threshold]} type="number" label="Low Stock Threshold" />
-          <.input field={@form[:critical_stock_threshold]} type="number" label="Critical Stock Threshold" />
+          <.input
+            field={@form[:critical_stock_threshold]}
+            type="number"
+            label="Critical Stock Threshold"
+          />
         </div>
 
-        <div class="pt-4">
-          <.button type="submit">Save Product</.button>
-        </div>
+        <div class="pt-4"><.button type="submit">Save Product</.button></div>
       </.form>
     </div>
     """

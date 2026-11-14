@@ -108,6 +108,7 @@ defmodule AshPhoenixStarterWeb.InventoryDashboardLive do
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 class="text-2xl font-bold">Regional Inventory Dashboard</h1>
+
           <p class="text-sm text-zinc-500 mt-1">
             Live remaining stock aggregated across merchant regions
           </p>
@@ -115,10 +116,13 @@ defmodule AshPhoenixStarterWeb.InventoryDashboardLive do
 
         <div class="flex flex-wrap items-center gap-2">
           <.link navigate={~p"/vendors"} class="px-3 py-2 text-sm border rounded-md hover:bg-zinc-50">
-            Vendors (<%= @total_vendors %>)
+            Vendors ({@total_vendors})
           </.link>
-          <.link navigate={~p"/merchants"} class="px-3 py-2 text-sm border rounded-md hover:bg-zinc-50">
-            Merchants (<%= @total_merchants %>)
+          <.link
+            navigate={~p"/merchants"}
+            class="px-3 py-2 text-sm border rounded-md hover:bg-zinc-50"
+          >
+            Merchants ({@total_merchants})
           </.link>
           <.link navigate={~p"/products"} class="px-3 py-2 text-sm border rounded-md hover:bg-zinc-50">
             Products
@@ -134,12 +138,13 @@ defmodule AshPhoenixStarterWeb.InventoryDashboardLive do
             aria-label="Filter by country"
           >
             <option value="" selected={@selected_country == ""}>All Countries</option>
+
             <option
               :for={code <- @country_codes}
               value={code}
               selected={@selected_country == code}
             >
-              <%= code %>
+              {code}
             </option>
           </select>
         </form>
@@ -158,14 +163,14 @@ defmodule AshPhoenixStarterWeb.InventoryDashboardLive do
           <p class="text-xs font-medium uppercase tracking-wider text-zinc-500">
             Total Remaining Stock
           </p>
-          <p class="text-3xl font-bold mt-1"><%= @total_stock %></p>
+
+          <p class="text-3xl font-bold mt-1">{@total_stock}</p>
         </div>
 
         <div class="p-4 border rounded-lg bg-zinc-50">
-          <p class="text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Active Regions
-          </p>
-          <p class="text-3xl font-bold mt-1"><%= length(@metrics) %></p>
+          <p class="text-xs font-medium uppercase tracking-wider text-zinc-500">Active Regions</p>
+
+          <p class="text-3xl font-bold mt-1">{length(@metrics)}</p>
         </div>
       </div>
 
@@ -176,8 +181,8 @@ defmodule AshPhoenixStarterWeb.InventoryDashboardLive do
 
         <div :for={{region_name, qty} <- @metrics} class="p-4">
           <div class="flex justify-between items-center text-sm mb-2">
-            <span class="font-semibold text-zinc-900"><%= region_name %></span>
-            <span class="font-mono text-zinc-700"><%= qty %> units</span>
+            <span class="font-semibold text-zinc-900">{region_name}</span>
+            <span class="font-mono text-zinc-700">{qty} units</span>
           </div>
 
           <div class="w-full bg-zinc-100 rounded-full h-2.5 overflow-hidden">

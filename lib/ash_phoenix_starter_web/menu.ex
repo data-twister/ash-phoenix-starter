@@ -2,7 +2,7 @@ defmodule AshPhoenixStarterWeb.Menu do
   use Gettext, backend: AshPhoenixStarterWeb.Gettext
   use AshPhoenixStarterWeb, :html
 
-    @doc """
+  @doc """
   Matches exact paths as well as nested sub-routes (e.g. `/vendors/new` or `/vendors/:id/edit`).
   """
   def active_link?(%URI{path: current_path}, href) when is_binary(current_path) do
@@ -13,7 +13,6 @@ defmodule AshPhoenixStarterWeb.Menu do
   end
 
   def active_link?(_, _), do: false
-
 
   @doc """
   Configure left menu in the application

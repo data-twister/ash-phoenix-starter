@@ -108,7 +108,7 @@ defmodule AshPhoenixStarter.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:con_cache, "~> 1.1"},
+      {:cachex, "~> 4.0"},
       {:nebulex, "~> 2.5"},
       {:decorator, "~> 1.4"},
       {:rename_project, "~> 0.1"},

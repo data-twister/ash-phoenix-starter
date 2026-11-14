@@ -55,7 +55,10 @@ defmodule AshPhoenixStarterWeb.VendorFormLive do
 
     {:noreply,
      socket
-     |> assign(:page_title, if(socket.assigns.live_action == :new, do: "New Vendor", else: "Edit Vendor"))
+     |> assign(
+       :page_title,
+       if(socket.assigns.live_action == :new, do: "New Vendor", else: "Edit Vendor")
+     )
      |> assign(:selected_region_id, region_id)
      |> assign(:region_locations, load_locations_for_region(region_id))
      |> assign(:form, to_form(form))}
@@ -68,7 +71,8 @@ defmodule AshPhoenixStarterWeb.VendorFormLive do
 
     {vendor_params, locations} =
       if new_region_id != old_region_id do
-        {Map.put(vendor_params, "region_location_ids", []), load_locations_for_region(new_region_id)}
+        {Map.put(vendor_params, "region_location_ids", []),
+         load_locations_for_region(new_region_id)}
       else
         {Map.put_new(vendor_params, "region_location_ids", []), socket.assigns.region_locations}
       end
@@ -114,14 +118,18 @@ defmodule AshPhoenixStarterWeb.VendorFormLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-2xl mx-auto p-6">
-      <h1 class="text-2xl font-bold mb-6"><%= @page_title %></h1>
+      <h1 class="text-2xl font-bold mb-6">{@page_title}</h1>
 
       <.form for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
         <.input field={@form[:user_id]} type="hidden" />
         <.input field={@form[:name]} type="text" label="Vendor Name" placeholder="Desert Supply Co" />
-
         <div class="grid grid-cols-2 gap-4">
-          <.input field={@form[:country_code]} type="text" label="Country Code (ISO-2)" placeholder="US" />
+          <.input
+            field={@form[:country_code]}
+            type="text"
+            label="Country Code (ISO-2)"
+            placeholder="US"
+          />
           <.input field={@form[:region_name]} type="text" label="Region Name" placeholder="Arizona" />
         </div>
 
@@ -132,12 +140,10 @@ defmodule AshPhoenixStarterWeb.VendorFormLive do
           options={Enum.map(@regions, &{&1.name, &1.id})}
           prompt="Select a region"
         />
-
         <div>
           <label class="block text-sm font-semibold leading-6 text-zinc-800 mb-2">
             Serviceable Region Locations
           </label>
-
           <div :if={is_nil(@selected_region_id)} class="text-sm text-zinc-500 border rounded-lg p-3">
             Select a primary region above to view available locations.
           </div>
@@ -164,15 +170,12 @@ defmodule AshPhoenixStarterWeb.VendorFormLive do
                 value={loc.id}
                 checked={loc.id in selected_ids}
                 class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
-              />
-              <span><%= loc.value %> (<%= loc.type %>)</span>
+              /> <span>{loc.value} ({loc.type})</span>
             </label>
           </div>
         </div>
 
-        <div class="pt-4">
-          <.button type="submit">Save Vendor</.button>
-        </div>
+        <div class="pt-4"><.button type="submit">Save Vendor</.button></div>
       </.form>
     </div>
     """

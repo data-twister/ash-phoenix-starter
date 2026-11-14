@@ -81,5 +81,4 @@ defmodule AshPhoenixStarterWeb.Map do
     </div>
     """
   end
-
 end

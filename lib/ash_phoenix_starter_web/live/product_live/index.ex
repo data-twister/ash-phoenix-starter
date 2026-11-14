@@ -101,7 +101,9 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
   defp maybe_filter_vendor(query, vendor_id), do: Ash.Query.filter(query, vendor_id == ^vendor_id)
 
   defp maybe_filter_merchant(query, ""), do: query
-  defp maybe_filter_merchant(query, merchant_id), do: Ash.Query.filter(query, merchant_id == ^merchant_id)
+
+  defp maybe_filter_merchant(query, merchant_id),
+    do: Ash.Query.filter(query, merchant_id == ^merchant_id)
 
   defp maybe_filter_stock_level(query, "true"),
     do: Ash.Query.filter(query, remaining_stock <= low_stock_threshold)
@@ -118,6 +120,7 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
           <h1 class="text-2xl font-bold">Products</h1>
+
           <.link
             :if={@filtered?}
             patch={~p"/products"}
@@ -126,21 +129,24 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
             Clear filters
           </.link>
         </div>
-
         <.link navigate={~p"/products/new"} class="btn btn-primary">New Product</.link>
       </div>
 
-      <form phx-change="filter" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 p-4 border rounded-lg bg-zinc-50">
+      <form
+        phx-change="filter"
+        class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 p-4 border rounded-lg bg-zinc-50"
+      >
         <div>
           <label class="block text-xs font-medium text-zinc-600 mb-1">Vendor</label>
           <select name="filters[vendor_id]" class="w-full rounded-md border-zinc-300 text-sm">
             <option value="">All Vendors</option>
+
             <option
               :for={v <- @vendors}
               value={v.id}
               selected={@filters["vendor_id"] == v.id}
             >
-              <%= v.name %>
+              {v.name}
             </option>
           </select>
         </div>
@@ -149,12 +155,13 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
           <label class="block text-xs font-medium text-zinc-600 mb-1">Merchant</label>
           <select name="filters[merchant_id]" class="w-full rounded-md border-zinc-300 text-sm">
             <option value="">All Merchants</option>
+
             <option
               :for={m <- @merchants}
               value={m.id}
               selected={@filters["merchant_id"] == m.id}
             >
-              <%= m.name %>
+              {m.name}
             </option>
           </select>
         </div>
@@ -163,8 +170,14 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
           <label class="block text-xs font-medium text-zinc-600 mb-1">Stock Status</label>
           <select name="filters[low_stock]" class="w-full rounded-md border-zinc-300 text-sm">
             <option value="" selected={@filters["low_stock"] == ""}>All Stock Levels</option>
-            <option value="true" selected={@filters["low_stock"] == "true"}>Low & Critical Stock</option>
-            <option value="critical" selected={@filters["low_stock"] == "critical"}>Critical Stock Only</option>
+
+            <option value="true" selected={@filters["low_stock"] == "true"}>
+              Low & Critical Stock
+            </option>
+
+            <option value="critical" selected={@filters["low_stock"] == "critical"}>
+              Critical Stock Only
+            </option>
           </select>
         </div>
       </form>
@@ -181,27 +194,22 @@ defmodule AshPhoenixStarterWeb.ProductIndexLive do
         >
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-semibold text-lg"><%= product.name %></h2>
-              <span class={alert_badge_class(product.alert_level)}>
-                <%= product.alert_level %>
-              </span>
+              <h2 class="font-semibold text-lg">{product.name}</h2>
+              <span class={alert_badge_class(product.alert_level)}>{product.alert_level}</span>
             </div>
 
             <p class="text-sm text-zinc-600 mt-1">
-              Price: $<%= product.price %> · Remaining Stock: <%= product.remaining_stock %>
+              Price: ${product.price} · Remaining Stock: {product.remaining_stock}
             </p>
 
             <p class="text-xs text-zinc-500 mt-1">
-              Vendor: <%= (product.vendor && product.vendor.name) || "None" %> ·
-              Merchant: <%= (product.merchant && product.merchant.name) || "None" %>
+              Vendor: {(product.vendor && product.vendor.name) || "None"} ·
+              Merchant: {(product.merchant && product.merchant.name) || "None"}
             </p>
           </div>
 
           <div class="flex items-center space-x-4">
-            <.link navigate={~p"/products/#{product.id}/edit"} class="text-sm underline">
-              Edit
-            </.link>
-
+            <.link navigate={~p"/products/#{product.id}/edit"} class="text-sm underline">Edit</.link>
             <button
               type="button"
               phx-click="delete"

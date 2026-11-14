@@ -23,7 +23,6 @@ defmodule AshPhoenixStarter.Accounts do
     resource AshPhoenixStarter.Accounts.VendorRegionLocation
     resource AshPhoenixStarter.Accounts.MerchantRegionLocation
 
-
     resource AshPhoenixStarter.Accounts.UserNotification do
       define :notify, action: :create
     end

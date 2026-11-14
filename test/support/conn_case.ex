@@ -109,6 +109,8 @@ defmodule AshPhoenixStarterWeb.ConnCase do
       %{name: "HR", description: "Human resources specialist"}
     ]
 
-    Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs, tenant: actor.current_organization)
+    Ash.Seed.seed!(AshPhoenixStarter.Accounts.Group, group_attrs,
+      tenant: actor.current_organization
+    )
   end
 end

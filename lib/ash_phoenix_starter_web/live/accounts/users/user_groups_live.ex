@@ -119,7 +119,9 @@ defmodule AshPhoenixStarterWeb.Accounts.Users.UserGroupsLive do
   end
 
   defp get_groups(current_user) do
-    {:ok, groups} = Ash.read(AshPhoenixStarter.Accounts.Group, tenant: current_user.current_organization)
+    {:ok, groups} =
+      Ash.read(AshPhoenixStarter.Accounts.Group, tenant: current_user.current_organization)
+
     groups
   end
 

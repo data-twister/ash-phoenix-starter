@@ -136,7 +136,8 @@ defmodule AshPhoenixStarterWeb.Layouts do
       navigate={@href}
       class={[
         "group -mx-2 -my-1 w-full inline-flex items-center gap-3 rounded-lg px-2 py-1 hover:text-primary hover:bg-base-100 hover:border hover:border-primary",
-        @active && "w-full bg-primary text-primary-content hover:text-primary-content hover:bg-primary"
+        @active &&
+          "w-full bg-primary text-primary-content hover:text-primary-content hover:bg-primary"
       ]}
     >
       <.icon name={@icon} class="w-5 h-5" /> {render_slot(@inner_block)}
@@ -167,7 +168,6 @@ defmodule AshPhoenixStarterWeb.Layouts do
     </div>
     """
   end
-
 
   defp top_search_box(assigns) do
     ~H"""
