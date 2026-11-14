@@ -122,7 +122,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:cachex, "~> 4.0"},
       {:nebulex, "~> 2.5"},
       {:decorator, "~> 1.4"},
-      {:rename_project, "~> 0.1"},
+      {:rename_project, github: "data-twister/rename_project"},
       {:x509, "~> 0.8"},
       {:maybe, "~> 1.0"},
       {:hammer, ">= 0.0.0"},
