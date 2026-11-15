@@ -21,6 +21,7 @@ defmodule AshPhoenixStarter.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      docs: docs(),
       test_paths: ["test", "lib"],
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader],
@@ -73,7 +74,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:phoenix_live_favicon, "~> 1.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       # {:phoenix_bakery, "~> 0.1.0", runtime: false},
-      {:live_debugger, "~> 0.4", only: [:dev]},
+      {:live_debugger, "~> 1.0", only: [:dev, :test]},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:swoosh, "~> 1.16"},
       {:ash, "~> 3.0"},
@@ -87,14 +88,14 @@ defmodule AshPhoenixStarter.MixProject do
       {:ash_state_machine, "~> 0.2.13"},
       {:ash_rate_limiter, "~> 2.0"},
       {:ash_query_builder, "~> 0.10.0"},
-      {:ash_credo, "~> 0.17.1"},
-      {:ash_diagram, "~> 0.2.2"},
+      {:ash_credo, "~> 0.17.1", only: [:dev, :test], runtime: false},
+      {:ash_diagram, "~> 0.2.2", only: :dev, runtime: false}
       {:ash_ops, "~> 0.2"},
       {:ash_oban, "~> 0.8"},
-      {:ash_workflow, "~> 0.10.1"},
+      {:ash_workflow, "~> 0.12"},
       {:oban, "~> 2.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
-      {:sourceror, "~> 1.8", only: [:dev, :test]},
+      {:sourceror, "~> 1.11", only: [:dev, :test]},
       {:ex_cldr, "~> 2.45", override: true},
       {:ex_cldr_calendars, "~> 2.1"},
       {:ex_cldr_currencies, "~> 2.13"},
@@ -119,12 +120,12 @@ defmodule AshPhoenixStarter.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:cachex, "~> 4.0"},
-      {:nebulex, "~> 2.5"},
+      {:nebulex, "~> 3.1"},
+      {:nebulex_local, "~> 3.1"},
+      {:decorator, "~> 1.4"}
       {:decorator, "~> 1.4"},
-      {:rename_project, "~> 0.1"},
+      {:rename_project, github: "data-twister/rename_project", only: :dev, runtime: false}
       {:x509, "~> 0.8"},
-      {:maybe, "~> 1.0"},
       {:hammer, ">= 0.0.0"},
       {:timex, ">= 0.0.0"},
       {:adept_svg, "~> 0.3.1"},
@@ -133,15 +134,11 @@ defmodule AshPhoenixStarter.MixProject do
       {:cinder, "~> 0.7"},
       {:picosat_elixir, "~> 0.2"},
       {:ex_cmd, "~> 0.18.0"},
-      {:mix_audit, "~> 2.1"},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
       {:altcha, github: "data-twister/altcha-lib-ex", branch: "ash"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
-      {:hackney, "~> 4.0", override: true},
-      {:waffle, "~> 2.0"},
-      {:waffle_ecto, "~> 0.0"},
       {:tussle, "~> 0.4.0"},
-      {:idna, "~> 7.1", override: true}
       # {:tz_world, "~> 2.5"},
       # {:geotz, github: "data-twister/geotz"},
       # {:geolixir, "~> 0.1.4"},
@@ -173,6 +170,39 @@ defmodule AshPhoenixStarter.MixProject do
         "phx.digest"
       ],
       precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]
+    ]
+  end
+
+   defp docs do
+    [
+      main: "readme",
+      extras: [
+        "README.md"
+      ],
+      groups_for_modules: [
+        Uploads: [
+          AshPhoenixStarter.Core.FileAsset,
+          AshPhoenixStarter.Uploads.ImageUploader,
+          AshPhoenixStarter.Uploads.StorageDispatcher,
+          AshPhoenixStarter.Uploads.TenantConfig
+        ],
+        Core: [
+          ~r/^AshPhoenixStarter\.Core\..*/
+        ],
+        Web: [
+          ~r/^AshPhoenixStarterWeb\..*/
+        ],
+        "Mix Tasks": [
+          ~r/^Mix\.Tasks\..*/
+        ]
+      ]
+    ]
+  end
+
+  defp deps do
+    [
+      # ... your existing deps ...
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
   end
 end

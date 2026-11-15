@@ -86,32 +86,18 @@ defmodule AshPhoenixStarterWeb.Components.FileManagerComponent do
   def handle_event("save_uploads", _params, socket) do
     organization_id = socket.assigns.organization_id
 
-    results =
-      consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
-        scope = %{organization_id: organization_id}
-        file_input = %{filename: entry.client_name, path: path}
+    results = consume_uploaded_entries(socket, :file, fn %{path: path}, entry ->
+      file = %{
+        path: path,
+        file_name: entry.client_name,
+        content_type: entry.client_type
+      }
 
-        case ImageUploader.store({file_input, scope}) do
-          {:ok, filename} ->
-            url = ImageUploader.url({filename, scope}, :original)
-
-            result =
-              FileAsset
-              |> Ash.Changeset.for_create(:create, %{
-                filename: entry.client_name,
-                file_url: url,
-                file_size: entry.client_size,
-                content_type: entry.client_type,
-                organization_id: organization_id
-              })
-              |> Ash.create!()
-
-            {:ok, result}
-
-          {:error, reason} ->
-            {:error, reason}
-        end
-      end)
+      case AshPhoenixStarter.Core.FileAsset.upload(file, %{organization_id: organization_id}) do
+        {:ok, asset} -> {:ok, asset}
+        {:error, reason} -> {:postpone, reason}
+      end
+    end)
 
     {successes, errors} =
       Enum.split_with(results, fn

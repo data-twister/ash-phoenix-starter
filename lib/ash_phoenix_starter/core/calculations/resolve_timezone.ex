@@ -1,83 +1,89 @@
 defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
+  @moduledoc """
+  Ash calculation that resolves an IANA timezone string (e.g. `"America/Phoenix"`)
+  for a record using a multi-tier lookup strategy:
+
+  1. Pre-saved `:cached_timezone` column on the record (if present and non-nil)
+  2. In-memory Nebulex cache (`AshPhoenixStarter.Cache.TimezoneResolution`)
+  3. Local offline NIF/ETS lookup via `TzWorld` or `Geotz` (if installed)
+  4. External HTTP fallback via `timeapi.io`
+  """
+
   use Ash.Resource.Calculation
   require Logger
 
-  # Define the named Cachex atom reference configured in your application supervision tree
-  @cache_name :timezone_resolution_cache
+  alias AshPhoenixStarter.Cache.TimezoneResolution
+
+  @timeapi_url "https://timeapi.io"
 
   @impl true
-  def describe(_opts),
-    do:
-      "Resolves IANA timezone using database columns, Cachex memory, TzWorld, Geotz, or API fallbacks"
+  def describe(_opts) do
+    "Resolves IANA timezone using database columns, Nebulex cache, TzWorld, Geotz, or API fallbacks"
+  end
 
   @impl true
   def calculate(records, _opts, _context) do
-    # Check what engine dependencies are natively loaded into the active BEAM runtime
-    tz_world_available? = Code.ensure_loaded?(TzWorld)
-    geotz_available? = Code.ensure_loaded?(Geotz)
+    engines = %{
+      tz_world?: Code.ensure_loaded?(TzWorld),
+      geotz?: Code.ensure_loaded?(Geotz)
+    }
 
-    Enum.map(records, fn record ->
-      cond do
-        # 1. Prioritize pre-saved database persistent columns if populated
-        has_attribute?(record, :cached_timezone) && not is_nil(record.cached_timezone) ->
-          record.cached_timezone
+    Enum.map(records, &resolve_record(&1, engines))
+  end
 
-        # 2. Process lookups if valid coordinate metrics exist
-        not is_nil(record.latitude) and not is_nil(record.longitude) ->
-          case fetch_from_memory_cache(record.latitude, record.longitude) do
-            timezone_string when is_binary(timezone_string) ->
-              timezone_string
+  # ============================================================================
+  # PRIVATE RESOLUTION PIPELINE
+  # ============================================================================
 
-            nil ->
-              # Cache miss: Execute resolution strategy loop cascade
-              resolved_tz =
-                cond do
-                  tz_world_available? ->
-                    lookup_local_tz_world(record.latitude, record.longitude)
+  defp resolve_record(%{cached_timezone: tz}, _engines) when is_binary(tz) and tz != "", do: tz
 
-                  geotz_available? ->
-                    lookup_local_geotz(record.latitude, record.longitude)
+  defp resolve_record(%{latitude: lat, longitude: lon}, engines)
+       when not is_nil(lat) and not is_nil(lon) do
+    cache_key = normalize_coords(lat, lon)
 
-                  true ->
-                    fetch_timezone_from_api(record.latitude, record.longitude)
-                end
-
-              store_in_memory_cache(record.latitude, record.longitude, resolved_tz)
-              resolved_tz
-          end
-
-        true ->
-          nil
-      end
+    TimezoneResolution.fetch(cache_key, fn ->
+      resolve_from_engines(lat, lon, engines)
     end)
   end
 
-  # --- Internal Resolution Engine Drivers ---
+  defp resolve_record(_record, _engines), do: nil
 
-  defp lookup_local_tz_world(lat, lon) do
-    # apply/3 safely insulates the compiler from crashing if the module is removed from mix.exs
-    case apply(TzWorld, :timezone_at, [{lon, lat}]) do
-      {:ok, timezone_string} -> timezone_string
-      _ -> fetch_timezone_from_api(lat, lon)
+  defp resolve_from_engines(lat, lon, engines) do
+    with nil <- maybe_lookup_tz_world(lat, lon, engines.tz_world?),
+         nil <- maybe_lookup_geotz(lat, lon, engines.geotz?) do
+      fetch_timezone_from_api(lat, lon)
     end
   end
 
-  defp lookup_local_geotz(lat, lon) do
-    # Geotz natively expects a coordinate lookup parameter mapped as {latitude, longitude} or via its signature
+  defp maybe_lookup_tz_world(_lat, _lon, false), do: nil
+
+  defp maybe_lookup_tz_world(lat, lon, true) do
+    case apply(TzWorld, :timezone_at, [{lon, lat}]) do
+      {:ok, timezone_string} -> timezone_string
+      _ -> nil
+    end
+  end
+
+  defp maybe_lookup_geotz(_lat, _lon, false), do: nil
+
+  defp maybe_lookup_geotz(lat, lon, true) do
     case apply(Geotz, :timezone_at, [{lat, lon}]) do
       {:ok, timezone_string} -> timezone_string
-      _ -> fetch_timezone_from_api(lat, lon)
+      _ -> nil
     end
   end
 
   defp fetch_timezone_from_api(lat, lon) do
-    url = "https://timeapi.io"
-
     Logger.info(
-      "[Timezone Resolution] Local engines missed/not found. Executing external API fallback for: {lat: #{lat}, lon: #{lon}}"
+      "[Timezone Resolution] Local engines missed/unavailable. Querying external API for {lat: #{lat}, lon: #{lon}}"
     )
 
-    case Req.get(url, query: [latitude: lat, longitude: lon], retry: false, receive_timeout: 2000) do
+    case Req.get(@timeapi_url,
+        Keyword.merge(
+          [query: [latitude: lat, longitude: lon], retry: false, receive_timeout: 2_000],
+          req_options()
+        )
+      ) do
       {:ok, %Req.Response{status: 200, body: %{"timeZone" => tz_string}}} ->
         tz_string
 
@@ -86,42 +92,22 @@ defmodule AshPhoenixStarter.Core.Calculations.ResolveTimezone do
         nil
 
       {:error, reason} ->
-        Logger.error(
-          "[Timezone API Fallback] Network connection failed. Reason: #{inspect(reason)}"
-        )
-
+        Logger.error("[Timezone API Fallback] Network request failed: #{inspect(reason)}")
         nil
     end
   end
 
-  # --- Cachex Memory Registry Store/Fetch Mechanics ---
-
-  defp fetch_from_memory_cache(lat, lon) do
-    if cache_available?() do
-      case Cachex.get(@cache_name, {lat, lon}) do
-        {:ok, timezone_string} -> timezone_string
-        _ -> nil
-      end
-    else
-      nil
-    end
+  # Round coordinates to 3 decimal places (~110m) to maximize cache hits
+  defp normalize_coords(lat, lon) do
+    {round_coord(lat), round_coord(lon)}
   end
 
-  defp store_in_memory_cache(_lat, _lon, nil), do: nil
+  defp round_coord(%Decimal{} = val), do: val |> Decimal.to_float() |> Float.round(3)
+  defp round_coord(val) when is_float(val), do: Float.round(val, 3)
+  defp round_coord(val) when is_integer(val), do: val / 1.0
 
-  defp store_in_memory_cache(lat, lon, timezone_string) do
-    if cache_available?() do
-      Cachex.put(@cache_name, {lat, lon}, timezone_string)
-    end
+  defp req_options do
+  Application.get_env(:ash_phoenix_starter, :timezone_req_options, [])
+end
 
-    timezone_string
-  end
-
-  defp cache_available? do
-    Code.ensure_loaded?(Cachex) and not is_nil(Process.whereis(@cache_name))
-  end
-
-  defp has_attribute?(record, attr) do
-    Map.has_key?(record, attr)
-  end
 end

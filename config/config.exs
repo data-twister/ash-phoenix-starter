@@ -7,7 +7,12 @@
 # General application configuration
 import Config
 
+config :ash_phoenix_starter, product_name: "AshPhoenixStarter"
+
 config :ash_oban, pro?: false
+
+config :ash_oban,
+  actor_persister: AshPhoenixStarter.Accounts.ObanActorPersister
 
 config :ash_phoenix_starter, Oban,
   engine: Oban.Engines.Basic,
