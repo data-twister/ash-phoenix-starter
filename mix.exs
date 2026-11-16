@@ -89,7 +89,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:ash_rate_limiter, "~> 2.0"},
       {:ash_query_builder, "~> 0.10.0"},
       {:ash_credo, "~> 0.17.1", only: [:dev, :test], runtime: false},
-      {:ash_diagram, "~> 0.2.2", only: :dev, runtime: false}
+      {:ash_diagram, "~> 0.2.2", only: :dev, runtime: false},
       {:ash_ops, "~> 0.2"},
       {:ash_oban, "~> 0.8"},
       {:ash_workflow, "~> 0.12"},
@@ -122,9 +122,8 @@ defmodule AshPhoenixStarter.MixProject do
        depth: 1},
       {:nebulex, "~> 3.1"},
       {:nebulex_local, "~> 3.1"},
-      {:decorator, "~> 1.4"}
       {:decorator, "~> 1.4"},
-      {:rename_project, github: "data-twister/rename_project", only: :dev, runtime: false}
+      {:rename_project, github: "data-twister/rename_project", only: :dev, runtime: false},
       {:x509, "~> 0.8"},
       {:hammer, ">= 0.0.0"},
       {:timex, ">= 0.0.0"},
@@ -134,7 +133,7 @@ defmodule AshPhoenixStarter.MixProject do
       {:cinder, "~> 0.7"},
       {:picosat_elixir, "~> 0.2"},
       {:ex_cmd, "~> 0.18.0"},
-      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false}
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:altcha, github: "data-twister/altcha-lib-ex", branch: "ash"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},
